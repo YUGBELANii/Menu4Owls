@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Menu</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <p class="eyebrow">Today's Menu</p>
+    <h1>What we're serving</h1>
+    <p>Everything below is made fresh, updated straight from our kitchen list — nothing here is stale.</p>
+  </div>
+</header>
+
+<main class="menu-section">
+  <div class="container" id="menu-root">
+    <p class="loading-state">Loading menu…</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container" style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:16px;">
+    <span>Questions about an item? <a href="contact.html">Get in touch</a>.</span>
+    <span>Powered by Supabase</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+  async function loadMenu() {
+    const root = document.getElementById('menu-root');
+    const { data, error } = await supabaseClient
+      .from('products')
+      .select('*')
+      .order('category', { ascending: true })
+      .order('name', { ascending: true });
+
+    if (error) {
+      root.innerHTML = `<p class="empty-state">Couldn't load the menu right now. (${error.message})</p>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      root.innerHTML = `<p class="empty-state">No items on the menu yet — add some from the Admin page.</p>`;
+      return;
+    }
+
+    // group by category
+    const groups = {};
+    data.forEach(item => {
+      const cat = item.category || 'General';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    });
+
+    root.innerHTML = Object.entries(groups).map(([cat, items]) => `
+      <section class="category-block">
+        <h2 class="category-title">${escapeHtml(cat)}</h2>
+        ${items.map(item => `
+          <div class="item-row ${item.available === false ? 'item-unavailable' : ''}">
+            <div class="item-main" style="width:100%;">
+              <div class="item-name-row">
+                <span class="item-name">${escapeHtml(item.name)}</span>
+                <span class="item-leader"></span>
+                <span class="item-price">₹${Number(item.price).toFixed(0)}</span>
+              </div>
+              ${item.description ? `<p class="item-desc">${escapeHtml(item.description)}</p>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </section>
+    `).join('');
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+  }
+
+  loadMenu();
+</script>
+</body>
+</html>

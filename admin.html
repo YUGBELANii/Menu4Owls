@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Menu</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="admin.html" class="active">Admin</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- LOGIN VIEW -->
+<div class="login-card" id="login-view">
+  <h2>Admin login</h2>
+  <p class="sub">Sign in with the account you created in Supabase.</p>
+  <form id="login-form">
+    <div class="field">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" required>
+    </div>
+    <div class="field">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" required>
+    </div>
+    <button type="submit" class="btn btn-full" id="login-btn">Log in</button>
+    <div class="status-msg" id="login-status"></div>
+  </form>
+</div>
+
+<!-- ADMIN VIEW (hidden until logged in) -->
+<main class="admin-shell" id="admin-view" style="display:none;">
+  <div class="container">
+    <div class="admin-topbar">
+      <div>
+        <p class="eyebrow" style="margin-bottom:4px;">Admin</p>
+        <h1 style="font-family:'Fraunces',serif; font-weight:500; margin:0; font-size:1.8rem;">Manage products</h1>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span class="who" id="who-label"></span>
+        <button class="btn btn-ghost" id="logout-btn">Log out</button>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h3>Add a new product</h3>
+      <form id="product-form">
+        <div class="form-row">
+          <div class="field">
+            <label for="p-name">Name</label>
+            <input type="text" id="p-name" required placeholder="e.g. Masala Chai">
+          </div>
+          <div class="field">
+            <label for="p-price">Price (₹)</label>
+            <input type="number" id="p-price" step="0.01" min="0" required placeholder="60">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="p-category">Category</label>
+            <input type="text" id="p-category" required placeholder="e.g. Beverages">
+          </div>
+          <div class="field">
+            <label for="p-image">Image URL (optional)</label>
+            <input type="url" id="p-image" placeholder="https://…">
+          </div>
+        </div>
+        <div class="field">
+          <label for="p-desc">Description (optional)</label>
+          <textarea id="p-desc" placeholder="Short one-line description"></textarea>
+        </div>
+        <button type="submit" class="btn" id="add-btn">Add product</button>
+        <div class="status-msg" id="product-status"></div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h3>Current products</h3>
+      <div class="product-list" id="product-list">
+        <p class="loading-state">Loading products…</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+  const loginView = document.getElementById('login-view');
+  const adminView = document.getElementById('admin-view');
+  const whoLabel = document.getElementById('who-label');
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+  }
+
+  // ── Auth ──────────────────────────────────────────
+  async function checkSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      loginView.style.display = 'none';
+      adminView.style.display = 'block';
+      whoLabel.textContent = session.user.email;
+      loadProducts();
+    } else {
+      loginView.style.display = 'block';
+      adminView.style.display = 'none';
+    }
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const loginBtn = document.getElementById('login-btn');
+    const loginStatus = document.getElementById('login-status');
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Logging in…';
+
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      loginStatus.textContent = error.message;
+      loginStatus.className = 'status-msg show err';
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Log in';
+      return;
+    }
+    checkSession();
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    checkSession();
+  });
+
+  // ── Products: create ────────────────────────────────
+  document.getElementById('product-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const addBtn = document.getElementById('add-btn');
+    const status = document.getElementById('product-status');
+    addBtn.disabled = true;
+    addBtn.textContent = 'Adding…';
+
+    const payload = {
+      name: document.getElementById('p-name').value.trim(),
+      price: parseFloat(document.getElementById('p-price').value),
+      category: document.getElementById('p-category').value.trim(),
+      image_url: document.getElementById('p-image').value.trim() || null,
+      description: document.getElementById('p-desc').value.trim() || null,
+    };
+
+    const { error } = await supabaseClient.from('products').insert([payload]);
+
+    if (error) {
+      status.textContent = `Couldn't add — ${error.message}`;
+      status.className = 'status-msg show err';
+    } else {
+      status.textContent = 'Product added.';
+      status.className = 'status-msg show ok';
+      document.getElementById('product-form').reset();
+      loadProducts();
+    }
+    addBtn.disabled = false;
+    addBtn.textContent = 'Add product';
+  });
+
+  // ── Products: list / toggle / delete ────────────────
+  async function loadProducts() {
+    const list = document.getElementById('product-list');
+    const { data, error } = await supabaseClient
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      list.innerHTML = `<p class="empty-state">${error.message}</p>`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      list.innerHTML = `<p class="empty-state">No products yet — add your first one above.</p>`;
+      return;
+    }
+
+    list.innerHTML = data.map(item => `
+      <div class="product-row" data-id="${item.id}">
+        ${item.image_url
+          ? `<img src="${escapeHtml(item.image_url)}" alt="">`
+          : `<div style="width:44px;height:44px;background:var(--surface-2);border-radius:2px;flex-shrink:0;"></div>`}
+        <div class="p-info">
+          <div class="p-name">${escapeHtml(item.name)}</div>
+          <div class="p-meta">${escapeHtml(item.category)} · ₹${Number(item.price).toFixed(0)} · ${item.available === false ? 'hidden' : 'visible'}</div>
+        </div>
+        <div class="p-actions">
+          <button class="icon-btn toggle-btn">${item.available === false ? 'Show' : 'Hide'}</button>
+          <button class="icon-btn danger delete-btn">Delete</button>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const row = e.target.closest('.product-row');
+        const id = row.dataset.id;
+        const item = data.find(d => d.id === id);
+        await supabaseClient.from('products').update({ available: item.available === false }).eq('id', id);
+        loadProducts();
+      });
+    });
+
+    list.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const row = e.target.closest('.product-row');
+        const id = row.dataset.id;
+        if (!confirm('Delete this product?')) return;
+        await supabaseClient.from('products').delete().eq('id', id);
+        loadProducts();
+      });
+    });
+  }
+
+  checkSession();
+</script>
+</body>
+</html>

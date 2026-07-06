@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Menu</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <p class="eyebrow">Get in touch</p>
+    <h1>Talk to us</h1>
+    <p>Questions, orders, or feedback — send a note and we'll get back to you.</p>
+  </div>
+</header>
+
+<main>
+  <div class="container contact-grid">
+    <div>
+      <div class="info-block">
+        <p class="info-label">Address</p>
+        <p class="info-value">Sindhi Colony, Tirora, Maharashtra</p>
+      </div>
+      <div class="info-block">
+        <p class="info-label">Phone</p>
+        <p class="info-value"><a href="tel:+910000000000">+91 00000 00000</a></p>
+      </div>
+      <div class="info-block">
+        <p class="info-label">Hours</p>
+        <p class="info-value">Mon – Sun · 10:00 AM – 10:00 PM</p>
+      </div>
+      <div class="info-block">
+        <p class="info-label">Instagram</p>
+        <p class="info-value"><a href="#" target="_blank">@yourhandle</a></p>
+      </div>
+    </div>
+
+    <div>
+      <form id="contact-form">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input type="text" id="name" required placeholder="Full name">
+        </div>
+        <div class="field">
+          <label for="phone">Phone (optional)</label>
+          <input type="tel" id="phone" placeholder="+91 …">
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" required placeholder="What's on your mind?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-full" id="submit-btn">Send message</button>
+        <div class="status-msg" id="status-msg"></div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container" style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:16px;">
+    <span>Prefer to browse first? <a href="index.html">See the menu</a>.</span>
+    <span>Powered by Supabase</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+  const form = document.getElementById('contact-form');
+  const btn = document.getElementById('submit-btn');
+  const statusMsg = document.getElementById('status-msg');
+
+  function showStatus(text, ok) {
+    statusMsg.textContent = text;
+    statusMsg.className = `status-msg show ${ok ? 'ok' : 'err'}`;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    const { error } = await supabaseClient.from('messages').insert([{ name, phone, message }]);
+
+    if (error) {
+      showStatus(`Couldn't send — ${error.message}`, false);
+      btn.disabled = false;
+      btn.textContent = 'Send message';
+      return;
+    }
+
+    showStatus('Message sent — we\'ll get back to you soon.', true);
+    form.reset();
+    btn.disabled = false;
+    btn.textContent = 'Send message';
+  });
+</script>
+</body>
+</html>
