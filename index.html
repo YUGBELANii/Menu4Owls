@@ -79,6 +79,8 @@
                 <span class="item-name">${escapeHtml(item.name)}</span>
                 <span class="item-leader"></span>
                 <span class="item-price">₹${Number(item.price).toFixed(0)}</span>
+                <span> <a href="https://wa.me/919373993869?text=${encodeURIComponent(`Hi Owlzz Cafe! I want to order: ${item.name}`)}"
+                         target="_blank"> Order Now </a></span>
               </div>
               ${item.description ? `<p class="item-desc">${escapeHtml(item.description)}</p>` : ''}
             </div>
