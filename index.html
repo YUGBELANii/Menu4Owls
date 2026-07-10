@@ -11,6 +11,7 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+
     <ul class="nav-links">
       <li><a href="index.html" class="active">Menu</a></li>
       <li><a href="contact.html">Contact</a></li>
@@ -23,7 +24,10 @@
   <div class="container">
     <p class="eyebrow">Today's Menu</p>
     <h1>What we're serving</h1>
-    <p>Everything below is made fresh, updated straight from our kitchen list — nothing here is stale.</p>
+    <p>
+      Everything below is made fresh, updated straight from our kitchen list —
+      nothing here is stale.
+    </p>
   </div>
 </header>
 
@@ -33,70 +37,320 @@
   </div>
 </main>
 
+<!-- Floating Cart -->
+<div class="cart-widget">
+  <button
+    id="cart-toggle"
+    class="cart-toggle"
+    onclick="toggleCart()"
+  >
+    🛒 <span id="cart-count">0</span> Items • ₹<span id="cart-total">0</span>
+  </button>
+
+  <div id="cart-panel" class="cart-panel">
+    <h3>Your Cart</h3>
+
+    <div id="cart-items">
+      No items added yet.
+    </div>
+
+    <button
+      class="btn btn-full"
+      onclick="checkoutWhatsapp()"
+    >
+      Order on WhatsApp
+    </button>
+  </div>
+</div>
+
 <footer class="site-footer">
-  <div class="container" style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:16px;">
-    <span>Questions about an item? <a href="contact.html">Get in touch</a>.</span>
-<span>Powered by Yug Belani</span>
+  <div
+    class="container"
+    style="
+      display:flex;
+      justify-content:space-between;
+      width:100%;
+      flex-wrap:wrap;
+      gap:16px;
+    "
+  >
+    <span>
+      Questions about an item?
+      <a href="contact.html">Get in touch</a>.
+    </span>
+
+    <span>Powered by Yug Belani</span>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+
 <script>
-  async function loadMenu() {
-    const root = document.getElementById('menu-root');
-    const { data, error } = await supabaseClient
-      .from('products')
-      .select('*')
-      .order('category', { ascending: true })
-      .order('name', { ascending: true });
+let products = [];
+let cart = [];
 
-    if (error) {
-      root.innerHTML = `<p class="empty-state">Couldn't load the menu right now. (${error.message})</p>`;
-      return;
+async function loadMenu() {
+  const root = document.getElementById('menu-root');
+
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .order('category', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) {
+    root.innerHTML =
+      `<p class="empty-state">
+        Couldn't load the menu right now.
+        (${error.message})
+      </p>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    root.innerHTML =
+      `<p class="empty-state">
+        No items on the menu yet —
+        add some from the Admin page.
+      </p>`;
+    return;
+  }
+
+  products = data;
+
+  const groups = {};
+
+  data.forEach(item => {
+    const cat = item.category || 'General';
+
+    if (!groups[cat]) {
+      groups[cat] = [];
     }
 
-    if (!data || data.length === 0) {
-      root.innerHTML = `<p class="empty-state">No items on the menu yet — add some from the Admin page.</p>`;
-      return;
-    }
+    groups[cat].push(item);
+  });
 
-    // group by category
-    const groups = {};
-    data.forEach(item => {
-      const cat = item.category || 'General';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(item);
-    });
-
-    root.innerHTML = Object.entries(groups).map(([cat, items]) => `
+  root.innerHTML = Object.entries(groups)
+    .map(([cat, items]) => `
       <section class="category-block">
-        <h2 class="category-title">${escapeHtml(cat)}</h2>
+
+        <h2 class="category-title">
+          ${escapeHtml(cat)}
+        </h2>
+
         ${items.map(item => `
-          <div class="item-row ${item.available === false ? 'item-unavailable' : ''}">
+          <div
+            class="item-row
+              ${item.available === false
+                ? 'item-unavailable'
+                : ''}"
+          >
             <div class="item-main" style="width:100%;">
+
               <div class="item-name-row">
-                <span class="item-name">${escapeHtml(item.name)}</span>
+
+                <span class="item-name">
+                  ${escapeHtml(item.name)}
+                </span>
+
                 <span class="item-leader"></span>
-                <span class="item-price">₹${Number(item.price).toFixed(0)}</span>
-                <span> <a href="https://wa.me/919373993869?text=${encodeURIComponent(`Hi Owlzz Cafe! I want to order: ${item.name}`)}"
-                         target="_blank"> Order Now </a></span>
+
+                <span class="item-price">
+                  ₹${Number(item.price).toFixed(0)}
+                </span>
+
+                ${
+                  item.available === false
+                    ? ''
+                    : `
+                      <button
+                        class="order-btn"
+                        onclick="addToCart('${item.name}')"
+                      >
+                        Add to Cart
+                      </button>
+                    `
+                }
+
               </div>
-              ${item.description ? `<p class="item-desc">${escapeHtml(item.description)}</p>` : ''}
+
+              ${
+                item.description
+                  ? `
+                    <p class="item-desc">
+                      ${escapeHtml(item.description)}
+                    </p>
+                  `
+                  : ''
+              }
+
             </div>
           </div>
         `).join('')}
+
       </section>
-    `).join('');
+    `)
+    .join('');
+}
+
+function addToCart(name) {
+  const product = products.find(
+    p => p.name === name
+  );
+
+  if (!product) return;
+
+  const existing = cart.find(
+    i => i.name === name
+  );
+
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({
+      name: product.name,
+      price: Number(product.price),
+      qty: 1
+    });
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str ?? '';
-    return div.innerHTML;
+  renderCart();
+}
+
+function renderCart() {
+  const items =
+    document.getElementById('cart-items');
+
+  const count =
+    document.getElementById('cart-count');
+
+  const totalEl =
+    document.getElementById('cart-total');
+
+  if (!cart.length) {
+    items.innerHTML =
+      'No items added yet.';
+    count.textContent = '0';
+    totalEl.textContent = '0';
+    return;
   }
 
-  loadMenu();
+  let total = 0;
+  let totalItems = 0;
+
+  items.innerHTML = cart.map(item => {
+    total += item.price * item.qty;
+    totalItems += item.qty;
+
+    return `
+      <div class="cart-item">
+
+        <div>
+          <strong>
+            ${escapeHtml(item.name)}
+          </strong>
+
+          <div>
+            ₹${item.price}
+            ×
+            ${item.qty}
+          </div>
+        </div>
+
+        <div class="cart-actions">
+
+          <button
+          onclick="changeQty('${item.name}', -1)"
+          >
+            −
+          </button>
+
+          <span>${item.qty}</span>
+
+          <button
+            onclick="changeQty('${item.name}', 1)"
+          >
+            +
+          </button>
+
+        </div>
+
+      </div>
+    `;
+  }).join('');
+
+  count.textContent = totalItems;
+  totalEl.textContent = total;
+}
+
+function changeQty(name, amount) {
+  const item = cart.find(
+    i => i.name === name
+  );
+
+  if (!item) return;
+
+  item.qty += amount;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(
+      i => i.name !== name
+    );
+  }
+
+  renderCart();
+}
+
+function toggleCart() {
+  document
+    .getElementById('cart-panel')
+    .classList
+    .toggle('show');
+}
+
+function checkoutWhatsapp() {
+  if (!cart.length) {
+    alert('Your cart is empty.');
+    return;
+  }
+
+  let total = 0;
+
+  const order = cart.map(item => {
+    const subtotal =
+      item.price * item.qty;
+
+    total += subtotal;
+
+    return `• ${item.name} x${item.qty} - ₹${subtotal}`;
+  }).join('\n');
+
+  const message =
+`Hi Owlzz Cafe! I'd like to order:
+
+${order}
+
+Total: ₹${total}`;
+
+  window.open(
+    `https://wa.me/919373993869?text=${encodeURIComponent(message)}`,
+    '_blank'
+  );
+}
+
+function escapeHtml(str) {
+  const div =
+    document.createElement('div');
+
+  div.textContent = str ?? '';
+
+  return div.innerHTML;
+}
+
+loadMenu();
 </script>
+
 </body>
 </html>
+
