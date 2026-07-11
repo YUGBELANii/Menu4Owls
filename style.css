@@ -878,3 +878,40 @@ textarea {
     padding-bottom: 90px; /* avoids floating cart overlap */
   }
 }
+
+.category-nav {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  margin-bottom: 32px;
+  padding: 8px 0;
+  position: sticky;
+  top: 70px;
+  background: rgba(28, 26, 23, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.category-chip {
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.category-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-2);
+}
+
+@media (max-width: 768px) {
+  .category-nav {
+    top: 100px;
+  }
+}
