@@ -915,3 +915,49 @@ textarea {
     top: 100px;
   }
 }
+
+/* ── Search ───────────────────────────────────────── */
+.search-bar {
+  margin: 32px 0;
+}
+
+.search-bar input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 14px 18px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.search-bar input::placeholder {
+  color: var(--muted);
+}
+
+.search-bar input:focus {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.search-input {
+  position: relative;
+}
+
+.search-input span {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.search-input input {
+  padding-left: 44px;
+}

@@ -31,8 +31,20 @@
   </div>
 </header>
 
+
 <main class="menu-section">
   <div class="container">
+
+    <div class="search-bar">
+  <div class="search-input">
+    <span>⌕</span>
+    <input
+      type="text"
+      id="menuSearch"
+      placeholder="Search coffee, maggi, fries…"
+    >
+  </div>
+</div>
 
     <div id="category-nav" class="category-nav"></div>
 
@@ -106,28 +118,47 @@ async function loadMenu() {
     .order('name', { ascending: true });
 
   if (error) {
-    root.innerHTML =
-      `<p class="empty-state">
+    root.innerHTML = `
+      <p class="empty-state">
         Couldn't load the menu right now.
         (${error.message})
-      </p>`;
+      </p>
+    `;
     return;
   }
 
   if (!data || data.length === 0) {
-    root.innerHTML =
-      `<p class="empty-state">
+    root.innerHTML = `
+      <p class="empty-state">
         No items on the menu yet —
         add some from the Admin page.
-      </p>`;
+      </p>
+    `;
     return;
   }
 
   products = data;
+  renderMenu(products);
+}
+
+function renderMenu(menuData) {
+  const root = document.getElementById('menu-root');
+  const nav = document.getElementById('category-nav');
+
+  if (!menuData.length) {
+    nav.innerHTML = '';
+
+    root.innerHTML = `
+      <p class="empty-state">
+        No items found 😔
+      </p>
+    `;
+    return;
+  }
 
   const groups = {};
 
-  data.forEach(item => {
+  menuData.forEach(item => {
     const cat = item.category || 'General';
 
     if (!groups[cat]) {
@@ -137,29 +168,23 @@ async function loadMenu() {
     groups[cat].push(item);
   });
 
-const nav = document.getElementById('category-nav');
-
-nav.innerHTML = Object.keys(groups)
-  .map(cat => `
-    <button
-      class="category-chip"
-      onclick="scrollToCategory('${cat}')"
-    >
-      ${escapeHtml(cat)}
-    </button>
-  `)
-  .join('');
-
-
-
+  nav.innerHTML = Object.keys(groups)
+    .map(cat => `
+      <button
+        class="category-chip"
+        onclick="scrollToCategory('${cat}')"
+      >
+        ${escapeHtml(cat)}
+      </button>
+    `)
+    .join('');
 
   root.innerHTML = Object.entries(groups)
     .map(([cat, items]) => `
       <section
-  class="category-block"
-  id="cat-${cat.trim().toLowerCase().replace(/\s+/g, '-')}"
->
-
+        class="category-block"
+        id="cat-${cat.trim().toLowerCase().replace(/\s+/g, '-')}"
+      >
         <h2 class="category-title">
           ${escapeHtml(cat)}
         </h2>
@@ -254,8 +279,7 @@ function renderCart() {
     document.getElementById('cart-total');
 
   if (!cart.length) {
-    items.innerHTML =
-      'No items added yet.';
+    items.innerHTML = 'No items added yet.';
     count.textContent = '0';
     totalEl.textContent = '0';
     return;
@@ -286,7 +310,7 @@ function renderCart() {
         <div class="cart-actions">
 
           <button
-          onclick="changeQty('${item.name}', -1)"
+            onclick="changeQty('${item.name}', -1)"
           >
             −
           </button>
@@ -346,7 +370,7 @@ function scrollToCategory(cat) {
   const y =
     el.getBoundingClientRect().top +
     window.pageYOffset -
-    160; // adjust for nav heights
+    160;
 
   window.scrollTo({
     top: y,
@@ -392,6 +416,34 @@ function escapeHtml(str) {
 
   return div.innerHTML;
 }
+
+/* SEARCH FEATURE */
+document
+  .getElementById('menuSearch')
+  .addEventListener('input', function () {
+
+    const search =
+      this.value.toLowerCase().trim();
+
+    const filtered = products.filter(item => {
+      const name =
+        (item.name || '').toLowerCase();
+
+      const category =
+        (item.category || '').toLowerCase();
+
+      const description =
+        (item.description || '').toLowerCase();
+
+      return (
+        name.includes(search) ||
+        category.includes(search) ||
+        description.includes(search)
+      );
+    });
+
+    renderMenu(filtered);
+  });
 
 loadMenu();
 </script>
