@@ -28,6 +28,9 @@
       Everything below is made fresh, updated straight from our kitchen list —
       nothing here is stale.
     </p>
+
+     <span>Timings 
+     <strong>Mon-Sun: 12:00 AM - 3:00 AM</strong> </span>
   </div>
 </header>
 
@@ -105,6 +108,8 @@
 <script src="supabase-config.js"></script>
 
 <script>
+
+const DELIVERY_CHARGE = 20;
 let products = [];
 let cart = [];
 
@@ -269,14 +274,9 @@ function addToCart(name) {
 }
 
 function renderCart() {
-  const items =
-    document.getElementById('cart-items');
-
-  const count =
-    document.getElementById('cart-count');
-
-  const totalEl =
-    document.getElementById('cart-total');
+  const items = document.getElementById('cart-items');
+  const count = document.getElementById('cart-count');
+  const totalEl = document.getElementById('cart-total');
 
   if (!cart.length) {
     items.innerHTML = 'No items added yet.';
@@ -285,52 +285,53 @@ function renderCart() {
     return;
   }
 
-  let total = 0;
+  let subtotal = 0;
   let totalItems = 0;
 
   items.innerHTML = cart.map(item => {
-    total += item.price * item.qty;
+    subtotal += item.price * item.qty;
     totalItems += item.qty;
 
     return `
       <div class="cart-item">
-
         <div>
-          <strong>
-            ${escapeHtml(item.name)}
-          </strong>
-
-          <div>
-            ₹${item.price}
-            ×
-            ${item.qty}
-          </div>
+          <strong>${escapeHtml(item.name)}</strong>
+          <div>₹${item.price} × ${item.qty}</div>
         </div>
 
         <div class="cart-actions">
-
-          <button
-            onclick="changeQty('${item.name}', -1)"
-          >
-            −
-          </button>
-
+          <button onclick="changeQty('${item.name}', -1)">−</button>
           <span>${item.qty}</span>
-
-          <button
-            onclick="changeQty('${item.name}', 1)"
-          >
-            +
-          </button>
-
+          <button onclick="changeQty('${item.name}', 1)">+</button>
         </div>
-
       </div>
     `;
   }).join('');
 
+  const grandTotal = subtotal + DELIVERY_CHARGE;
+
+  items.innerHTML += `
+    <hr style="margin:12px 0;">
+    <div class="cart-summary">
+      <div style="display:flex;justify-content:space-between;">
+        <span>Subtotal</span>
+        <span>₹${subtotal}</span>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;">
+        <span>Delivery</span>
+        <span>₹${DELIVERY_CHARGE}</span>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;font-weight:bold;margin-top:8px;">
+        <span>Total</span>
+        <span>₹${grandTotal}</span>
+      </div>
+    </div>
+  `;
+
   count.textContent = totalItems;
-  totalEl.textContent = total;
+  totalEl.textContent = grandTotal;
 }
 
 function changeQty(name, amount) {
@@ -384,30 +385,30 @@ function checkoutWhatsapp() {
     return;
   }
 
-  let total = 0;
+  let subtotal = 0;
 
   const order = cart.map(item => {
-    const subtotal =
-      item.price * item.qty;
+    const itemTotal = item.price * item.qty;
+    subtotal += itemTotal;
 
-    total += subtotal;
-
-    return `• ${item.name} x${item.qty} - ₹${subtotal}`;
+    return `• ${item.name} x${item.qty} - ₹${itemTotal}`;
   }).join('\n');
 
-  const message =
-`Hi Owlzz Cafe! I'd like to order:
+  const grandTotal = subtotal + DELIVERY_CHARGE;
+
+  const message = `Hi Owlzz Cafe! I'd like to order:
 
 ${order}
 
-Total: ₹${total}`;
+Subtotal: ₹${subtotal}
+Delivery: ₹${DELIVERY_CHARGE}
+Total: ₹${grandTotal}`;
 
   window.open(
     `https://wa.me/919370693869?text=${encodeURIComponent(message)}`,
     '_blank'
   );
 }
-
 function escapeHtml(str) {
   const div =
     document.createElement('div');
