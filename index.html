@@ -1,90 +1,249 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menu</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+/* =========================
+   MYSTERY REWARD
+========================= */
+
+/* =========================
+SMALL MYSTERY REWARD
+========================= */
+
+.mystery-reward {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin: 10px 0;
+padding: 8px 0;
+border-top: 1px dashed #ddd;
+border-bottom: 1px dashed #ddd;
+}
+
+.mystery-reward-info {
+display: flex;
+align-items: center;
+gap: 7px;
+font-size: 13px;
+}
+
+.mystery-reward-icon {
+font-size: 17px;
+}
+
+.mystery-reward-text {
+font-weight: 600;
+}
+
+.reward-reveal-btn {
+border: 0;
+background: transparent;
+font-size: 12px;
+font-weight: 800;
+cursor: pointer;
+padding: 5px 7px;
+text-decoration: underline;
+}
+
+.reward-reveal-btn:active {
+transform: scale(0.92);
+}
+
+/* =========================
+REWARD WON ANIMATION
+========================= */
+
+.reward-won {
+display: flex;
+align-items: center;
+gap: 6px;
+font-size: 13px;
+font-weight: 700;
+animation: rewardPop 0.5s ease;
+}
+
+.reward-won-icon {
+display: inline-block;
+animation: rewardBounce 0.6s ease;
+}
+
+.reward-won-text {
+animation: rewardGlow 0.8s ease;
+}
+
+@keyframes rewardPop {
+
+0% {
+opacity: 0;
+transform: scale(0.7);
+}
+
+60% {
+opacity: 1;
+transform: scale(1.08);
+}
+
+100% {
+transform: scale(1);
+}
+
+}
+
+@keyframes rewardBounce {
+
+0% {
+transform: translateY(-8px) rotate(-10deg);
+}
+
+50% {
+transform: translateY(2px) rotate(10deg);
+}
+
+100% {
+transform: translateY(0) rotate(0);
+}
+
+}
+
+@keyframes rewardGlow {
+
+0% {
+opacity: 0;
+}
+
+50% {
+opacity: 1;
+}
+
+100% {
+opacity: 1;
+}
+
+}
+
+</style>
+
 </head>
+
 <body>
 
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="brand">Owl's<span>Corner</span></a>
 
-    <ul class="nav-links">
-      <li><a href="index.html" class="active">Menu</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="admin.html">Admin</a></li>
-    </ul>
+
+<ul class="nav-links">
+  <li><a href="index.html" class="active">Menu</a></li>
+  <li><a href="contact.html">Contact</a></li>
+  <li><a href="admin.html">Admin</a></li>
+</ul>
+
+
   </div>
 </nav>
 
 <header class="hero">
   <div class="container">
     <p class="eyebrow">Today's Menu</p>
-    <h1>What we're serving</h1>
-    <p>
-      Everything below is made fresh, updated straight from our kitchen list —
-      nothing here is stale.
-    </p>
 
-     <span>Timings 
-     <strong>Mon-Sun: 12:00 AM - 3:00 AM</strong> </span>
+
+<h1>What we're serving</h1>
+
+<p>
+  Everything below is made fresh, updated straight from our kitchen list —
+  nothing here is stale.
+</p>
+
+<span>
+  Timings
+  <strong>Mon-Sun: 12:00 AM - 3:00 AM</strong>
+</span>
+
+
   </div>
 </header>
 
-
 <main class="menu-section">
+
   <div class="container">
 
-    <div class="search-bar">
+
+<div class="search-bar">
+
   <div class="search-input">
+
     <span>⌕</span>
+
     <input
       type="text"
       id="menuSearch"
       placeholder="Search coffee, maggi, fries…"
     >
+
   </div>
+
 </div>
 
-    <div id="category-nav" class="category-nav"></div>
+<div id="category-nav" class="category-nav"></div>
 
-    <div id="menu-root">
-      <p class="loading-state">Loading menu…</p>
-    </div>
+<div id="menu-root">
+  <p class="loading-state">Loading menu…</p>
+</div>
+
 
   </div>
+
 </main>
 
 <!-- Floating Cart -->
+
 <div class="cart-widget">
-  <button
-    id="cart-toggle"
-    class="cart-toggle"
-    onclick="toggleCart()"
-  >
-    🛒 <span id="cart-count">0</span> Items • ₹<span id="cart-total">0</span>
+
+<button
+id="cart-toggle"
+class="cart-toggle"
+onclick="toggleCart()"
+
+>
+
+
+🛒
+
+<span id="cart-count">0</span>
+Items • ₹<span id="cart-total">0</span>
+
+
   </button>
 
   <div id="cart-panel" class="cart-panel">
-    <h3>Your Cart</h3>
 
-    <div id="cart-items">
-      No items added yet.
-    </div>
+<h3>Your Cart</h3>
 
-    <button
-      class="btn btn-full"
-      onclick="checkoutWhatsapp()"
-    >
-      Order on WhatsApp
-    </button>
+<div id="cart-items">
+  No items added yet.
+</div>
+
+<button
+  class="btn btn-full"
+  onclick="checkoutWhatsapp()"
+>
+  Order on WhatsApp
+</button>
+
+
   </div>
+
 </div>
 
 <footer class="site-footer">
+
   <div
     class="container"
     style="
@@ -95,62 +254,160 @@
       gap:16px;
     "
   >
-    <span>
-      Questions about an item?
-      <a href="contact.html">Get in touch</a>.
-    </span>
 
-    <span>Powered by <a href="https://instagram.com/yugbelanii" target="_blank">Yug Belani</a></span>
+
+<span>
+  Questions about an item?
+  <a href="contact.html">Get in touch</a>.
+</span>
+
+<span>
+  Powered by
+  <a
+    href="https://instagram.com/yugbelanii"
+    target="_blank"
+  >
+    Yug Belani
+  </a>
+</span>
+
+
   </div>
+
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase-config.js"></script>
 
 <script>
 
 const DELIVERY_CHARGE = 20;
+
+/*
+=========================================
+  MYSTERY REWARD SETTINGS
+=========================================
+*/
+
+const REWARD_THRESHOLD = 250;
+
+/*
+  These are product names from your
+  Supabase products table.
+
+  Coco-Cola already exists in your DB.
+
+  Make sure Croissant exists as a
+  normal product in products table.
+*/
+
+const REWARD_PRODUCT_NAMES = [
+  'Coco-Cola',
+  'Croissant'
+];
+
+
+/*
+=========================================
+  GLOBAL STATE
+=========================================
+*/
+
 let products = [];
+
 let cart = [];
 
-async function loadMenu() {
-  const root = document.getElementById('menu-root');
+/*
+  This stores the product object won
+  by the customer.
 
-  const { data, error } = await supabaseClient
-    .from('products')
-    .select('*')
-    .order('category', { ascending: true })
-    .order('name', { ascending: true });
+  Example:
+
+  {
+    id: "...",
+    name: "Coco-Cola",
+    price: 30
+  }
+*/
+
+let mysteryReward = null;
+
+/*
+  Once the customer taps reveal,
+  this becomes true.
+
+  This prevents rerolling the reward
+  repeatedly.
+*/
+
+let rewardRevealed = false;
+
+
+/*
+=========================================
+  LOAD MENU
+=========================================
+*/
+
+async function loadMenu() {
+
+  const root =
+    document.getElementById('menu-root');
+
+  const { data, error } =
+    await supabaseClient
+      .from('products')
+      .select('*')
+      .order('category', {
+        ascending: true
+      })
+      .order('name', {
+        ascending: true
+      });
 
   if (error) {
+
     root.innerHTML = `
       <p class="empty-state">
         Couldn't load the menu right now.
-        (${error.message})
+        (${escapeHtml(error.message)})
       </p>
     `;
+
     return;
   }
 
   if (!data || data.length === 0) {
+
     root.innerHTML = `
       <p class="empty-state">
         No items on the menu yet —
         add some from the Admin page.
       </p>
     `;
+
     return;
   }
 
   products = data;
+
   renderMenu(products);
 }
 
+
+
+
 function renderMenu(menuData) {
-  const root = document.getElementById('menu-root');
-  const nav = document.getElementById('category-nav');
+
+  const root =
+    document.getElementById('menu-root');
+
+  const nav =
+    document.getElementById('category-nav');
 
   if (!menuData.length) {
+
     nav.innerHTML = '';
 
     root.innerHTML = `
@@ -158,297 +415,752 @@ function renderMenu(menuData) {
         No items found 😔
       </p>
     `;
+
     return;
   }
 
   const groups = {};
 
   menuData.forEach(item => {
-    const cat = item.category || 'General';
+
+    const cat =
+      item.category || 'General';
 
     if (!groups[cat]) {
       groups[cat] = [];
     }
 
     groups[cat].push(item);
+
   });
 
-  nav.innerHTML = Object.keys(groups)
-    .map(cat => `
-      <button
-        class="category-chip"
-        onclick="scrollToCategory('${cat}')"
-      >
-        ${escapeHtml(cat)}
-      </button>
-    `)
-    .join('');
 
-  root.innerHTML = Object.entries(groups)
-    .map(([cat, items]) => `
-      <section
-        class="category-block"
-        id="cat-${cat.trim().toLowerCase().replace(/\s+/g, '-')}"
-      >
-        <h2 class="category-title">
+  nav.innerHTML =
+    Object.keys(groups)
+      .map(cat => `
+        <button
+          class="category-chip"
+          onclick="scrollToCategory('${escapeJs(cat)}')"
+        >
           ${escapeHtml(cat)}
-        </h2>
+        </button>
+      `)
+      .join('');
 
-        ${items.map(item => `
-          <div
-            class="item-row
-              ${item.available === false
-                ? 'item-unavailable'
-                : ''}"
-          >
-            <div class="item-main" style="width:100%;">
 
-              <div class="item-name-row">
+  root.innerHTML =
+    Object.entries(groups)
+      .map(([cat, items]) => `
 
-                <span class="item-name">
-                  ${escapeHtml(item.name)}
-                </span>
+        <section
+          class="category-block"
+          id="cat-${cat
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-')}"
+        >
 
-                <span class="item-leader"></span>
+          <h2 class="category-title">
+            ${escapeHtml(cat)}
+          </h2>
 
-                <span class="item-price">
-                  ₹${Number(item.price).toFixed(0)}
-                </span>
+          ${items.map(item => `
+
+            <div
+              class="
+                item-row
+                ${item.available === false
+                  ? 'item-unavailable'
+                  : ''}
+              "
+            >
+
+              <div
+                class="item-main"
+                style="width:100%;"
+              >
+
+                <div class="item-name-row">
+
+                  <span class="item-name">
+                    ${escapeHtml(item.name)}
+                  </span>
+
+                  <span class="item-leader"></span>
+
+                  <span class="item-price">
+                    ₹${Number(item.price).toFixed(0)}
+                  </span>
+
+                  ${
+                    item.available === false
+                      ? ''
+                      : `
+                        <button
+                          class="order-btn"
+                          onclick="addToCart('${item.id}')"
+                        >
+                          Add to Cart
+                        </button>
+                      `
+                  }
+
+                </div>
 
                 ${
-                  item.available === false
-                    ? ''
-                    : `
-                      <button
-                        class="order-btn"
-                        onclick="addToCart('${item.name}')"
-                      >
-                        Add to Cart
-                      </button>
+                  item.description
+                    ? `
+                      <p class="item-desc">
+                        ${escapeHtml(item.description)}
+                      </p>
                     `
+                    : ''
                 }
 
               </div>
 
-              ${
-                item.description
-                  ? `
-                    <p class="item-desc">
-                      ${escapeHtml(item.description)}
-                    </p>
-                  `
-                  : ''
-              }
-
             </div>
-          </div>
-        `).join('')}
 
-      </section>
-    `)
-    .join('');
+          `).join('')}
+
+        </section>
+
+      `)
+      .join('');
 }
 
-function addToCart(name) {
-  const product = products.find(
-    p => p.name === name
-  );
+
+
+
+function addToCart(productId) {
+
+  const product =
+    products.find(
+      p => p.id === productId
+    );
 
   if (!product) return;
 
-  const existing = cart.find(
-    i => i.name === name
-  );
+  if (product.available === false) {
+    return;
+  }
+
+  const existing =
+    cart.find(
+      i => i.id === productId
+    );
 
   if (existing) {
+
     existing.qty++;
+
   } else {
+
     cart.push({
+      id: product.id,
       name: product.name,
       price: Number(product.price),
       qty: 1
     });
+
   }
 
   renderCart();
 }
 
-function renderCart() {
-  const items = document.getElementById('cart-items');
-  const count = document.getElementById('cart-count');
-  const totalEl = document.getElementById('cart-total');
 
-  if (!cart.length) {
-    items.innerHTML = 'No items added yet.';
-    count.textContent = '0';
-    totalEl.textContent = '0';
+
+
+function getCartSubtotal() {
+
+  return cart.reduce(
+    (total, item) =>
+      total + (item.price * item.qty),
+    0
+  );
+
+}
+
+
+
+
+function checkRewardEligibility() {
+
+  const subtotal =
+    getCartSubtotal();
+
+
+
+
+  if (subtotal < REWARD_THRESHOLD) {
+
+    mysteryReward = null;
+
+    rewardRevealed = false;
+
+    return false;
+  }
+
+
+
+  return true;
+}
+
+
+
+
+function getAvailableRewards() {
+
+  return products.filter(product => {
+
+    return (
+      REWARD_PRODUCT_NAMES.includes(
+        product.name
+      )
+      &&
+      product.available !== false
+    );
+
+  });
+
+}
+
+
+
+function revealMysteryReward() {
+
+  const subtotal =
+    getCartSubtotal();
+
+  if (subtotal < REWARD_THRESHOLD) {
+
+    mysteryReward = null;
+
+    rewardRevealed = false;
+
+    renderCart();
+
     return;
   }
 
-  let subtotal = 0;
-  let totalItems = 0;
 
-  items.innerHTML = cart.map(item => {
-    subtotal += item.price * item.qty;
-    totalItems += item.qty;
 
-    return `
-      <div class="cart-item">
-        <div>
-          <strong>${escapeHtml(item.name)}</strong>
-          <div>₹${item.price} × ${item.qty}</div>
-        </div>
 
-        <div class="cart-actions">
-          <button onclick="changeQty('${item.name}', -1)">−</button>
-          <span>${item.qty}</span>
-          <button onclick="changeQty('${item.name}', 1)">+</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+  if (rewardRevealed) {
+    return;
+  }
 
-  const grandTotal = subtotal + DELIVERY_CHARGE;
 
-  items.innerHTML += `
-    <hr style="margin:12px 0;">
-    <div class="cart-summary">
-      <div style="display:flex;justify-content:space-between;">
-        <span>Subtotal</span>
-        <span>₹${subtotal}</span>
-      </div>
+  const rewards =
+    getAvailableRewards();
 
-      <div style="display:flex;justify-content:space-between;">
-        <span>Delivery</span>
-        <span>₹${DELIVERY_CHARGE}</span>
-      </div>
 
-      <div style="display:flex;justify-content:space-between;font-weight:bold;margin-top:8px;">
-        <span>Total</span>
-        <span>₹${grandTotal}</span>
-      </div>
-    </div>
-  `;
+  
 
-  count.textContent = totalItems;
-  totalEl.textContent = grandTotal;
+  if (!rewards.length) {
+
+    alert(
+      'Mystery rewards are temporarily unavailable.'
+    );
+
+    return;
+  }
+
+
+ 
+  const randomIndex =
+    Math.floor(
+      Math.random() * rewards.length
+    );
+
+  mysteryReward =
+    rewards[randomIndex];
+
+  rewardRevealed = true;
+
+  renderCart();
+
 }
 
-function changeQty(name, amount) {
-  const item = cart.find(
-    i => i.name === name
-  );
+
+
+
+function renderMysteryReward() {
+
+  const eligible = checkRewardEligibility();
+
+  if (!eligible) {
+    return '';
+  }
+
+  // Before reveal
+  if (!rewardRevealed) {
+
+    return `
+      <div class="mystery-reward">
+
+        <div class="mystery-reward-info">
+
+          <span class="mystery-reward-icon">
+            🎁
+          </span>
+
+          <span class="mystery-reward-text">
+            Mystery reward
+          </span>
+
+        </div>
+
+        <button
+          class="reward-reveal-btn"
+          onclick="revealMysteryReward()"
+        >
+          TAP TO REVEAL
+        </button>
+
+      </div>
+    `;
+  }
+
+  // After reveal
+  const rewardIcon =
+    mysteryReward.name
+      .toLowerCase()
+      .includes('cola')
+      ? '🥤'
+      : '🥐';
+
+  return `
+    <div class="mystery-reward reward-won">
+
+      <span class="reward-won-icon">
+        ${rewardIcon}
+      </span>
+
+      <span class="reward-won-text">
+        🎉 You won ${escapeHtml(mysteryReward.name)} — FREE!
+      </span>
+
+    </div>
+  `;
+}
+
+
+
+function renderCart() {
+
+  const items =
+    document.getElementById('cart-items');
+
+  const count =
+    document.getElementById('cart-count');
+
+  const totalEl =
+    document.getElementById('cart-total');
+
+
+
+  checkRewardEligibility();
+
+
+  if (!cart.length) {
+
+    items.innerHTML =
+      'No items added yet.';
+
+    count.textContent = '0';
+
+    totalEl.textContent = '0';
+
+    return;
+  }
+
+
+  let subtotal = 0;
+
+  let totalItems = 0;
+
+
+  const cartHtml =
+    cart.map(item => {
+
+      const itemTotal =
+        item.price * item.qty;
+
+      subtotal += itemTotal;
+
+      totalItems += item.qty;
+
+
+      return `
+
+        <div class="cart-item">
+
+          <div>
+
+            <strong>
+              ${escapeHtml(item.name)}
+            </strong>
+
+            <div>
+              ₹${item.price} × ${item.qty}
+            </div>
+
+          </div>
+
+          <div class="cart-actions">
+
+            <button
+              onclick="changeQty('${item.id}', -1)"
+            >
+              −
+            </button>
+
+            <span>
+              ${item.qty}
+            </span>
+
+            <button
+              onclick="changeQty('${item.id}', 1)"
+            >
+              +
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join('');
+
+
+
+
+  const rewardHtml =
+    renderMysteryReward();
+
+
+
+
+  const grandTotal =
+    subtotal + DELIVERY_CHARGE;
+
+
+  items.innerHTML = `
+
+    ${cartHtml}
+
+    ${rewardHtml}
+
+    <hr style="margin:12px 0;">
+
+    <div class="cart-summary">
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+        "
+      >
+        <span>
+          Subtotal
+        </span>
+
+        <span>
+          ₹${subtotal}
+        </span>
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+        "
+      >
+        <span>
+          Delivery
+        </span>
+
+        <span>
+          ₹${DELIVERY_CHARGE}
+        </span>
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          font-weight:bold;
+          margin-top:8px;
+        "
+      >
+
+        <span>
+          Total
+        </span>
+
+        <span>
+          ₹${grandTotal}
+        </span>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  count.textContent =
+    totalItems;
+
+  totalEl.textContent =
+    grandTotal;
+}
+
+
+
+
+function changeQty(productId, amount) {
+
+  const item =
+    cart.find(
+      i => i.id === productId
+    );
 
   if (!item) return;
 
+
   item.qty += amount;
 
+
   if (item.qty <= 0) {
-    cart = cart.filter(
-      i => i.name !== name
-    );
+
+    cart =
+      cart.filter(
+        i => i.id !== productId
+      );
+
   }
+
 
   renderCart();
 }
 
+
+
+
 function toggleCart() {
+
   document
     .getElementById('cart-panel')
     .classList
     .toggle('show');
+
 }
 
+
+
+
 function scrollToCategory(cat) {
+
   const id =
     'cat-' +
-    cat.trim().toLowerCase().replace(/\s+/g, '-');
+    cat
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
 
-  const el = document.getElementById(id);
+
+  const el =
+    document.getElementById(id);
+
 
   if (!el) return;
+
 
   const y =
     el.getBoundingClientRect().top +
     window.pageYOffset -
     160;
 
+
   window.scrollTo({
+
     top: y,
+
     behavior: 'smooth'
+
   });
+
 }
 
+
+
+
+
 function checkoutWhatsapp() {
+
   if (!cart.length) {
-    alert('Your cart is empty.');
+
+    alert(
+      'Your cart is empty.'
+    );
+
     return;
   }
 
+
   let subtotal = 0;
 
-  const order = cart.map(item => {
-    const itemTotal = item.price * item.qty;
-    subtotal += itemTotal;
 
-    return `• ${item.name} x${item.qty} - ₹${itemTotal}`;
-  }).join('\n');
+  const order =
+    cart.map(item => {
 
-  const grandTotal = subtotal + DELIVERY_CHARGE;
+      const itemTotal =
+        item.price * item.qty;
+
+
+      subtotal += itemTotal;
+
+
+      return `
+• ${item.name} x${item.qty} - ₹${itemTotal}
+`;
+
+    }).join('');
+
+
+
+
+  let rewardMessage = '';
+
+
+  if (
+    rewardRevealed &&
+    mysteryReward
+  ) {
+
+    rewardMessage = `
+• 🎁 FREE ${mysteryReward.name} x1 - ₹0
+`;
+
+  }
+
+
+  const grandTotal =
+    subtotal + DELIVERY_CHARGE;
+
 
   const message = `Hi Owlzz Cafe! I'd like to order:
 
-${order}
-
+${order}${rewardMessage}
 Subtotal: ₹${subtotal}
 Delivery: ₹${DELIVERY_CHARGE}
-Total: ₹${grandTotal}`;
+Total: ₹${grandTotal}
+
+${rewardRevealed && mysteryReward
+  ? `🎁 Mystery Reward: ${mysteryReward.name} - FREE`
+  : ''
+}`;
+
 
   window.open(
+
     `https://wa.me/919370693869?text=${encodeURIComponent(message)}`,
+
     '_blank'
+
   );
+
 }
+
+
+
+
 function escapeHtml(str) {
+
   const div =
     document.createElement('div');
 
-  div.textContent = str ?? '';
+  div.textContent =
+    str ?? '';
 
   return div.innerHTML;
+
 }
 
-/* SEARCH FEATURE */
+
+
+function escapeJs(str) {
+
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n');
+
+}
+
+
 document
   .getElementById('menuSearch')
-  .addEventListener('input', function () {
+  .addEventListener(
+    'input',
+    function () {
 
-    const search =
-      this.value.toLowerCase().trim();
+      const search =
+        this.value
+          .toLowerCase()
+          .trim();
 
-    const filtered = products.filter(item => {
-      const name =
-        (item.name || '').toLowerCase();
 
-      const category =
-        (item.category || '').toLowerCase();
+      const filtered =
+        products.filter(item => {
 
-      const description =
-        (item.description || '').toLowerCase();
+          const name =
+            (item.name || '')
+              .toLowerCase();
 
-      return (
-        name.includes(search) ||
-        category.includes(search) ||
-        description.includes(search)
-      );
-    });
+          const category =
+            (item.category || '')
+              .toLowerCase();
 
-    renderMenu(filtered);
-  });
+          const description =
+            (item.description || '')
+              .toLowerCase();
+
+
+          return (
+
+            name.includes(search)
+
+            ||
+
+            category.includes(search)
+
+            ||
+
+            description.includes(search)
+
+          );
+
+        });
+
+
+      renderMenu(filtered);
+
+    }
+  );
+
+
+
 
 loadMenu();
+
 </script>
 
 </body>
 </html>
-
