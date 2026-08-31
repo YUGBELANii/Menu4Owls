@@ -5,233 +5,2148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================
+   IMAGE UPLOAD
+========================================= */
+
+.image-upload-box {
+  border: 1px dashed var(--border);
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--surface-2);
+}
+
+.image-upload-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.image-upload-input {
+  width: 100%;
+}
+
+.image-preview {
+  margin-top: 12px;
+}
+
+.image-preview img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+.image-preview-text {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+.image-source-divider {
+  text-align: center;
+  margin: 12px 0;
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.product-row.editing {
+  display: block;
+  padding: 18px;
+}
+
+.edit-product-form {
+  width: 100%;
+}
+
+.edit-product-form .field {
+  margin-bottom: 12px;
+}
+
+.edit-product-form input,
+.edit-product-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-product-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.edit-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.edit-preview img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--surface-2);
+}
+
+.edit-preview-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  background: var(--surface-2);
+}
+
+.upload-status {
+  font-size: 0.85rem;
+  margin-top: 8px;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+
+  .edit-product-form .form-row {
+    display: block;
+  }
+
+  .image-preview img {
+    width: 100px;
+    height: 100px;
+  }
+
+}
+
+</style>
+
 </head>
+
 <body>
 
 <nav class="nav">
+
   <div class="nav-inner">
-    <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+
+    <a href="index.html" class="brand">
+      Owl's<span>Corner</span>
+    </a>
+
     <ul class="nav-links">
-      <li><a href="index.html">Menu</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="admin.html" class="active">Admin</a></li>
+
+      <li>
+        <a href="index.html">Menu</a>
+      </li>
+
+      <li>
+        <a href="contact.html">Contact</a>
+      </li>
+
+      <li>
+        <a href="admin.html" class="active">Admin</a>
+      </li>
+
     </ul>
+
   </div>
+
 </nav>
 
-<!-- LOGIN VIEW -->
+
+<!-- =========================================
+     LOGIN
+========================================= -->
+
 <div class="login-card" id="login-view">
+
   <h2>Admin login</h2>
-  <p class="sub">Sign in with the account you created in Supabase.</p>
+
+  <p class="sub">
+    Sign in with the account you created in Supabase.
+  </p>
+
   <form id="login-form">
+
     <div class="field">
-      <label for="login-email">Email</label>
-      <input type="email" id="login-email" required>
+
+      <label for="login-email">
+        Email
+      </label>
+
+      <input
+        type="email"
+        id="login-email"
+        required
+      >
+
     </div>
+
+
     <div class="field">
-      <label for="login-password">Password</label>
-      <input type="password" id="login-password" required>
+
+      <label for="login-password">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="login-password"
+        required
+      >
+
     </div>
-    <button type="submit" class="btn btn-full" id="login-btn">Log in</button>
-    <div class="status-msg" id="login-status"></div>
+
+
+    <button
+      type="submit"
+      class="btn btn-full"
+      id="login-btn"
+    >
+      Log in
+    </button>
+
+
+    <div
+      class="status-msg"
+      id="login-status"
+    ></div>
+
   </form>
+
 </div>
 
-<!-- ADMIN VIEW (hidden until logged in) -->
-<main class="admin-shell" id="admin-view" style="display:none;">
+
+
+<!-- =========================================
+     ADMIN
+========================================= -->
+
+<main
+  class="admin-shell"
+  id="admin-view"
+  style="display:none;"
+>
+
   <div class="container">
+
+
+    <!-- TOP BAR -->
+
     <div class="admin-topbar">
+
       <div>
-        <p class="eyebrow" style="margin-bottom:4px;">Admin</p>
-        <h1 style="font-family:'Fraunces',serif; font-weight:500; margin:0; font-size:1.8rem;">Manage products</h1>
+
+        <p
+          class="eyebrow"
+          style="margin-bottom:4px;"
+        >
+          Admin
+        </p>
+
+        <h1
+          style="
+            font-family:'Fraunces',serif;
+            font-weight:500;
+            margin:0;
+            font-size:1.8rem;
+          "
+        >
+          Manage products
+        </h1>
+
       </div>
-      <div style="display:flex; align-items:center; gap:14px;">
-        <span class="who" id="who-label"></span>
-        <button class="btn btn-ghost" id="logout-btn">Log out</button>
+
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:14px;
+        "
+      >
+
+        <span
+          class="who"
+          id="who-label"
+        ></span>
+
+        <button
+          class="btn btn-ghost"
+          id="logout-btn"
+        >
+          Log out
+        </button>
+
       </div>
+
     </div>
 
-    <section class="panel">
-      <h3>Add a new product</h3>
-      <form id="product-form">
-        <div class="form-row">
-          <div class="field">
-            <label for="p-name">Name</label>
-            <input type="text" id="p-name" required placeholder="e.g. Masala Chai">
-          </div>
-          <div class="field">
-            <label for="p-price">Price (₹)</label>
-            <input type="number" id="p-price" step="0.01" min="0" required placeholder="60">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="field">
-            <label for="p-category">Category</label>
-            <input type="text" id="p-category" required placeholder="e.g. Beverages">
-          </div>
-          <div class="field">
-            <label for="p-image">Image URL (optional)</label>
-            <input type="url" id="p-image" placeholder="https://…">
-          </div>
-        </div>
-        <div class="field">
-          <label for="p-desc">Description (optional)</label>
-          <textarea id="p-desc" placeholder="Short one-line description"></textarea>
-        </div>
-        <button type="submit" class="btn" id="add-btn">Add product</button>
-        <div class="status-msg" id="product-status"></div>
-      </form>
-    </section>
+
+
+    <!-- =========================================
+         ADD PRODUCT
+    ========================================= -->
 
     <section class="panel">
-      <h3>Current products</h3>
-      <div class="product-list" id="product-list">
-        <p class="loading-state">Loading products…</p>
-      </div>
+
+      <h3>
+        Add a new product
+      </h3>
+
+
+      <form id="product-form">
+
+
+        <div class="form-row">
+
+          <div class="field">
+
+            <label for="p-name">
+              Name
+            </label>
+
+            <input
+              type="text"
+              id="p-name"
+              required
+              placeholder="e.g. Masala Chai"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="p-price">
+              Price (₹)
+            </label>
+
+            <input
+              type="number"
+              id="p-price"
+              step="0.01"
+              min="0"
+              required
+              placeholder="60"
+            >
+
+          </div>
+
+        </div>
+
+
+
+        <div class="form-row">
+
+          <div class="field">
+
+            <label for="p-category">
+              Category
+            </label>
+
+            <input
+              type="text"
+              id="p-category"
+              required
+              placeholder="e.g. Beverages"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="p-image">
+              Image URL (optional)
+            </label>
+
+            <input
+              type="url"
+              id="p-image"
+              placeholder="https://…"
+            >
+
+          </div>
+
+        </div>
+
+
+
+        <!-- IMAGE UPLOAD -->
+
+        <div class="image-upload-box">
+
+          <label
+            for="p-image-file"
+            class="image-upload-label"
+          >
+            Or upload an image
+          </label>
+
+          <input
+            type="file"
+            id="p-image-file"
+            class="image-upload-input"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+          >
+
+          <div
+            id="p-image-preview"
+            class="image-preview"
+          ></div>
+
+          <div
+            id="p-upload-status"
+            class="upload-status"
+          ></div>
+
+        </div>
+
+
+
+        <div class="field">
+
+          <label for="p-desc">
+            Description (optional)
+          </label>
+
+          <textarea
+            id="p-desc"
+            placeholder="Short one-line description"
+          ></textarea>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="btn"
+          id="add-btn"
+        >
+          Add product
+        </button>
+
+
+        <div
+          class="status-msg"
+          id="product-status"
+        ></div>
+
+      </form>
+
     </section>
+
+
+
+    <!-- =========================================
+         CURRENT PRODUCTS
+    ========================================= -->
+
+    <section class="panel">
+
+      <h3>
+        Current products
+      </h3>
+
+
+      <div
+        class="product-list"
+        id="product-list"
+      >
+
+        <p class="loading-state">
+          Loading products…
+        </p>
+
+      </div>
+
+    </section>
+
   </div>
+
 </main>
 
+
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase-config.js"></script>
+
+
 <script>
-  const loginView = document.getElementById('login-view');
-  const adminView = document.getElementById('admin-view');
-  const whoLabel = document.getElementById('who-label');
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str ?? '';
-    return div.innerHTML;
+/* =========================================
+   CONFIG
+========================================= */
+
+const STORAGE_BUCKET = 'menu-images';
+
+const MAX_IMAGE_SIZE =
+  5 * 1024 * 1024;
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const loginView =
+  document.getElementById('login-view');
+
+const adminView =
+  document.getElementById('admin-view');
+
+const whoLabel =
+  document.getElementById('who-label');
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(str) {
+
+  const div =
+    document.createElement('div');
+
+  div.textContent =
+    str ?? '';
+
+  return div.innerHTML;
+
+}
+
+
+/* =========================================
+   CREATE UNIQUE FILE NAME
+========================================= */
+
+function createImageFileName(file) {
+
+  const extension =
+    file.name
+      .split('.')
+      .pop()
+      .toLowerCase();
+
+  const random =
+    Math.random()
+      .toString(36)
+      .substring(2, 10);
+
+  const timestamp =
+    Date.now();
+
+  return `${timestamp}-${random}.${extension}`;
+
+}
+
+
+/* =========================================
+   UPLOAD IMAGE
+========================================= */
+
+async function uploadImage(file, statusElement) {
+
+  if (!file) {
+    return null;
   }
 
-  // ── Auth ──────────────────────────────────────────
-  async function checkSession() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-      loginView.style.display = 'none';
-      adminView.style.display = 'block';
-      whoLabel.textContent = session.user.email;
-      loadProducts();
-    } else {
-      loginView.style.display = 'block';
-      adminView.style.display = 'none';
-    }
+
+  /* File type */
+
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif'
+  ];
+
+
+  if (!allowedTypes.includes(file.type)) {
+
+    throw new Error(
+      'Please upload a JPG, PNG, WEBP or GIF image.'
+    );
+
   }
 
-  document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const loginBtn = document.getElementById('login-btn');
-    const loginStatus = document.getElementById('login-status');
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Logging in…';
 
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
+  /* File size */
 
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (file.size > MAX_IMAGE_SIZE) {
 
-    if (error) {
-      loginStatus.textContent = error.message;
-      loginStatus.className = 'status-msg show err';
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'Log in';
-      return;
+    throw new Error(
+      'Image must be smaller than 5 MB.'
+    );
+
+  }
+
+
+  const fileName =
+    createImageFileName(file);
+
+
+  if (statusElement) {
+
+    statusElement.textContent =
+      'Uploading image…';
+
+  }
+
+
+  const {
+    error: uploadError
+  } =
+    await supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .upload(
+        fileName,
+        file,
+        {
+          cacheControl: '3600',
+          upsert: false
+        }
+      );
+
+
+  if (uploadError) {
+
+    throw uploadError;
+
+  }
+
+
+  /* Get public URL */
+
+  const {
+    data
+  } =
+    supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(fileName);
+
+
+  if (!data || !data.publicUrl) {
+
+    throw new Error(
+      'Image uploaded but public URL could not be generated.'
+    );
+
+  }
+
+
+  if (statusElement) {
+
+    statusElement.textContent =
+      'Image uploaded successfully.';
+
+  }
+
+
+  return data.publicUrl;
+
+}
+
+
+/* =========================================
+   IMAGE PREVIEW - ADD PRODUCT
+========================================= */
+
+document
+  .getElementById('p-image-file')
+  .addEventListener(
+    'change',
+    function () {
+
+      const file =
+        this.files[0];
+
+      const preview =
+        document.getElementById(
+          'p-image-preview'
+        );
+
+
+      preview.innerHTML = '';
+
+
+      if (!file) {
+        return;
+      }
+
+
+      if (
+        ![
+          'image/jpeg',
+          'image/png',
+          'image/webp',
+          'image/gif'
+        ].includes(file.type)
+      ) {
+
+        preview.innerHTML = `
+          <div class="status-msg show err">
+            Invalid image format.
+          </div>
+        `;
+
+        this.value = '';
+
+        return;
+
+      }
+
+
+      if (
+        file.size > MAX_IMAGE_SIZE
+      ) {
+
+        preview.innerHTML = `
+          <div class="status-msg show err">
+            Image is larger than 5 MB.
+          </div>
+        `;
+
+        this.value = '';
+
+        return;
+
+      }
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function (event) {
+
+          preview.innerHTML = `
+
+            <img
+              src="${event.target.result}"
+              alt="Image preview"
+            >
+
+            <div class="image-preview-text">
+              ${escapeHtml(file.name)}
+            </div>
+
+          `;
+
+        };
+
+
+      reader.readAsDataURL(file);
+
     }
-    checkSession();
-  });
+  );
 
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    checkSession();
-  });
 
-  // ── Products: create ────────────────────────────────
-  document.getElementById('product-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const addBtn = document.getElementById('add-btn');
-    const status = document.getElementById('product-status');
-    addBtn.disabled = true;
-    addBtn.textContent = 'Adding…';
 
-    const payload = {
-      name: document.getElementById('p-name').value.trim(),
-      price: parseFloat(document.getElementById('p-price').value),
-      category: document.getElementById('p-category').value.trim(),
-      image_url: document.getElementById('p-image').value.trim() || null,
-      description: document.getElementById('p-desc').value.trim() || null,
-    };
+/* =========================================
+   AUTH
+========================================= */
 
-    const { error } = await supabaseClient.from('products').insert([payload]);
+async function checkSession() {
 
-    if (error) {
-      status.textContent = `Couldn't add — ${error.message}`;
-      status.className = 'status-msg show err';
-    } else {
-      status.textContent = 'Product added.';
-      status.className = 'status-msg show ok';
-      document.getElementById('product-form').reset();
-      loadProducts();
+  const {
+    data: {
+      session
     }
-    addBtn.disabled = false;
-    addBtn.textContent = 'Add product';
-  });
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
 
-  // ── Products: list / toggle / delete ────────────────
-  async function loadProducts() {
-    const list = document.getElementById('product-list');
-    const { data, error } = await supabaseClient
+
+  if (session) {
+
+    loginView.style.display =
+      'none';
+
+    adminView.style.display =
+      'block';
+
+    whoLabel.textContent =
+      session.user.email;
+
+    loadProducts();
+
+  } else {
+
+    loginView.style.display =
+      'block';
+
+    adminView.style.display =
+      'none';
+
+  }
+
+}
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+document
+  .getElementById('login-form')
+  .addEventListener(
+    'submit',
+    async (e) => {
+
+      e.preventDefault();
+
+
+      const loginBtn =
+        document.getElementById(
+          'login-btn'
+        );
+
+      const loginStatus =
+        document.getElementById(
+          'login-status'
+        );
+
+
+      loginBtn.disabled =
+        true;
+
+      loginBtn.textContent =
+        'Logging in…';
+
+
+      const email =
+        document
+          .getElementById(
+            'login-email'
+          )
+          .value
+          .trim();
+
+
+      const password =
+        document
+          .getElementById(
+            'login-password'
+          )
+          .value;
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .auth
+          .signInWithPassword({
+            email,
+            password
+          });
+
+
+      if (error) {
+
+        loginStatus.textContent =
+          error.message;
+
+        loginStatus.className =
+          'status-msg show err';
+
+        loginBtn.disabled =
+          false;
+
+        loginBtn.textContent =
+          'Log in';
+
+        return;
+
+      }
+
+
+      checkSession();
+
+    }
+  );
+
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+document
+  .getElementById('logout-btn')
+  .addEventListener(
+    'click',
+    async () => {
+
+      await supabaseClient
+        .auth
+        .signOut();
+
+      checkSession();
+
+    }
+  );
+
+
+
+/* =========================================
+   ADD PRODUCT
+========================================= */
+
+document
+  .getElementById('product-form')
+  .addEventListener(
+    'submit',
+    async (e) => {
+
+      e.preventDefault();
+
+
+      const addBtn =
+        document.getElementById(
+          'add-btn'
+        );
+
+      const status =
+        document.getElementById(
+          'product-status'
+        );
+
+      const uploadStatus =
+        document.getElementById(
+          'p-upload-status'
+        );
+
+
+      addBtn.disabled =
+        true;
+
+      addBtn.textContent =
+        'Adding…';
+
+
+      try {
+
+        const name =
+          document
+            .getElementById(
+              'p-name'
+            )
+            .value
+            .trim();
+
+
+        const price =
+          parseFloat(
+            document
+              .getElementById(
+                'p-price'
+              )
+              .value
+          );
+
+
+        const category =
+          document
+            .getElementById(
+              'p-category'
+            )
+            .value
+            .trim();
+
+
+        const imageUrlInput =
+          document
+            .getElementById(
+              'p-image'
+            )
+            .value
+            .trim();
+
+
+        const imageFile =
+          document
+            .getElementById(
+              'p-image-file'
+            )
+            .files[0];
+
+
+        const description =
+          document
+            .getElementById(
+              'p-desc'
+            )
+            .value
+            .trim();
+
+
+        if (!name) {
+
+          throw new Error(
+            'Product name is required.'
+          );
+
+        }
+
+
+        if (
+          Number.isNaN(price) ||
+          price < 0
+        ) {
+
+          throw new Error(
+            'Please enter a valid price.'
+          );
+
+        }
+
+
+        if (!category) {
+
+          throw new Error(
+            'Category is required.'
+          );
+
+        }
+
+
+        /*
+          If an uploaded image exists,
+          it takes priority over URL.
+        */
+
+        let imageUrl =
+          imageUrlInput || null;
+
+
+        if (imageFile) {
+
+          imageUrl =
+            await uploadImage(
+              imageFile,
+              uploadStatus
+            );
+
+        }
+
+
+        const payload = {
+
+          name,
+
+          price,
+
+          category,
+
+          image_url:
+            imageUrl,
+
+          description:
+            description || null
+
+        };
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from('products')
+            .insert([
+              payload
+            ]);
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        status.textContent =
+          'Product added successfully.';
+
+        status.className =
+          'status-msg show ok';
+
+
+        document
+          .getElementById(
+            'product-form'
+          )
+          .reset();
+
+
+        document
+          .getElementById(
+            'p-image-preview'
+          )
+          .innerHTML = '';
+
+
+        uploadStatus.textContent =
+          '';
+
+
+        loadProducts();
+
+
+      } catch (error) {
+
+        console.error(
+          'Product creation failed:',
+          error
+        );
+
+
+        status.textContent =
+          `Couldn't add — ${error.message}`;
+
+        status.className =
+          'status-msg show err';
+
+      }
+
+
+      addBtn.disabled =
+        false;
+
+      addBtn.textContent =
+        'Add product';
+
+    }
+  );
+
+
+
+/* =========================================
+   LOAD PRODUCTS
+========================================= */
+
+async function loadProducts() {
+
+  const list =
+    document.getElementById(
+      'product-list'
+    );
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
       .from('products')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order(
+        'created_at',
+        {
+          ascending: false
+        }
+      );
 
-    if (error) {
-      list.innerHTML = `<p class="empty-state">${error.message}</p>`;
-      return;
-    }
-    if (!data || data.length === 0) {
-      list.innerHTML = `<p class="empty-state">No products yet — add your first one above.</p>`;
-      return;
-    }
 
-    list.innerHTML = data.map(item => `
-      <div class="product-row" data-id="${item.id}">
-        ${item.image_url
-          ? `<img src="${escapeHtml(item.image_url)}" alt="">`
-          : `<div style="width:44px;height:44px;background:var(--surface-2);border-radius:2px;flex-shrink:0;"></div>`}
-        <div class="p-info">
-          <div class="p-name">${escapeHtml(item.name)}</div>
-          <div class="p-meta">${escapeHtml(item.category)} · ₹${Number(item.price).toFixed(0)} · ${item.available === false ? 'hidden' : 'visible'}</div>
-        </div>
-        <div class="p-actions">
-          <button class="icon-btn toggle-btn">${item.available === false ? 'Show' : 'Hide'}</button>
-          <button class="icon-btn danger delete-btn">Delete</button>
-        </div>
-      </div>
-    `).join('');
+  if (error) {
 
-    list.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const row = e.target.closest('.product-row');
-        const id = row.dataset.id;
-        const item = data.find(d => d.id === id);
-        await supabaseClient.from('products').update({ available: item.available === false }).eq('id', id);
-        loadProducts();
-      });
-    });
+    list.innerHTML = `
 
-    list.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const row = e.target.closest('.product-row');
-        const id = row.dataset.id;
-        if (!confirm('Delete this product?')) return;
-        await supabaseClient.from('products').delete().eq('id', id);
-        loadProducts();
-      });
-    });
+      <p class="empty-state">
+        ${escapeHtml(error.message)}
+      </p>
+
+    `;
+
+    return;
+
   }
 
-  checkSession();
+
+  if (
+    !data ||
+    data.length === 0
+  ) {
+
+    list.innerHTML = `
+
+      <p class="empty-state">
+        No products yet —
+        add your first one above.
+      </p>
+
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    data.map(item => `
+
+      <div
+        class="product-row"
+        data-id="${item.id}"
+      >
+
+
+        ${
+          item.image_url
+
+            ? `
+
+              <img
+                src="${escapeHtml(item.image_url)}"
+                alt=""
+              >
+
+            `
+
+            : `
+
+              <div
+                style="
+                  width:44px;
+                  height:44px;
+                  background:var(--surface-2);
+                  border-radius:2px;
+                  flex-shrink:0;
+                "
+              ></div>
+
+            `
+        }
+
+
+        <div class="p-info">
+
+          <div class="p-name">
+            ${escapeHtml(item.name)}
+          </div>
+
+          <div class="p-meta">
+
+            ${escapeHtml(item.category)}
+
+            ·
+
+            ₹${Number(item.price).toFixed(0)}
+
+            ·
+
+            ${
+              item.available === false
+                ? 'hidden'
+                : 'visible'
+            }
+
+          </div>
+
+        </div>
+
+
+        <div class="p-actions">
+
+          <button
+            class="icon-btn edit-btn"
+          >
+            Edit
+          </button>
+
+
+          <button
+            class="icon-btn toggle-btn"
+          >
+            ${
+              item.available === false
+                ? 'Show'
+                : 'Hide'
+            }
+          </button>
+
+
+          <button
+            class="icon-btn danger delete-btn"
+          >
+            Delete
+          </button>
+
+        </div>
+
+
+      </div>
+
+    `).join('');
+
+
+
+  /* =========================================
+     EDIT
+  ========================================= */
+
+  list
+    .querySelectorAll(
+      '.edit-btn'
+    )
+    .forEach(btn => {
+
+      btn.addEventListener(
+        'click',
+        (e) => {
+
+          const row =
+            e.target.closest(
+              '.product-row'
+            );
+
+
+          const id =
+            row.dataset.id;
+
+
+          const item =
+            data.find(
+              d => d.id === id
+            );
+
+
+          if (item) {
+
+            startEdit(item);
+
+          }
+
+        }
+      );
+
+    });
+
+
+
+  /* =========================================
+     TOGGLE
+  ========================================= */
+
+  list
+    .querySelectorAll(
+      '.toggle-btn'
+    )
+    .forEach(btn => {
+
+      btn.addEventListener(
+        'click',
+        async (e) => {
+
+          const row =
+            e.target.closest(
+              '.product-row'
+            );
+
+
+          const id =
+            row.dataset.id;
+
+
+          const item =
+            data.find(
+              d => d.id === id
+            );
+
+
+          if (!item) return;
+
+
+          btn.disabled =
+            true;
+
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .from('products')
+              .update({
+                available:
+                  item.available === false
+              })
+              .eq(
+                'id',
+                id
+              );
+
+
+          if (error) {
+
+            alert(
+              `Couldn't update product — ${error.message}`
+            );
+
+            btn.disabled =
+              false;
+
+            return;
+
+          }
+
+
+          loadProducts();
+
+        }
+      );
+
+    });
+
+
+
+  /* =========================================
+     DELETE
+  ========================================= */
+
+  list
+    .querySelectorAll(
+      '.delete-btn'
+    )
+    .forEach(btn => {
+
+      btn.addEventListener(
+        'click',
+        async (e) => {
+
+          const row =
+            e.target.closest(
+              '.product-row'
+            );
+
+
+          const id =
+            row.dataset.id;
+
+
+          const item =
+            data.find(
+              d => d.id === id
+            );
+
+
+          if (!item) return;
+
+
+          if (
+            !confirm(
+              `Delete "${item.name}"?`
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          btn.disabled =
+            true;
+
+          btn.textContent =
+            'Deleting…';
+
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .from('products')
+              .delete()
+              .eq(
+                'id',
+                id
+              );
+
+
+          if (error) {
+
+            alert(
+              `Couldn't delete product — ${error.message}`
+            );
+
+            btn.disabled =
+              false;
+
+            btn.textContent =
+              'Delete';
+
+            return;
+
+          }
+
+
+          loadProducts();
+
+        }
+      );
+
+    });
+
+}
+
+
+
+/* =========================================
+   START EDIT
+========================================= */
+
+function startEdit(item) {
+
+  const row =
+    document.querySelector(
+      `.product-row[data-id="${item.id}"]`
+    );
+
+
+  if (!row) return;
+
+
+  row.classList.add(
+    'editing'
+  );
+
+
+  row.innerHTML = `
+
+    <div class="edit-product-form">
+
+
+      ${
+        item.image_url
+
+          ? `
+
+            <div class="edit-preview">
+
+              <img
+                src="${escapeHtml(item.image_url)}"
+                alt=""
+              >
+
+              <div>
+
+                <strong>
+                  Editing product
+                </strong>
+
+                <div
+                  style="
+                    font-size:0.85rem;
+                    opacity:0.7;
+                    margin-top:3px;
+                  "
+                >
+                  ${escapeHtml(item.name)}
+                </div>
+
+              </div>
+
+            </div>
+
+          `
+
+          : `
+
+            <div class="edit-preview">
+
+              <div
+                class="edit-preview-placeholder"
+              ></div>
+
+              <div>
+
+                <strong>
+                  Editing product
+                </strong>
+
+                <div
+                  style="
+                    font-size:0.85rem;
+                    opacity:0.7;
+                    margin-top:3px;
+                  "
+                >
+                  ${escapeHtml(item.name)}
+                </div>
+
+              </div>
+
+            </div>
+
+          `
+      }
+
+
+
+      <!-- NAME / PRICE -->
+
+      <div class="form-row">
+
+
+        <div class="field">
+
+          <label>
+            Name
+          </label>
+
+          <input
+            type="text"
+            class="edit-name"
+            value="${escapeHtml(item.name)}"
+            required
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Price (₹)
+          </label>
+
+          <input
+            type="number"
+            class="edit-price"
+            min="0"
+            step="0.01"
+            value="${Number(item.price)}"
+            required
+          >
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- CATEGORY -->
+
+      <div class="field">
+
+        <label>
+          Category
+        </label>
+
+        <input
+          type="text"
+          class="edit-category"
+          value="${escapeHtml(item.category)}"
+          required
+        >
+
+      </div>
+
+
+
+      <!-- IMAGE -->
+
+      <div class="image-upload-box">
+
+        <label
+          class="image-upload-label"
+        >
+          Change image
+        </label>
+
+
+        <input
+          type="file"
+          class="edit-image-file image-upload-input"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+        >
+
+
+        <div
+          class="edit-image-preview image-preview"
+        ></div>
+
+
+        <div
+          class="edit-upload-status upload-status"
+        ></div>
+
+
+        <div class="image-source-divider">
+          OR
+        </div>
+
+
+        <label
+          class="image-upload-label"
+        >
+          Use image URL
+        </label>
+
+
+        <input
+          type="url"
+          class="edit-image-url"
+          value="${escapeHtml(item.image_url || '')}"
+          placeholder="https://…"
+        >
+
+      </div>
+
+
+
+      <!-- DESCRIPTION -->
+
+      <div class="field">
+
+        <label>
+          Description
+        </label>
+
+        <textarea
+          class="edit-description"
+          placeholder="Short one-line description"
+        >${escapeHtml(item.description || '')}</textarea>
+
+      </div>
+
+
+
+      <!-- ACTIONS -->
+
+      <div class="edit-actions">
+
+        <button
+          type="button"
+          class="btn save-edit-btn"
+        >
+          Save changes
+        </button>
+
+
+        <button
+          type="button"
+          class="btn btn-ghost cancel-edit-btn"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+
+      <div
+        class="status-msg edit-status"
+      ></div>
+
+
+    </div>
+
+  `;
+
+
+
+  /* =========================================
+     EDIT IMAGE PREVIEW
+  ========================================= */
+
+  const fileInput =
+    row.querySelector(
+      '.edit-image-file'
+    );
+
+
+  const preview =
+    row.querySelector(
+      '.edit-image-preview'
+    );
+
+
+  fileInput.addEventListener(
+    'change',
+    function () {
+
+      const file =
+        this.files[0];
+
+
+      preview.innerHTML =
+        '';
+
+
+      if (!file) {
+        return;
+      }
+
+
+      if (
+        ![
+          'image/jpeg',
+          'image/png',
+          'image/webp',
+          'image/gif'
+        ].includes(file.type)
+      ) {
+
+        preview.innerHTML = `
+          <div class="status-msg show err">
+            Invalid image format.
+          </div>
+        `;
+
+        this.value = '';
+
+        return;
+
+      }
+
+
+      if (
+        file.size > MAX_IMAGE_SIZE
+      ) {
+
+        preview.innerHTML = `
+          <div class="status-msg show err">
+            Image is larger than 5 MB.
+          </div>
+        `;
+
+        this.value = '';
+
+        return;
+
+      }
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function (event) {
+
+          preview.innerHTML = `
+
+            <img
+              src="${event.target.result}"
+              alt="Image preview"
+            >
+
+            <div class="image-preview-text">
+              ${escapeHtml(file.name)}
+            </div>
+
+          `;
+
+        };
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+
+
+  /* =========================================
+     SAVE
+  ========================================= */
+
+  row
+    .querySelector(
+      '.save-edit-btn'
+    )
+    .addEventListener(
+      'click',
+      () => {
+
+        saveEdit(
+          item.id,
+          row
+        );
+
+      }
+    );
+
+
+
+  /* =========================================
+     CANCEL
+  ========================================= */
+
+  row
+    .querySelector(
+      '.cancel-edit-btn'
+    )
+    .addEventListener(
+      'click',
+      () => {
+
+        loadProducts();
+
+      }
+    );
+
+}
+
+
+
+/* =========================================
+   SAVE EDIT
+========================================= */
+
+async function saveEdit(
+  id,
+  row
+) {
+
+  const saveBtn =
+    row.querySelector(
+      '.save-edit-btn'
+    );
+
+
+  const status =
+    row.querySelector(
+      '.edit-status'
+    );
+
+
+  const uploadStatus =
+    row.querySelector(
+      '.edit-upload-status'
+    );
+
+
+  const name =
+    row
+      .querySelector(
+        '.edit-name'
+      )
+      .value
+      .trim();
+
+
+  const price =
+    parseFloat(
+      row
+        .querySelector(
+          '.edit-price'
+        )
+        .value
+    );
+
+
+  const category =
+    row
+      .querySelector(
+        '.edit-category'
+      )
+      .value
+      .trim();
+
+
+  const imageUrlInput =
+    row
+      .querySelector(
+        '.edit-image-url'
+      )
+      .value
+      .trim();
+
+
+  const imageFile =
+    row
+      .querySelector(
+        '.edit-image-file'
+      )
+      .files[0];
+
+
+  const description =
+    row
+      .querySelector(
+        '.edit-description'
+      )
+      .value
+      .trim();
+
+
+
+  /* =========================================
+     VALIDATION
+  ========================================= */
+
+  if (!name) {
+
+    status.textContent =
+      'Product name is required.';
+
+    status.className =
+      'status-msg show err';
+
+    return;
+
+  }
+
+
+  if (
+    Number.isNaN(price) ||
+    price < 0
+  ) {
+
+    status.textContent =
+      'Please enter a valid price.';
+
+    status.className =
+      'status-msg show err';
+
+    return;
+
+  }
+
+
+  if (!category) {
+
+    status.textContent =
+      'Category is required.';
+
+    status.className =
+      'status-msg show err';
+
+    return;
+
+  }
+
+
+
+  try {
+
+    saveBtn.disabled =
+      true;
+
+    saveBtn.textContent =
+      'Saving…';
+
+
+    let imageUrl =
+      imageUrlInput || null;
+
+
+    /*
+      Uploaded file has priority
+      over manually entered URL.
+    */
+
+    if (imageFile) {
+
+      imageUrl =
+        await uploadImage(
+          imageFile,
+          uploadStatus
+        );
+
+    }
+
+
+    const payload = {
+
+      name,
+
+      price,
+
+      category,
+
+      image_url:
+        imageUrl,
+
+      description:
+        description || null
+
+    };
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from('products')
+        .update(payload)
+        .eq(
+          'id',
+          id
+        );
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    status.textContent =
+      'Product updated successfully.';
+
+    status.className =
+      'status-msg show ok';
+
+
+    setTimeout(
+      () => {
+        loadProducts();
+      },
+      500
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      'Product update failed:',
+      error
+    );
+
+
+    status.textContent =
+      `Couldn't save — ${error.message}`;
+
+    status.className =
+      'status-msg show err';
+
+
+    saveBtn.disabled =
+      false;
+
+    saveBtn.textContent =
+      'Save changes';
+
+  }
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+checkSession();
+
 </script>
+
 </body>
 </html>

@@ -1,116 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact</title>
+
+<title>Contact · Owl's Corner</title>
+
 <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="index.html" class="brand">Owl's<span>Corner</span></a>
-    <ul class="nav-links">
-      <li><a href="index.html">Menu</a></li>
-      <li><a href="contact.html" class="active">Contact</a></li>
-      <li><a href="admin.html">Admin</a></li>
-    </ul>
-  </div>
-</nav>
+<style>
 
-<header class="hero">
-  <div class="container">
-    <p class="eyebrow">Get in touch</p>
-    <h1>Talk to us</h1>
-    <p>Questions, orders, or feedback — send a note and we'll get back to you.</p>
-  </div>
-</header>
+/* =========================================
+   CONTACT PAGE
+========================================= */
 
-<main>
-  <div class="container contact-grid">
-    <div>
-      <div class="info-block">
-        <p class="info-label">Address</p>
-        <p class="info-value">Sindhi Colony, Tirora, Maharashtra</p>
-      </div>
-      <div class="info-block">
-        <p class="info-label">Phone</p>
-        <p class="info-value"><a href="tel:+919370693869">+91 93706 93869</a></p>
-      </div>
-      <div class="info-block">
-        <p class="info-label">Hours</p>
-        <p class="info-value"><Strong><bold>Mon – Sun · 12:00 AM – 3:00 AM</bold></Strong></p>
-      </div>
-      <div class="info-block">
-        <p class="info-label">Instagram</p>
-        <p class="info-value"><a href="https://instagram.com/owlzcorner" target="_blank">@owlzcorner</a></p>
-      </div>
-    </div>
+.contact-page {
+  padding: 70px 0 90px;
+}
 
-    <div>
-      <form id="contact-form">
-        <div class="field">
-          <label for="name">Yug Belani</label>
-          <input type="text" id="name" required placeholder="Full name">
-        </div>
-        <div class="field">
-          <label for="phone">Phone (optional)</label>
-          <input type="tel" id="phone" placeholder="+91 93706 93869">
-        </div>
-        <div class="field">
-          <label for="message">Message</label>
-          <textarea id="message" required placeholder="What's on your mind?"></textarea>
-        </div>
-        <button type="submit" class="btn btn-full" id="submit-btn">Send message</button>
-        <div class="status-msg" id="status-msg"></div>
-      </form>
-    </div>
-  </div>
-</main>
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  align-items: start;
+}
 
-<footer class="site-footer">
-  <div class="container" style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:16px;">
-    <span>Prefer to browse first? <a href="index.html">See the menu</a>.</span>
-    <span>Powered by <a href="https://instagram.com/yugbelanii" target="_blank">Yug Belani</a></span>
-  </div>
-</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script>
-  const form = document.getElementById('contact-form');
-  const btn = document.getElementById('submit-btn');
-  const statusMsg = document.getElementById('status-msg');
+/* =========================================
+   CONTACT INTRO
+========================================= */
 
-  function showStatus(text, ok) {
-    statusMsg.textContent = text;
-    statusMsg.className = `status-msg show ${ok ? 'ok' : 'err'}`;
+.contact-intro {
+  margin-bottom: 35px;
+}
+
+.contact-intro h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 2rem;
+  margin: 0 0 12px;
+}
+
+.contact-intro p {
+  max-width: 520px;
+  line-height: 1.7;
+  opacity: 0.72;
+  margin: 0;
+}
+
+
+/* =========================================
+   INFO BLOCKS
+========================================= */
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.info-block {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.info-block:first-child {
+  padding-top: 0;
+}
+
+.info-block:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  margin: 0 0 7px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+
+.info-value {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.info-value a {
+  text-decoration: none;
+}
+
+
+/* =========================================
+   CONTACT FORM
+========================================= */
+
+.contact-form-wrap {
+  padding: 28px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.contact-form-wrap h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  margin: 0 0 7px;
+}
+
+.contact-form-wrap .form-sub {
+  margin: 0 0 25px;
+  opacity: 0.65;
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+
+/* =========================================
+   SMALL HELP TEXT
+========================================= */
+
+.contact-note {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  opacity: 0.6;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 760px) {
+
+  .contact-page {
+    padding: 45px 0 65px;
   }
 
-  form.addEventListener('submit', async (e) => {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .contact-intro h2 {
+    font-size: 1.7rem;
+  }
+
+  .contact-form-wrap {
+    padding: 22px;
+  }
+
+}
+
+@media (max-width: 760px) {
+
+  .contact-page .container {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .contact-page {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-grid {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-form-wrap {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+}
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     NAVIGATION
+========================================= -->
+
+<nav class="nav">
+
+  <div class="nav-inner">
+
+    <a href="index.html" class="brand">
+      Owl's<span>Corner</span>
+    </a>
+
+
+    <ul class="nav-links">
+
+      <li>
+        <a href="index.html">
+          Menu
+        </a>
+      </li>
+
+      <li>
+        <a href="contact.html" class="active">
+          Contact
+        </a>
+      </li>
+
+      <li>
+        <a href="admin.html">
+          Admin
+        </a>
+      </li>
+
+    </ul>
+
+  </div>
+
+</nav>
+
+
+
+<!-- =========================================
+     HERO
+========================================= -->
+
+<header class="hero">
+
+  <div class="container">
+
+    <p class="eyebrow">
+      Get in touch
+    </p>
+
+    <h1>
+      Talk to us
+    </h1>
+
+    <p>
+      Questions, orders, or feedback —
+      send a note and we'll get back to you.
+    </p>
+
+  </div>
+
+</header>
+
+
+
+<!-- =========================================
+     CONTACT CONTENT
+========================================= -->
+
+<main class="contact-page">
+
+  <div class="container contact-grid">
+
+
+    <!-- =====================================
+         LEFT SIDE
+    ====================================== -->
+
+    <section>
+
+      <div class="contact-intro">
+
+        <p class="eyebrow">
+          Reach Owl's Corner
+        </p>
+
+        <h2>
+          We're just a message away.
+        </h2>
+
+        <p>
+          Whether you're looking for something
+          on the menu, have a question about your
+          order, or simply want to say hello,
+          you can reach us through any of the
+          options below.
+        </p>
+
+      </div>
+
+
+      <div class="contact-info">
+
+
+        <!-- ADDRESS -->
+
+        <div class="info-block">
+
+          <p class="info-label">
+            Address
+          </p>
+
+          <p class="info-value">
+            Sindhi Colony, Tirora, Maharashtra
+          </p>
+
+        </div>
+
+
+        <!-- PHONE -->
+
+        <div class="info-block">
+
+          <p class="info-label">
+            Phone
+          </p>
+
+          <p class="info-value">
+
+            <a href="tel:+919370693869">
+              +91 93706 93869
+            </a>
+
+          </p>
+
+        </div>
+
+
+        <!-- HOURS -->
+
+        <div class="info-block">
+
+          <p class="info-label">
+            Hours
+          </p>
+
+          <p class="info-value">
+            <strong>
+              Mon – Sun · 12:00 AM – 3:00 AM
+            </strong>
+          </p>
+
+        </div>
+
+
+        <!-- INSTAGRAM -->
+
+        <div class="info-block">
+
+          <p class="info-label">
+            Instagram
+          </p>
+
+          <p class="info-value">
+
+            <a
+              href="https://instagram.com/owlzcorner"
+              target="_blank"
+              rel="noopener"
+            >
+              @owlzcorner
+            </a>
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="contact-note">
+
+        Prefer ordering instead?
+        Browse the menu and place your order
+        directly through WhatsApp.
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         RIGHT SIDE
+    ====================================== -->
+
+    <section class="contact-form-wrap">
+
+      <h3>
+        Send us a message
+      </h3>
+
+      <p class="form-sub">
+        Fill this out and we'll get back to you
+        as soon as we can.
+      </p>
+
+
+      <form id="contact-form">
+
+
+        <!-- NAME -->
+
+        <div class="field">
+
+          <label for="name">
+            Your name
+          </label>
+
+          <input
+            type="text"
+            id="name"
+            required
+            placeholder="Full name"
+          >
+
+        </div>
+
+
+        <!-- PHONE -->
+
+        <div class="field">
+
+          <label for="phone">
+            Phone (optional)
+          </label>
+
+          <input
+            type="tel"
+            id="phone"
+            placeholder="+919370693869"
+          >
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div class="field">
+
+          <label for="message">
+            Message
+          </label>
+
+          <textarea
+            id="message"
+            required
+            placeholder="What's on your mind?"
+          ></textarea>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+          type="submit"
+          class="btn btn-full"
+          id="submit-btn"
+        >
+          Send message
+        </button>
+
+
+        <div
+          class="status-msg"
+          id="status-msg"
+        ></div>
+
+
+      </form>
+
+    </section>
+
+  </div>
+
+</main>
+
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer class="site-footer">
+
+  <div
+    class="container"
+    style="
+      display:flex;
+      justify-content:space-between;
+      width:100%;
+      flex-wrap:wrap;
+      gap:16px;
+    "
+  >
+
+    <span>
+
+      Prefer to browse first?
+
+      <a href="index.html">
+        See the menu
+      </a>.
+
+    </span>
+
+
+    <span>
+
+      Powered by
+
+      <a
+        href="https://instagram.com/yugbelanii"
+        target="_blank"
+        rel="noopener"
+      >
+        Yug Belani
+      </a>
+
+    </span>
+
+  </div>
+
+</footer>
+
+
+
+<!-- =========================================
+     SUPABASE
+========================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+
+<script>
+
+/* =========================================
+   CONTACT FORM
+========================================= */
+
+const form =
+  document.getElementById(
+    'contact-form'
+  );
+
+
+const btn =
+  document.getElementById(
+    'submit-btn'
+  );
+
+
+const statusMsg =
+  document.getElementById(
+    'status-msg'
+  );
+
+
+function showStatus(text, ok) {
+
+  statusMsg.textContent =
+    text;
+
+  statusMsg.className =
+    `status-msg show ${ok ? 'ok' : 'err'}`;
+
+}
+
+
+form.addEventListener(
+  'submit',
+  async (e) => {
+
     e.preventDefault();
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
 
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const message = document.getElementById('message').value.trim();
 
-    const { error } = await supabaseClient.from('messages').insert([{ name, phone, message }]);
+    btn.disabled =
+      true;
+
+    btn.textContent =
+      'Sending…';
+
+
+    const name =
+      document
+        .getElementById('name')
+        .value
+        .trim();
+
+
+    const phone =
+      document
+        .getElementById('phone')
+        .value
+        .trim();
+
+
+    const message =
+      document
+        .getElementById('message')
+        .value
+        .trim();
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from('messages')
+        .insert([
+          {
+            name,
+            phone,
+            message
+          }
+        ]);
+
 
     if (error) {
-      showStatus(`Couldn't send — ${error.message}`, false);
-      btn.disabled = false;
-      btn.textContent = 'Send message';
+
+      console.error(
+        'Message submission failed:',
+        error
+      );
+
+
+      showStatus(
+        `Couldn't send — ${error.message}`,
+        false
+      );
+
+
+      btn.disabled =
+        false;
+
+      btn.textContent =
+        'Send message';
+
       return;
+
     }
 
-    showStatus('Message sent — we\'ll get back to you soon.', true);
+
+    showStatus(
+      "Message sent — we'll get back to you soon.",
+      true
+    );
+
+
     form.reset();
-    btn.disabled = false;
-    btn.textContent = 'Send message';
-  });
+
+
+    btn.disabled =
+      false;
+
+    btn.textContent =
+      'Send message';
+
+  }
+);
+
 </script>
+
+<script>
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+</script>
+
+<script defer src="/_vercel/insights/script.js"></script>
+
 </body>
+
 </html>

@@ -293,6 +293,20 @@ opacity: 1;
   }
 }
 
+.menu-item-image {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.item-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 </style>
 
 </head>
@@ -685,19 +699,27 @@ function renderMenu(menuData) {
 
           ${items.map(item => `
 
-            <div
-              class="
-                item-row
-                ${item.available === false
-                  ? 'item-unavailable'
-                  : ''}
-              "
-            >
+        <div
+  class="item-row
+    ${item.available === false
+      ? 'item-unavailable'
+      : ''}"
+>
 
-              <div
-                class="item-main"
-                style="width:100%;"
-              >
+  ${
+    item.image_url
+      ? `
+        <img
+          src="${escapeHtml(item.image_url)}"
+          alt="${escapeHtml(item.name)}"
+          class="menu-item-image"
+          loading="lazy"
+        >
+      `
+      : ''
+  }
+
+  <div class="item-main" style="width:100%;">
 
                 <div class="item-name-row">
 
@@ -1584,5 +1606,13 @@ loadMenu();
 
 </script>
 
+
+<script>
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+</script>
+
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
