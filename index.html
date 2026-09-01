@@ -1,146 +1,705 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
 <title>Menu</title>
+
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* =========================
-   MYSTERY REWARD
-========================= */
 
-/* =========================
-SMALL MYSTERY REWARD
-========================= */
+/* =========================================================
+   GLOBAL SAFETY
+========================================================= */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   MENU PRODUCT
+========================================================= */
+
+.item-row {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.item-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 22px;
+}
+
+.item-image-wrap {
+  width: 165px;
+  height: 135px;
+
+  flex: 0 0 165px;
+
+  overflow: hidden;
+
+  border-radius: 6px;
+
+  background: var(--surface-2);
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.item-details {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  flex: 1 1 auto;
+}
+
+
+/* =========================================================
+   PRODUCT NAME / PRICE / BUTTON
+========================================================= */
+
+.item-name-row {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, auto)
+    minmax(20px, 1fr)
+    auto
+    auto;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.item-name {
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  line-height: 1.3;
+}
+
+.item-leader {
+  width: 100%;
+  min-width: 0;
+
+  border-bottom:
+    1px dotted rgba(255,255,255,.16);
+}
+
+.item-price {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.order-btn {
+  min-width: 0;
+  max-width: 100%;
+
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.item-desc {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   FLOATING CART
+========================================================= */
+
+.cart-widget {
+  position: fixed;
+
+  right: 20px;
+  bottom: 20px;
+
+  width: 58px;
+  height: 58px;
+
+  margin: 0;
+  padding: 0;
+
+  z-index: 9999;
+}
+
+
+/* =========================================================
+   CART BUTTON
+========================================================= */
+
+.cart-toggle {
+  position: relative;
+
+  width: 58px;
+  height: 58px;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--accent);
+  color: var(--bg);
+
+  font-size: 22px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.28);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.cart-toggle:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.35);
+}
+
+
+/* Hide textual cart count */
+.cart-toggle #cart-count,
+.cart-toggle #cart-total {
+  display: none;
+}
+
+
+/* =========================================================
+   CART BADGE
+========================================================= */
+
+.cart-toggle::after {
+  content: attr(data-count);
+
+  position: absolute;
+
+  top: -4px;
+  right: -4px;
+
+  min-width: 22px;
+  height: 22px;
+
+  padding: 0 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--surface);
+  color: var(--accent);
+
+  border: 2px solid var(--accent);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   CART PANEL
+========================================================= */
+
+/*
+   IMPORTANT:
+
+   The panel is ABSOLUTELY positioned relative
+   to the fixed .cart-widget.
+
+   This prevents it from escaping the viewport
+   because of conflicting fixed-position rules.
+*/
+
+.cart-panel {
+  position: absolute;
+
+  right: 0;
+
+  bottom: calc(100% + 14px);
+
+  width: 360px;
+
+  max-width:
+    min(360px, calc(100vw - 24px));
+
+  max-height:
+    min(520px, calc(100vh - 110px));
+
+  margin: 0;
+  padding: 20px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  background: var(--surface);
+  color: var(--text);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    var(--radius);
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.35);
+
+  display: none;
+
+  z-index: 10000;
+}
+
+.cart-panel.show {
+  display: block;
+}
+
+
+/* =========================================================
+   CART HEADING
+========================================================= */
+
+.cart-panel h3 {
+  margin: 0 0 18px;
+
+  font-family: "Fraunces", serif;
+
+  font-size: 1.4rem;
+  font-weight: 500;
+
+  color: var(--text);
+}
+
+
+/* =========================================================
+   CART ITEMS
+========================================================= */
+
+.cart-item {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid var(--border);
+}
+
+.cart-item > div:first-child {
+  min-width: 0;
+
+  flex:
+    1 1 auto;
+}
+
+.cart-item strong {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   CART QUANTITY
+========================================================= */
+
+.cart-actions {
+  flex:
+    0 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.cart-actions button {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 50%;
+
+  background:
+    var(--surface-2);
+
+  color:
+    var(--text);
+
+  cursor: pointer;
+
+  font-size: 17px;
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+.cart-actions button:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+
+/* =========================================================
+   CART SUMMARY
+========================================================= */
+
+.cart-summary {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.cart-summary-row {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 7px;
+}
+
+.cart-summary-total {
+  margin-top: 8px;
+  margin-bottom: 0;
+
+  font-weight: 800;
+}
+
+.cart-panel hr {
+  border: 0;
+
+  border-top:
+    1px solid var(--border);
+
+  margin:
+    12px 0;
+}
+
+
+/* =========================================================
+   MYSTERY REWARD
+========================================================= */
 
 .mystery-reward {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 10px;
-margin: 10px 0;
-padding: 8px 0;
-border-top: 1px dashed #ddd;
-border-bottom: 1px dashed #ddd;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  margin:
+    14px 0;
+
+  padding:
+    10px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  border-top:
+    1px dashed var(--border);
+
+  border-bottom:
+    1px dashed var(--border);
+
+  color: inherit;
 }
 
 .mystery-reward-info {
-display: flex;
-align-items: center;
-gap: 7px;
-font-size: 13px;
+  min-width: 0;
+
+  flex:
+    1 1 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
 }
 
 .mystery-reward-icon {
-font-size: 17px;
+  flex:
+    0 0 auto;
+
+  font-size: 16px;
 }
 
 .mystery-reward-text {
-font-weight: 600;
+  min-width: 0;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+
+/* =========================================================
+   REWARD BUTTON
+========================================================= */
+
 .reward-reveal-btn {
-border: 0;
-background: transparent;
-font-size: 12px;
-font-weight: 800;
-cursor: pointer;
-padding: 5px 7px;
-text-decoration: underline;
+  flex:
+    0 0 auto;
+
+  padding:
+    6px 8px;
+
+  border:
+    1px solid var(--accent);
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color:
+    var(--accent);
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: .04em;
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .15s ease;
+}
+
+.reward-reveal-btn:hover {
+  background:
+    var(--accent);
+
+  color:
+    var(--bg);
 }
 
 .reward-reveal-btn:active {
-transform: scale(0.92);
+  transform:
+    scale(.92);
 }
 
-/* =========================
-REWARD WON ANIMATION
-========================= */
+
+/* =========================================================
+   REWARD WON
+========================================================= */
 
 .reward-won {
-display: flex;
-align-items: center;
-gap: 6px;
-font-size: 13px;
-font-weight: 700;
-animation: rewardPop 0.5s ease;
+  justify-content: flex-start;
+
+  color:
+    var(--accent);
+
+  border-color:
+    var(--accent);
+
+  animation:
+    rewardPop .45s ease;
 }
 
 .reward-won-icon {
-display: inline-block;
-animation: rewardBounce 0.6s ease;
+  display: inline-block;
+
+  flex:
+    0 0 auto;
+
+  font-size: 18px;
+
+  animation:
+    rewardBounce .55s ease;
 }
 
 .reward-won-text {
-animation: rewardGlow 0.8s ease;
+  min-width: 0;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  animation:
+    rewardGlow .7s ease;
 }
+
+
+/* =========================================================
+   REWARD ANIMATIONS
+========================================================= */
 
 @keyframes rewardPop {
 
-0% {
-opacity: 0;
-transform: scale(0.7);
-}
+  0% {
+    opacity: 0;
+    transform: scale(.88);
+  }
 
-60% {
-opacity: 1;
-transform: scale(1.08);
-}
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
 
-100% {
-transform: scale(1);
-}
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 
 }
 
 @keyframes rewardBounce {
 
-0% {
-transform: translateY(-8px) rotate(-10deg);
-}
+  0% {
+    transform:
+      translateY(-7px)
+      rotate(-8deg);
+  }
 
-50% {
-transform: translateY(2px) rotate(10deg);
-}
+  50% {
+    transform:
+      translateY(2px)
+      rotate(8deg);
+  }
 
-100% {
-transform: translateY(0) rotate(0);
-}
+  100% {
+    transform:
+      translateY(0)
+      rotate(0);
+  }
 
 }
 
 @keyframes rewardGlow {
 
-0% {
-opacity: 0;
-}
+  0% {
+    opacity: 0;
+  }
 
-50% {
-opacity: 1;
-}
-
-100% {
-opacity: 1;
-}
+  100% {
+    opacity: 1;
+  }
 
 }
 
 
-
-/* =========================
+/* =========================================================
    CUSTOMER REVIEWS
-========================= */
+========================================================= */
 
 .reviews-section {
-  padding: 70px 0 90px;
+  width: 100%;
+
+  padding:
+    70px 0
+    90px;
 }
 
 .reviews-header {
-  text-align: center;
   margin-bottom: 32px;
+
+  text-align: center;
 }
 
 .reviews-header .eyebrow {
@@ -152,292 +711,830 @@ opacity: 1;
 }
 
 .reviews-header p {
-  margin: 0 auto;
   max-width: 560px;
+
+  margin: 0 auto;
+
   opacity: .72;
 }
 
+
+/* =========================================================
+   REVIEW FORM
+========================================================= */
+
 .review-form-wrap {
+  width: 100%;
   max-width: 620px;
-  margin: 0 auto 42px;
+
+  margin:
+    0 auto
+    42px;
+
   padding: 24px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 16px;
-  background: rgba(255,255,255,.025);
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  background:
+    var(--surface-2);
 }
 
 .review-form {
+  width: 100%;
+
   display: grid;
+
   gap: 14px;
 }
 
 .review-form label {
+  margin-bottom: -7px;
+
   font-size: 13px;
   font-weight: 700;
-  margin-bottom: -7px;
 }
 
 .review-form input,
 .review-form textarea {
   width: 100%;
-  box-sizing: border-box;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 10px;
-  background: rgba(255,255,255,.035);
-  color: inherit;
-  padding: 12px 13px;
+  max-width: 100%;
+  min-width: 0;
+
+  padding:
+    12px 13px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 8px;
+
+  background:
+    var(--surface);
+
+  color:
+    inherit;
+
   outline: none;
+
   font: inherit;
-  transition: border-color .2s ease, box-shadow .2s ease;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
 }
 
 .review-form textarea {
   min-height: 105px;
+
   resize: vertical;
 }
 
 .review-form input:focus,
 .review-form textarea:focus {
-  border-color: rgba(230,164,48,.75);
-  box-shadow: 0 0 0 3px rgba(230,164,48,.08);
+  border-color:
+    var(--accent);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(230,164,48,.08);
 }
 
+
+/* =========================================================
+   REVIEW SUBMIT
+========================================================= */
+
 .review-submit {
-  border: 1px solid #e6a430;
-  border-radius: 10px;
-  background: #e6a430;
-  color: #171513;
-  padding: 11px 16px;
-  font: inherit;
+  width: 100%;
+
+  padding:
+    11px 16px;
+
+  border:
+    1px solid var(--accent);
+
+  border-radius: 8px;
+
+  background:
+    var(--accent);
+
+  color:
+    var(--bg);
+
+  font:
+    inherit;
+
   font-weight: 800;
+
   cursor: pointer;
-  transition: transform .15s ease, opacity .15s ease;
+
+  transition:
+    transform .15s ease,
+    opacity .15s ease;
 }
 
 .review-submit:active {
-  transform: scale(.98);
+  transform:
+    scale(.98);
 }
 
 .review-submit:disabled {
   opacity: .6;
+
   cursor: wait;
 }
 
 .review-status {
   min-height: 18px;
+
   margin: 0;
+
   font-size: 13px;
+
   text-align: center;
+
   opacity: .8;
 }
 
+
+/* =========================================================
+   REVIEW LIST
+========================================================= */
+
 .reviews-list {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 16px;
 }
 
 .review-card {
+  width: 100%;
+  min-width: 0;
+
   padding: 20px;
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 14px;
-  background: rgba(255,255,255,.02);
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 10px;
+
+  background:
+    var(--surface-2);
 }
 
 .review-card-head {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 12px;
+
   margin-bottom: 10px;
 }
 
 .review-card-name {
+  min-width: 0;
+
   font-weight: 800;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .review-card-time {
+  flex:
+    0 0 auto;
+
   font-size: 11px;
+
   opacity: .5;
+
   white-space: nowrap;
 }
 
 .review-card-comment {
+  width: 100%;
+  min-width: 0;
+
   margin: 0;
+
   line-height: 1.65;
+
   opacity: .86;
+
   white-space: pre-wrap;
+
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .reviews-empty {
   grid-column: 1 / -1;
+
+  padding:
+    20px 0;
+
   text-align: center;
+
   opacity: .65;
-  padding: 20px 0;
 }
 
+
+/* =========================================================
+   TABLET / MOBILE
+========================================================= */
+
 @media (max-width: 700px) {
+
+  /* PRODUCT */
+
+  .item-content {
+    gap: 14px;
+  }
+
+  .item-image-wrap {
+    width: 120px;
+    height: 110px;
+
+    flex:
+      0 0 120px;
+  }
+
+  .item-name-row {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto
+      auto;
+
+    grid-template-areas:
+      "name name name"
+      "leader price button";
+
+    gap: 9px;
+  }
+
+  .item-name {
+    grid-area:
+      name;
+
+    font-size:
+      1rem;
+
+    line-height:
+      1.3;
+  }
+
+  .item-leader {
+    grid-area:
+      leader;
+
+    min-width:
+      8px;
+  }
+
+  .item-price {
+    grid-area:
+      price;
+
+    white-space:
+      nowrap;
+  }
+
+  .order-btn {
+    grid-area:
+      button;
+
+    padding:
+      8px 11px;
+
+    font-size:
+      .85rem;
+
+    max-width:
+      100%;
+  }
+
+
+  /* CART */
+
+  .cart-widget {
+    right:
+      16px;
+
+    bottom:
+      16px;
+
+    width:
+      54px;
+
+    height:
+      54px;
+  }
+
+  .cart-toggle {
+    width:
+      54px;
+
+    height:
+      54px;
+
+    font-size:
+      20px;
+  }
+
+  .cart-panel {
+    right:
+      0;
+
+    bottom:
+      calc(100% + 12px);
+
+    width:
+      360px;
+
+    max-width:
+      calc(100vw - 24px);
+
+    max-height:
+      calc(100vh - 105px);
+
+    padding:
+      16px;
+
+    border-radius:
+      18px;
+  }
+
+
+  /* REVIEWS */
+
   .reviews-list {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .review-form-wrap {
-    padding: 18px;
+    padding:
+      18px;
   }
 
   .review-card-head {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 3px;
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap:
+      3px;
   }
+
 }
 
-.menu-item-image {
-  width: 110px;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 4px;
-  flex-shrink: 0;
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .item-content {
+    gap:
+      11px;
+  }
+
+  .item-image-wrap {
+    width:
+      105px;
+
+    height:
+      100px;
+
+    flex:
+      0 0 105px;
+  }
+
+  .item-name {
+    font-size:
+      .95rem;
+  }
+
+  .item-price {
+    font-size:
+      .95rem;
+  }
+
+  .order-btn {
+    padding:
+      7px 9px;
+
+    font-size:
+      .78rem;
+  }
+
+
+  .mystery-reward {
+    gap:
+      8px;
+  }
+
+  .mystery-reward-text {
+    font-size:
+      12px;
+  }
+
+  .reward-reveal-btn {
+    padding:
+      5px 7px;
+
+    font-size:
+      10px;
+  }
+
+
+  .cart-widget {
+    right:
+      14px;
+
+    bottom:
+      14px;
+  }
+
+  .cart-panel {
+    max-width:
+      calc(100vw - 24px);
+
+    padding:
+      14px;
+  }
+
 }
 
-.item-row {
-  display: flex;
-  gap: 16px;
-  align-items: center;
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .item-content {
+    gap:
+      9px;
+  }
+
+  .item-image-wrap {
+    width:
+      88px;
+
+    height:
+      90px;
+
+    flex:
+      0 0 88px;
+  }
+
+  .item-name {
+    font-size:
+      .9rem;
+  }
+
+  .item-price {
+    font-size:
+      .9rem;
+  }
+
+  .order-btn {
+    padding:
+      6px 8px;
+
+    font-size:
+      .72rem;
+  }
+
+  .cart-widget {
+    right:
+      12px;
+
+    bottom:
+      12px;
+  }
+
+  .cart-toggle {
+    width:
+      52px;
+
+    height:
+      52px;
+
+    font-size:
+      19px;
+  }
+
+  .cart-panel {
+    max-width:
+      calc(100vw - 24px);
+
+    max-height:
+      calc(100vh - 95px);
+
+    padding:
+      13px;
+  }
+
+  .mystery-reward {
+    gap:
+      7px;
+  }
+
+  .mystery-reward-text {
+    font-size:
+      11px;
+  }
+
+  .reward-reveal-btn {
+    padding:
+      5px 6px;
+
+    font-size:
+      9px;
+  }
+
+}
+
+
+/* =========================================================
+   EXTREMELY SMALL PHONES
+========================================================= */
+
+@media (max-width: 320px) {
+
+  .item-content {
+    gap:
+      7px;
+  }
+
+  .item-image-wrap {
+    width:
+      78px;
+
+    height:
+      82px;
+
+    flex:
+      0 0 78px;
+  }
+
+  .item-name {
+    font-size:
+      .85rem;
+  }
+
+  .item-price {
+    font-size:
+      .82rem;
+  }
+
+  .order-btn {
+    padding:
+      5px 6px;
+
+    font-size:
+      .68rem;
+  }
+
+  .cart-panel {
+    max-width:
+      calc(100vw - 20px);
+
+    padding:
+      12px;
+  }
+
 }
 
 </style>
 
 </head>
 
+
 <body>
 
+
+<!-- =======================================================
+     NAVIGATION
+======================================================= -->
+
 <nav class="nav">
+
   <div class="nav-inner">
-    <a href="index.html" class="brand">Owl's<span>Corner</span></a>
 
+    <a href="index.html" class="brand">
+      Owl's<span>Corner</span>
+    </a>
 
-<ul class="nav-links">
-  <li><a href="index.html" class="active">Menu</a></li>
-  <li><a href="contact.html">Contact</a></li>
-  <li><a href="admin.html">Admin</a></li>
-</ul>
+    <ul class="nav-links">
 
+      <li>
+        <a href="index.html" class="active">
+          Menu
+        </a>
+      </li>
+
+      <li>
+        <a href="contact.html">
+          Contact
+        </a>
+      </li>
+
+      <li>
+        <a href="admin.html">
+          Admin
+        </a>
+      </li>
+
+    </ul>
 
   </div>
+
 </nav>
 
+
+<!-- =======================================================
+     HERO
+======================================================= -->
+
 <header class="hero">
+
   <div class="container">
-    <p class="eyebrow">Today's Menu</p>
 
+    <p class="eyebrow">
+      Today's Menu
+    </p>
 
-<h1>What we're serving</h1>
+    <h1>
+      What we're serving
+    </h1>
 
-<p>
-  Everything below is made fresh, updated straight from our kitchen list —
-  nothing here is stale.
-</p>
+    <p>
+      Everything below is made fresh, updated straight from
+      our kitchen list — nothing here is stale.
+    </p>
 
-<span>
-  Timings
-  <strong>Mon-Sun: 12:00 AM - 3:00 AM</strong>
-</span>
-
+    <span>
+      Timings
+      <strong>
+        Mon-Sun: 12:00 AM - 3:00 AM
+      </strong>
+    </span>
 
   </div>
+
 </header>
+
+
+<!-- =======================================================
+     MENU
+======================================================= -->
 
 <main class="menu-section">
 
   <div class="container">
 
+    <div class="search-bar">
 
-<div class="search-bar">
+      <div class="search-input">
 
-  <div class="search-input">
+        <span>⌕</span>
 
-    <span>⌕</span>
+        <input
+          type="text"
+          id="menuSearch"
+          placeholder="Search coffee, maggi, fries…"
+          autocomplete="off"
+        >
 
-    <input
-      type="text"
-      id="menuSearch"
-      placeholder="Search coffee, maggi, fries…"
-    >
+      </div>
 
-  </div>
+    </div>
 
-</div>
 
-<div id="category-nav" class="category-nav"></div>
+    <div
+      id="category-nav"
+      class="category-nav"
+    ></div>
 
-<div id="menu-root">
-  <p class="loading-state">Loading menu…</p>
-</div>
 
+    <div id="menu-root">
+
+      <p class="loading-state">
+        Loading menu…
+      </p>
+
+    </div>
 
   </div>
 
 </main>
 
-<!-- Floating Cart -->
+
+<!-- =======================================================
+     FLOATING CART
+======================================================= -->
 
 <div class="cart-widget">
 
-<button
-id="cart-toggle"
-class="cart-toggle"
-onclick="toggleCart()"
+  <button
+    id="cart-toggle"
+    class="cart-toggle"
+    onclick="toggleCart()"
+    aria-label="Open cart"
+    data-count="0"
+  >
 
->
+    <span id="cart-count">
+      0
+    </span>
 
-
-🛒
-
-<span id="cart-count">0</span>
-Items • ₹<span id="cart-total">0</span>
-
+    🛒
 
   </button>
 
-  <div id="cart-panel" class="cart-panel">
 
-<h3>Your Cart</h3>
+  <div
+    id="cart-panel"
+    class="cart-panel"
+  >
 
-<div id="cart-items">
-  No items added yet.
-</div>
+    <h3>
+      Your Cart
+    </h3>
 
-<button
-  class="btn btn-full"
-  onclick="checkoutWhatsapp()"
->
-  Order on WhatsApp
-</button>
+    <div id="cart-items">
+      No items added yet.
+    </div>
 
+    <button
+      class="btn btn-full"
+      onclick="checkoutWhatsapp()"
+    >
+      Order on WhatsApp
+    </button>
 
   </div>
 
 </div>
 
 
+<!-- =======================================================
+     REVIEWS
+======================================================= -->
 
 <section class="reviews-section">
+
   <div class="container">
 
     <div class="reviews-header">
-      <p class="eyebrow">Customer Reviews</p>
-      <h2>What people are saying</h2>
-      <p>
-        Ordered from Owl's Corner? Tell us how we did.
+
+      <p class="eyebrow">
+        Customer Reviews
       </p>
+
+      <h2>
+        What people are saying
+      </h2>
+
+      <p>
+        Ordered from Owl's Corner?
+        Tell us how we did.
+      </p>
+
     </div>
 
-    <div class="review-form-wrap">
-      <form id="reviewForm" class="review-form">
 
-        <label for="reviewName">Your name</label>
+    <div class="review-form-wrap">
+
+      <form
+        id="reviewForm"
+        class="review-form"
+      >
+
+        <label for="reviewName">
+          Your name
+        </label>
+
         <input
           type="text"
           id="reviewName"
@@ -447,13 +1544,18 @@ Items • ₹<span id="cart-total">0</span>
           required
         >
 
-        <label for="reviewComment">Your review</label>
+
+        <label for="reviewComment">
+          Your review
+        </label>
+
         <textarea
           id="reviewComment"
           maxlength="500"
           placeholder="How was your food?"
           required
         ></textarea>
+
 
         <button
           type="submit"
@@ -463,17 +1565,36 @@ Items • ₹<span id="cart-total">0</span>
           Leave Review
         </button>
 
-        <p id="reviewStatus" class="review-status"></p>
+
+        <p
+          id="reviewStatus"
+          class="review-status"
+        ></p>
 
       </form>
+
     </div>
 
-    <div id="reviews-root" class="reviews-list">
-      <p class="reviews-empty">Loading reviews…</p>
+
+    <div
+      id="reviews-root"
+      class="reviews-list"
+    >
+
+      <p class="reviews-empty">
+        Loading reviews…
+      </p>
+
     </div>
 
   </div>
+
 </section>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
 
 <footer class="site-footer">
 
@@ -488,52 +1609,50 @@ Items • ₹<span id="cart-total">0</span>
     "
   >
 
+    <span>
+      Questions about an item?
+      <a href="contact.html">
+        Get in touch
+      </a>.
+    </span>
 
-<span>
-  Questions about an item?
-  <a href="contact.html">Get in touch</a>.
-</span>
+    <span>
 
-<span>
-  Powered by
-  <a
-    href="https://instagram.com/yugbelanii"
-    target="_blank"
-  >
-    Yug Belani
-  </a>
-</span>
+      Powered by
 
+      <a
+        href="https://instagram.com/yugbelanii"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Yug Belani
+      </a>
+
+    </span>
 
   </div>
 
 </footer>
 
+
+<!-- =======================================================
+     SUPABASE
+======================================================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase-config.js"></script>
 
+
 <script>
+
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 const DELIVERY_CHARGE = 20;
 
-/*
-=========================================
-  MYSTERY REWARD SETTINGS
-=========================================
-*/
-
 const REWARD_THRESHOLD = 250;
-
-/*
-  These are product names from your
-  Supabase products table.
-
-  Coco-Cola already exists in your DB.
-
-  Make sure Croissant exists as a
-  normal product in products table.
-*/
 
 const REWARD_PRODUCT_NAMES = [
   'Coco-Cola',
@@ -541,95 +1660,126 @@ const REWARD_PRODUCT_NAMES = [
 ];
 
 
-/*
-=========================================
-  GLOBAL STATE
-=========================================
-*/
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
 
 let products = [];
 
 let cart = [];
 
-/*
-  This stores the product object won
-  by the customer.
-
-  Example:
-
-  {
-    id: "...",
-    name: "Coco-Cola",
-    price: 30
-  }
-*/
-
 let mysteryReward = null;
-
-/*
-  Once the customer taps reveal,
-  this becomes true.
-
-  This prevents rerolling the reward
-  repeatedly.
-*/
 
 let rewardRevealed = false;
 
 
-/*
-=========================================
-  LOAD MENU
-=========================================
-*/
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function escapeHtml(value) {
+
+  const div =
+    document.createElement('div');
+
+  div.textContent =
+    value ?? '';
+
+  return div.innerHTML;
+}
+
+
+function escapeJs(value) {
+
+  return String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n');
+
+}
+
+
+function categoryId(category) {
+
+  return 'cat-' +
+    String(category)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+}
+
+
+/* =========================================================
+   LOAD MENU
+========================================================= */
 
 async function loadMenu() {
 
   const root =
     document.getElementById('menu-root');
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
+
       .from('products')
+
       .select('*')
+
       .order('category', {
         ascending: true
       })
+
       .order('name', {
         ascending: true
       });
 
+
   if (error) {
 
     root.innerHTML = `
+
       <p class="empty-state">
         Couldn't load the menu right now.
         (${escapeHtml(error.message)})
       </p>
+
     `;
 
     return;
   }
 
-  if (!data || data.length === 0) {
+
+  if (!data || !data.length) {
 
     root.innerHTML = `
+
       <p class="empty-state">
         No items on the menu yet —
         add some from the Admin page.
       </p>
+
     `;
 
     return;
   }
 
+
   products = data;
 
   renderMenu(products);
+
 }
 
 
-
+/* =========================================================
+   RENDER MENU
+========================================================= */
 
 function renderMenu(menuData) {
 
@@ -639,157 +1789,230 @@ function renderMenu(menuData) {
   const nav =
     document.getElementById('category-nav');
 
+
   if (!menuData.length) {
 
     nav.innerHTML = '';
 
     root.innerHTML = `
+
       <p class="empty-state">
         No items found 😔
       </p>
+
     `;
 
     return;
   }
 
+
   const groups = {};
+
 
   menuData.forEach(item => {
 
-    const cat =
+    const category =
       item.category || 'General';
 
-    if (!groups[cat]) {
-      groups[cat] = [];
+
+    if (!groups[category]) {
+
+      groups[category] = [];
+
     }
 
-    groups[cat].push(item);
+
+    groups[category].push(item);
 
   });
 
 
+  /* CATEGORY NAV */
+
   nav.innerHTML =
+
     Object.keys(groups)
-      .map(cat => `
-        <button
-          class="category-chip"
-          onclick="scrollToCategory('${escapeJs(cat)}')"
-        >
-          ${escapeHtml(cat)}
-        </button>
-      `)
+
+      .map(category => {
+
+        return `
+
+          <button
+            class="category-chip"
+            onclick="scrollToCategory('${escapeJs(category)}')"
+          >
+
+            ${escapeHtml(category)}
+
+          </button>
+
+        `;
+
+      })
+
       .join('');
 
 
+  /* PRODUCTS */
+
   root.innerHTML =
+
     Object.entries(groups)
-      .map(([cat, items]) => `
 
-        <section
-          class="category-block"
-          id="cat-${cat
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, '-')}"
-        >
+      .map(([category, items]) => {
 
-          <h2 class="category-title">
-            ${escapeHtml(cat)}
-          </h2>
+        return `
 
-          ${items.map(item => `
+          <section
+            class="category-block"
+            id="${categoryId(category)}"
+          >
 
-        <div
-  class="item-row
-    ${item.available === false
-      ? 'item-unavailable'
-      : ''}"
->
+            <h2 class="category-title">
+              ${escapeHtml(category)}
+            </h2>
 
-  ${
-    item.image_url
-      ? `
-        <img
-          src="${escapeHtml(item.image_url)}"
-          alt="${escapeHtml(item.name)}"
-          class="menu-item-image"
-          loading="lazy"
-        >
-      `
-      : ''
-  }
 
-  <div class="item-main" style="width:100%;">
+            ${items.map(item => {
 
-                <div class="item-name-row">
+              const imageHtml =
 
-                  <span class="item-name">
-                    ${escapeHtml(item.name)}
-                  </span>
+                item.image_url
 
-                  <span class="item-leader"></span>
+                  ? `
 
-                  <span class="item-price">
-                    ₹${Number(item.price).toFixed(0)}
-                  </span>
+                    <div class="item-image-wrap">
 
-                  ${
-                    item.available === false
-                      ? ''
-                      : `
-                        <button
-                          class="order-btn"
-                          onclick="addToCart('${item.id}')"
-                        >
-                          Add to Cart
-                        </button>
-                      `
-                  }
+                      <img
+                        class="item-image"
+                        src="${escapeHtml(item.image_url)}"
+                        alt="${escapeHtml(item.name)}"
+                        loading="lazy"
+                        onerror="
+                          this.parentElement.style.display='none';
+                        "
+                      >
+
+                    </div>
+
+                  `
+
+                  : '';
+
+
+              const buttonHtml =
+
+                item.available === false
+
+                  ? ''
+
+                  : `
+
+                    <button
+                      class="order-btn"
+                      onclick="addToCart('${escapeJs(item.id)}')"
+                    >
+                      Add to Cart
+                    </button>
+
+                  `;
+
+
+              return `
+
+                <div
+                  class="
+                    item-row
+                    ${item.available === false
+                      ? 'item-unavailable'
+                      : ''}
+                  "
+                >
+
+                  <div class="item-content">
+
+                    ${imageHtml}
+
+
+                    <div class="item-details">
+
+                      <div class="item-name-row">
+
+                        <span class="item-name">
+                          ${escapeHtml(item.name)}
+                        </span>
+
+                        <span class="item-leader"></span>
+
+                        <span class="item-price">
+                          ₹${Number(item.price).toFixed(0)}
+                        </span>
+
+                        ${buttonHtml}
+
+                      </div>
+
+
+                      ${
+                        item.description
+
+                          ? `
+
+                            <p class="item-desc">
+                              ${escapeHtml(item.description)}
+                            </p>
+
+                          `
+
+                          : ''
+                      }
+
+                    </div>
+
+                  </div>
 
                 </div>
 
-                ${
-                  item.description
-                    ? `
-                      <p class="item-desc">
-                        ${escapeHtml(item.description)}
-                      </p>
-                    `
-                    : ''
-                }
+              `;
 
-              </div>
+            }).join('')}
 
-            </div>
+          </section>
 
-          `).join('')}
+        `;
 
-        </section>
+      })
 
-      `)
       .join('');
+
 }
 
 
-
+/* =========================================================
+   ADD TO CART
+========================================================= */
 
 function addToCart(productId) {
 
   const product =
     products.find(
-      p => p.id === productId
+      product => product.id === productId
     );
 
+
   if (!product) return;
+
 
   if (product.available === false) {
     return;
   }
 
+
   const existing =
     cart.find(
-      i => i.id === productId
+      item => item.id === productId
     );
+
 
   if (existing) {
 
@@ -798,39 +2021,57 @@ function addToCart(productId) {
   } else {
 
     cart.push({
-      id: product.id,
-      name: product.name,
-      price: Number(product.price),
-      qty: 1
+
+      id:
+        product.id,
+
+      name:
+        product.name,
+
+      price:
+        Number(product.price),
+
+      qty:
+        1
+
     });
 
   }
 
+
   renderCart();
+
 }
 
 
-
+/* =========================================================
+   CART TOTAL
+========================================================= */
 
 function getCartSubtotal() {
 
   return cart.reduce(
+
     (total, item) =>
-      total + (item.price * item.qty),
+
+      total +
+      (item.price * item.qty),
+
     0
+
   );
 
 }
 
 
-
+/* =========================================================
+   REWARD ELIGIBILITY
+========================================================= */
 
 function checkRewardEligibility() {
 
   const subtotal =
     getCartSubtotal();
-
-
 
 
   if (subtotal < REWARD_THRESHOLD) {
@@ -840,26 +2081,32 @@ function checkRewardEligibility() {
     rewardRevealed = false;
 
     return false;
+
   }
 
 
-
   return true;
+
 }
 
 
-
+/* =========================================================
+   AVAILABLE REWARDS
+========================================================= */
 
 function getAvailableRewards() {
 
   return products.filter(product => {
 
     return (
-      REWARD_PRODUCT_NAMES.includes(
-        product.name
-      )
+
+      REWARD_PRODUCT_NAMES
+        .includes(product.name)
+
       &&
+
       product.available !== false
+
     );
 
   });
@@ -867,11 +2114,15 @@ function getAvailableRewards() {
 }
 
 
+/* =========================================================
+   REVEAL REWARD
+========================================================= */
 
 function revealMysteryReward() {
 
   const subtotal =
     getCartSubtotal();
+
 
   if (subtotal < REWARD_THRESHOLD) {
 
@@ -882,9 +2133,8 @@ function revealMysteryReward() {
     renderCart();
 
     return;
+
   }
-
-
 
 
   if (rewardRevealed) {
@@ -896,8 +2146,6 @@ function revealMysteryReward() {
     getAvailableRewards();
 
 
-  
-
   if (!rewards.length) {
 
     alert(
@@ -905,39 +2153,48 @@ function revealMysteryReward() {
     );
 
     return;
+
   }
 
 
- 
   const randomIndex =
     Math.floor(
       Math.random() * rewards.length
     );
 
+
   mysteryReward =
     rewards[randomIndex];
 
-  rewardRevealed = true;
+
+  rewardRevealed =
+    true;
+
 
   renderCart();
 
 }
 
 
-
+/* =========================================================
+   RENDER REWARD
+========================================================= */
 
 function renderMysteryReward() {
 
-  const eligible = checkRewardEligibility();
+  const eligible =
+    checkRewardEligibility();
+
 
   if (!eligible) {
     return '';
   }
 
-  // Before reveal
+
   if (!rewardRevealed) {
 
     return `
+
       <div class="mystery-reward">
 
         <div class="mystery-reward-info">
@@ -952,6 +2209,7 @@ function renderMysteryReward() {
 
         </div>
 
+
         <button
           class="reward-reveal-btn"
           onclick="revealMysteryReward()"
@@ -960,18 +2218,25 @@ function renderMysteryReward() {
         </button>
 
       </div>
+
     `;
+
   }
 
-  // After reveal
+
   const rewardIcon =
+
     mysteryReward.name
       .toLowerCase()
       .includes('cola')
+
       ? '🥤'
+
       : '🥐';
 
+
   return `
+
     <div class="mystery-reward reward-won">
 
       <span class="reward-won-icon">
@@ -979,14 +2244,19 @@ function renderMysteryReward() {
       </span>
 
       <span class="reward-won-text">
-        🎉 You won ${escapeHtml(mysteryReward.name)} — FREE!
+        You won ${escapeHtml(mysteryReward.name)} — FREE!
       </span>
 
     </div>
+
   `;
+
 }
 
 
+/* =========================================================
+   RENDER CART
+========================================================= */
 
 function renderCart() {
 
@@ -996,9 +2266,8 @@ function renderCart() {
   const count =
     document.getElementById('cart-count');
 
-  const totalEl =
-    document.getElementById('cart-total');
-
+  const toggle =
+    document.getElementById('cart-toggle');
 
 
   checkRewardEligibility();
@@ -1009,11 +2278,16 @@ function renderCart() {
     items.innerHTML =
       'No items added yet.';
 
-    count.textContent = '0';
+    count.textContent =
+      '0';
 
-    totalEl.textContent = '0';
+    toggle.setAttribute(
+      'data-count',
+      '0'
+    );
 
     return;
+
   }
 
 
@@ -1023,14 +2297,19 @@ function renderCart() {
 
 
   const cartHtml =
+
     cart.map(item => {
 
       const itemTotal =
         item.price * item.qty;
 
-      subtotal += itemTotal;
 
-      totalItems += item.qty;
+      subtotal +=
+        itemTotal;
+
+
+      totalItems +=
+        item.qty;
 
 
       return `
@@ -1049,10 +2328,12 @@ function renderCart() {
 
           </div>
 
+
           <div class="cart-actions">
 
             <button
-              onclick="changeQty('${item.id}', -1)"
+              onclick="changeQty('${escapeJs(item.id)}', -1)"
+              aria-label="Decrease quantity"
             >
               −
             </button>
@@ -1062,7 +2343,8 @@ function renderCart() {
             </span>
 
             <button
-              onclick="changeQty('${item.id}', 1)"
+              onclick="changeQty('${escapeJs(item.id)}', 1)"
+              aria-label="Increase quantity"
             >
               +
             </button>
@@ -1073,19 +2355,18 @@ function renderCart() {
 
       `;
 
-    }).join('');
+    })
 
-
+    .join('');
 
 
   const rewardHtml =
     renderMysteryReward();
 
 
-
-
   const grandTotal =
-    subtotal + DELIVERY_CHARGE;
+    subtotal +
+    DELIVERY_CHARGE;
 
 
   items.innerHTML = `
@@ -1094,16 +2375,13 @@ function renderCart() {
 
     ${rewardHtml}
 
-    <hr style="margin:12px 0;">
+    <hr>
+
 
     <div class="cart-summary">
 
-      <div
-        style="
-          display:flex;
-          justify-content:space-between;
-        "
-      >
+      <div class="cart-summary-row">
+
         <span>
           Subtotal
         </span>
@@ -1111,15 +2389,12 @@ function renderCart() {
         <span>
           ₹${subtotal}
         </span>
+
       </div>
 
 
-      <div
-        style="
-          display:flex;
-          justify-content:space-between;
-        "
-      >
+      <div class="cart-summary-row">
+
         <span>
           Delivery
         </span>
@@ -1127,15 +2402,14 @@ function renderCart() {
         <span>
           ₹${DELIVERY_CHARGE}
         </span>
+
       </div>
 
 
       <div
-        style="
-          display:flex;
-          justify-content:space-between;
-          font-weight:bold;
-          margin-top:8px;
+        class="
+          cart-summary-row
+          cart-summary-total
         "
       >
 
@@ -1157,90 +2431,104 @@ function renderCart() {
   count.textContent =
     totalItems;
 
-  totalEl.textContent =
-    grandTotal;
+
+  toggle.setAttribute(
+    'data-count',
+    totalItems
+  );
+
 }
 
 
-
+/* =========================================================
+   CHANGE QUANTITY
+========================================================= */
 
 function changeQty(productId, amount) {
 
   const item =
     cart.find(
-      i => i.id === productId
+      item => item.id === productId
     );
+
 
   if (!item) return;
 
 
-  item.qty += amount;
+  item.qty +=
+    amount;
 
 
   if (item.qty <= 0) {
 
     cart =
       cart.filter(
-        i => i.id !== productId
+        item => item.id !== productId
       );
 
   }
 
 
   renderCart();
+
 }
 
 
-
+/* =========================================================
+   CART TOGGLE
+========================================================= */
 
 function toggleCart() {
 
-  document
-    .getElementById('cart-panel')
-    .classList
-    .toggle('show');
+  const panel =
+    document.getElementById('cart-panel');
+
+
+  panel.classList.toggle('show');
 
 }
 
 
+/* =========================================================
+   CATEGORY SCROLL
+========================================================= */
+
+function scrollToCategory(category) {
+
+  const element =
+    document.getElementById(
+      categoryId(category)
+    );
 
 
-function scrollToCategory(cat) {
-
-  const id =
-    'cat-' +
-    cat
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-
-
-  const el =
-    document.getElementById(id);
-
-
-  if (!el) return;
+  if (!element) return;
 
 
   const y =
-    el.getBoundingClientRect().top +
+
+    element.getBoundingClientRect().top +
+
     window.pageYOffset -
+
     160;
 
 
   window.scrollTo({
 
-    top: y,
+    top:
+      y,
 
-    behavior: 'smooth'
+    behavior:
+      'smooth'
 
   });
 
 }
 
 
-
-
+/* =========================================================
+   WHATSAPP CHECKOUT
+========================================================= */
 
 function checkoutWhatsapp() {
 
@@ -1251,6 +2539,7 @@ function checkoutWhatsapp() {
     );
 
     return;
+
   }
 
 
@@ -1258,22 +2547,22 @@ function checkoutWhatsapp() {
 
 
   const order =
+
     cart.map(item => {
 
       const itemTotal =
         item.price * item.qty;
 
 
-      subtotal += itemTotal;
+      subtotal +=
+        itemTotal;
 
 
-      return `
-• ${item.name} x${item.qty} - ₹${itemTotal}
-`;
+      return `• ${item.name} x${item.qty} - ₹${itemTotal}`;
 
-    }).join('');
+    })
 
-
+    .join('\n');
 
 
   let rewardMessage = '';
@@ -1284,27 +2573,34 @@ function checkoutWhatsapp() {
     mysteryReward
   ) {
 
-    rewardMessage = `
-• 🎁 FREE ${mysteryReward.name} x1 - ₹0
-`;
+    rewardMessage =
+
+      `\n• 🎁 FREE ${mysteryReward.name} x1 - ₹0`;
 
   }
 
 
   const grandTotal =
-    subtotal + DELIVERY_CHARGE;
+    subtotal +
+    DELIVERY_CHARGE;
 
 
-  const message = `Hi Owlzz Cafe! I'd like to order:
+  const message =
+
+`Hi Owlzz Cafe! I'd like to order:
 
 ${order}${rewardMessage}
+
 Subtotal: ₹${subtotal}
 Delivery: ₹${DELIVERY_CHARGE}
 Total: ₹${grandTotal}
 
-${rewardRevealed && mysteryReward
-  ? `🎁 Mystery Reward: ${mysteryReward.name} - FREE`
-  : ''
+${
+  rewardRevealed && mysteryReward
+
+    ? `🎁 Mystery Reward: ${mysteryReward.name} - FREE`
+
+    : ''
 }`;
 
 
@@ -1319,32 +2615,9 @@ ${rewardRevealed && mysteryReward
 }
 
 
-
-
-function escapeHtml(str) {
-
-  const div =
-    document.createElement('div');
-
-  div.textContent =
-    str ?? '';
-
-  return div.innerHTML;
-
-}
-
-
-
-function escapeJs(str) {
-
-  return String(str)
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n');
-
-}
-
+/* =========================================================
+   SEARCH
+========================================================= */
 
 document
   .getElementById('menuSearch')
@@ -1359,15 +2632,18 @@ document
 
 
       const filtered =
+
         products.filter(item => {
 
           const name =
             (item.name || '')
               .toLowerCase();
 
+
           const category =
             (item.category || '')
               .toLowerCase();
+
 
           const description =
             (item.description || '')
@@ -1397,222 +2673,463 @@ document
   );
 
 
-
-
-
-/* =========================
-   CUSTOMER REVIEWS
-========================= */
+/* =========================================================
+   LOAD REVIEWS
+========================================================= */
 
 async function loadReviews() {
 
-  const root = document.getElementById('reviews-root');
+  const root =
+    document.getElementById(
+      'reviews-root'
+    );
+
 
   if (!root) return;
 
-  const { data, error } = await supabaseClient
-    .from('reviews')
-    .select('id, name, comment, created_at')
-    .order('created_at', { ascending: false });
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+
+      .from('reviews')
+
+      .select(
+        'id, name, comment, created_at'
+      )
+
+      .order(
+        'created_at',
+        {
+          ascending: false
+        }
+      );
+
 
   if (error) {
-    console.error('Failed to load reviews:', error);
+
+    console.error(
+      'Failed to load reviews:',
+      error
+    );
+
+
     root.innerHTML = `
+
       <p class="reviews-empty">
         Reviews are unavailable right now.
       </p>
+
     `;
+
     return;
+
   }
 
-  renderReviews(data || []);
+
+  renderReviews(
+    data || []
+  );
+
 }
+
+
+/* =========================================================
+   RENDER REVIEWS
+========================================================= */
 
 function renderReviews(reviews) {
 
-  const root = document.getElementById('reviews-root');
+  const root =
+    document.getElementById(
+      'reviews-root'
+    );
+
 
   if (!root) return;
 
+
   if (!reviews.length) {
+
     root.innerHTML = `
+
       <p class="reviews-empty">
         Be the first to leave a review ❤️
       </p>
+
     `;
+
     return;
+
   }
 
-  root.innerHTML = reviews.map(review => `
-    <article class="review-card">
 
-      <div class="review-card-head">
-        <span class="review-card-name">
-          ${escapeHtml(review.name)}
-        </span>
+  root.innerHTML =
 
-        <span class="review-card-time">
-          ${formatReviewTime(review.created_at)}
-        </span>
-      </div>
+    reviews.map(review => {
 
-      <p class="review-card-comment">
-        ${escapeHtml(review.comment)}
-      </p>
+      return `
 
-    </article>
-  `).join('');
+        <article class="review-card">
+
+          <div class="review-card-head">
+
+            <span class="review-card-name">
+              ${escapeHtml(review.name)}
+            </span>
+
+            <span class="review-card-time">
+              ${formatReviewTime(review.created_at)}
+            </span>
+
+          </div>
+
+
+          <p class="review-card-comment">
+            ${escapeHtml(review.comment)}
+          </p>
+
+        </article>
+
+      `;
+
+    })
+
+    .join('');
+
 }
+
+
+/* =========================================================
+   REVIEW TIME
+========================================================= */
 
 function formatReviewTime(timestamp) {
 
-  const date = new Date(timestamp);
-  const now = new Date();
+  const date =
+    new Date(timestamp);
 
-  if (Number.isNaN(date.getTime())) {
+  const now =
+    new Date();
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
     return '';
+
   }
 
-  const diffSeconds = Math.max(
-    0,
-    Math.floor((now - date) / 1000)
-  );
+
+  const diffSeconds =
+
+    Math.max(
+
+      0,
+
+      Math.floor(
+        (now - date) / 1000
+      )
+
+    );
+
 
   if (diffSeconds < 60) {
     return 'Just now';
   }
 
+
   if (diffSeconds < 3600) {
-    const minutes = Math.floor(diffSeconds / 60);
+
+    const minutes =
+      Math.floor(
+        diffSeconds / 60
+      );
+
     return `${minutes} min ago`;
+
   }
 
+
   if (diffSeconds < 86400) {
-    const hours = Math.floor(diffSeconds / 3600);
+
+    const hours =
+      Math.floor(
+        diffSeconds / 3600
+      );
+
     return `${hours} hr ago`;
+
   }
+
 
   if (diffSeconds < 172800) {
     return 'Yesterday';
   }
 
+
   if (diffSeconds < 604800) {
-    const days = Math.floor(diffSeconds / 86400);
+
+    const days =
+      Math.floor(
+        diffSeconds / 86400
+      );
+
     return `${days} days ago`;
+
   }
 
-  return date.toLocaleDateString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day:
+        'numeric',
+
+      month:
+        'short',
+
+      year:
+        'numeric'
+    }
+  );
+
 }
+
+
+/* =========================================================
+   SUBMIT REVIEW
+========================================================= */
 
 async function submitReview(event) {
 
   event.preventDefault();
 
-  const nameInput = document.getElementById('reviewName');
-  const commentInput = document.getElementById('reviewComment');
-  const submitButton = document.getElementById('reviewSubmit');
-  const status = document.getElementById('reviewStatus');
 
-  const name = nameInput.value.trim();
-  const comment = commentInput.value.trim();
+  const nameInput =
+    document.getElementById(
+      'reviewName'
+    );
+
+  const commentInput =
+    document.getElementById(
+      'reviewComment'
+    );
+
+  const submitButton =
+    document.getElementById(
+      'reviewSubmit'
+    );
+
+  const status =
+    document.getElementById(
+      'reviewStatus'
+    );
+
+
+  const name =
+    nameInput.value.trim();
+
+  const comment =
+    commentInput.value.trim();
+
 
   if (!name || !comment) {
-    status.textContent = 'Please enter your name and review.';
+
+    status.textContent =
+      'Please enter your name and review.';
+
     return;
+
   }
+
 
   if (name.length > 50) {
-    status.textContent = 'Name must be 50 characters or less.';
+
+    status.textContent =
+      'Name must be 50 characters or less.';
+
     return;
+
   }
+
 
   if (comment.length > 500) {
-    status.textContent = 'Review must be 500 characters or less.';
+
+    status.textContent =
+      'Review must be 500 characters or less.';
+
     return;
+
   }
 
-  submitButton.disabled = true;
-  submitButton.textContent = 'Submitting…';
-  status.textContent = '';
 
-  const { data, error } = await supabaseClient
-    .from('reviews')
-    .insert({
-      name,
-      comment
-    })
-    .select('id, name, comment, created_at')
-    .single();
+  submitButton.disabled =
+    true;
+
+  submitButton.textContent =
+    'Submitting…';
+
+  status.textContent =
+    '';
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+
+      .from('reviews')
+
+      .insert({
+
+        name,
+        comment
+
+      })
+
+      .select(
+        'id, name, comment, created_at'
+      )
+
+      .single();
+
 
   if (error) {
-    console.error('Review submission failed:', error);
-    status.textContent = 'Could not submit your review. Please try again.';
-    submitButton.disabled = false;
-    submitButton.textContent = 'Leave Review';
+
+    console.error(
+      'Review submission failed:',
+      error
+    );
+
+
+    status.textContent =
+      'Could not submit your review. Please try again.';
+
+
+    submitButton.disabled =
+      false;
+
+    submitButton.textContent =
+      'Leave Review';
+
     return;
+
   }
 
-  /*
-    Show the new review immediately without
-    waiting for a page refresh.
-  */
-  const root = document.getElementById('reviews-root');
-  const existingEmpty = root.querySelector('.reviews-empty');
+
+  const root =
+    document.getElementById(
+      'reviews-root'
+    );
+
+
+  const existingEmpty =
+    root.querySelector(
+      '.reviews-empty'
+    );
+
 
   if (existingEmpty) {
-    root.innerHTML = '';
+
+    root.innerHTML =
+      '';
+
   }
 
-  const card = document.createElement('article');
-  card.className = 'review-card';
+
+  const card =
+    document.createElement(
+      'article'
+    );
+
+
+  card.className =
+    'review-card';
+
+
   card.innerHTML = `
+
     <div class="review-card-head">
+
       <span class="review-card-name">
         ${escapeHtml(data.name)}
       </span>
+
       <span class="review-card-time">
         ${formatReviewTime(data.created_at)}
       </span>
+
     </div>
+
+
     <p class="review-card-comment">
       ${escapeHtml(data.comment)}
     </p>
+
   `;
+
 
   root.prepend(card);
 
-  nameInput.value = '';
-  commentInput.value = '';
 
-  status.textContent = 'Thanks for your review! ❤️';
+  nameInput.value =
+    '';
 
-  submitButton.disabled = false;
-  submitButton.textContent = 'Leave Review';
+  commentInput.value =
+    '';
+
+
+  status.textContent =
+    'Thanks for your review! ❤️';
+
+
+  submitButton.disabled =
+    false;
+
+  submitButton.textContent =
+    'Leave Review';
+
 }
 
-const reviewForm = document.getElementById('reviewForm');
+
+/* =========================================================
+   REVIEW FORM
+========================================================= */
+
+const reviewForm =
+  document.getElementById(
+    'reviewForm'
+  );
+
 
 if (reviewForm) {
-  reviewForm.addEventListener('submit', submitReview);
+
+  reviewForm.addEventListener(
+    'submit',
+    submitReview
+  );
+
 }
 
 
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+renderCart();
+
 loadReviews();
+
 loadMenu();
 
 </script>
 
-
-<script>
-  window.va = window.va || function () {
-    (window.vaq = window.vaq || []).push(arguments);
-  };
-</script>
-
-<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
