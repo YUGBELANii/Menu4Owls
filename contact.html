@@ -26,6 +26,30 @@
   align-items: start;
 }
 
+/* =========================================
+   NAV BRAND / OWL LOGO
+========================================= */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.nav-logo-svg {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  .nav-logo-svg {
+    width: 27px;
+    height: 27px;
+  }
+}
 
 /* =========================================
    CONTACT INTRO
@@ -48,7 +72,6 @@
   opacity: 0.72;
   margin: 0;
 }
-
 
 /* =========================================
    INFO BLOCKS
@@ -91,7 +114,6 @@
   text-decoration: none;
 }
 
-
 /* =========================================
    CONTACT FORM
 ========================================= */
@@ -116,7 +138,6 @@
   font-size: 0.92rem;
 }
 
-
 /* =========================================
    SMALL HELP TEXT
 ========================================= */
@@ -129,7 +150,6 @@
   line-height: 1.6;
   opacity: 0.6;
 }
-
 
 /* =========================================
    MOBILE
@@ -154,10 +174,6 @@
     padding: 22px;
   }
 
-}
-
-@media (max-width: 760px) {
-
   .contact-page .container {
     padding-left: 22px;
     padding-right: 22px;
@@ -177,15 +193,12 @@
     width: 100%;
     box-sizing: border-box;
   }
-
 }
 </style>
 
 </head>
 
-
 <body>
-
 
 <!-- =========================================
      NAVIGATION
@@ -195,10 +208,18 @@
 
   <div class="nav-inner">
 
-    <a href="index.html" class="brand">
-      Owl's<span>Corner</span>
-    </a>
+    <a href="index.html" class="brand" aria-label="Owl's Corner home">
 
+      <svg class="nav-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Owl's Corner logo">
+        <path fill="currentColor" d="M8 28c9-12 20-18 35-20-4 5-8 9-12 12 8-2 15-1 21 2-8 2-14 6-18 12-2 10-9 17-18 17 4-5 6-10 5-15-4 2-8 4-13 4 2-4 4-8 7-12-3 0-5 0-7 0z"/>
+        <circle cx="31" cy="35" r="12" fill="none" stroke="currentColor" stroke-width="5"/>
+        <circle cx="31" cy="35" r="4" fill="currentColor"/>
+        <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M23 45c4 3 12 3 16 0"/>
+      </svg>
+
+      Owl's<span>Corner</span>
+
+    </a>
 
     <ul class="nav-links">
 
@@ -214,19 +235,17 @@
         </a>
       </li>
 
-      <li>
+      <!-- <li>
         <a href="admin.html">
           Admin
         </a>
-      </li>
+      </li> -->
 
     </ul>
 
   </div>
 
 </nav>
-
-
 
 <!-- =========================================
      HERO
@@ -253,8 +272,6 @@
 
 </header>
 
-
-
 <!-- =========================================
      CONTACT CONTENT
 ========================================= -->
@@ -262,11 +279,6 @@
 <main class="contact-page">
 
   <div class="container contact-grid">
-
-
-    <!-- =====================================
-         LEFT SIDE
-    ====================================== -->
 
     <section>
 
@@ -290,11 +302,7 @@
 
       </div>
 
-
       <div class="contact-info">
-
-
-        <!-- ADDRESS -->
 
         <div class="info-block">
 
@@ -308,9 +316,6 @@
 
         </div>
 
-
-        <!-- PHONE -->
-
         <div class="info-block">
 
           <p class="info-label">
@@ -318,17 +323,12 @@
           </p>
 
           <p class="info-value">
-
             <a href="tel:+919370693869">
               +91 93706 93869
             </a>
-
           </p>
 
         </div>
-
-
-        <!-- HOURS -->
 
         <div class="info-block">
 
@@ -338,14 +338,11 @@
 
           <p class="info-value">
             <strong>
-              Mon – Sun · 12:00 AM – 3:00 AM
+              Mon – Sun · 6:00 PM – 3:00 AM
             </strong>
           </p>
 
         </div>
-
-
-        <!-- INSTAGRAM -->
 
         <div class="info-block">
 
@@ -354,7 +351,6 @@
           </p>
 
           <p class="info-value">
-
             <a
               href="https://instagram.com/owlzcorner"
               target="_blank"
@@ -362,13 +358,11 @@
             >
               @owlzcorner
             </a>
-
           </p>
 
         </div>
 
       </div>
-
 
       <div class="contact-note">
 
@@ -379,12 +373,6 @@
       </div>
 
     </section>
-
-
-
-    <!-- =====================================
-         RIGHT SIDE
-    ====================================== -->
 
     <section class="contact-form-wrap">
 
@@ -397,11 +385,7 @@
         as soon as we can.
       </p>
 
-
       <form id="contact-form">
-
-
-        <!-- NAME -->
 
         <div class="field">
 
@@ -418,9 +402,6 @@
 
         </div>
 
-
-        <!-- PHONE -->
-
         <div class="field">
 
           <label for="phone">
@@ -434,9 +415,6 @@
           >
 
         </div>
-
-
-        <!-- MESSAGE -->
 
         <div class="field">
 
@@ -452,9 +430,6 @@
 
         </div>
 
-
-        <!-- SUBMIT -->
-
         <button
           type="submit"
           class="btn btn-full"
@@ -463,12 +438,10 @@
           Send message
         </button>
 
-
         <div
           class="status-msg"
           id="status-msg"
         ></div>
-
 
       </form>
 
@@ -477,8 +450,6 @@
   </div>
 
 </main>
-
-
 
 <!-- =========================================
      FOOTER
@@ -498,20 +469,14 @@
   >
 
     <span>
-
       Prefer to browse first?
-
       <a href="index.html">
         See the menu
       </a>.
-
     </span>
 
-
     <span>
-
       Powered by
-
       <a
         href="https://instagram.com/yugbelanii"
         target="_blank"
@@ -519,151 +484,104 @@
       >
         Yug Belani
       </a>
-
     </span>
 
   </div>
 
 </footer>
 
-
-
 <!-- =========================================
      SUPABASE
 ========================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="supabase-config.js"></script>
 
-
 <script>
-
 /* =========================================
    CONTACT FORM
 ========================================= */
 
-const form =
-  document.getElementById(
-    'contact-form'
-  );
-
-
-const btn =
-  document.getElementById(
-    'submit-btn'
-  );
-
-
-const statusMsg =
-  document.getElementById(
-    'status-msg'
-  );
-
+const form = document.getElementById('contact-form');
+const btn = document.getElementById('submit-btn');
+const statusMsg = document.getElementById('status-msg');
 
 function showStatus(text, ok) {
-
-  statusMsg.textContent =
-    text;
-
-  statusMsg.className =
-    `status-msg show ${ok ? 'ok' : 'err'}`;
-
+  statusMsg.textContent = text;
+  statusMsg.className = `status-msg show ${ok ? 'ok' : 'err'}`;
 }
 
+form.addEventListener('submit', async (e) => {
 
-form.addEventListener(
-  'submit',
-  async (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
+  if (!window.supabaseClient) {
+    console.error(
+      'supabaseClient is not available. Check supabase-config.js.'
+    );
 
+    showStatus(
+      'Could not connect to the message service. Please try again later.',
+      false
+    );
 
-    btn.disabled =
-      true;
+    return;
+  }
 
-    btn.textContent =
-      'Sending…';
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
 
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const message = document.getElementById('message').value.trim();
 
-    const name =
-      document
-        .getElementById('name')
-        .value
-        .trim();
+  try {
 
-
-    const phone =
-      document
-        .getElementById('phone')
-        .value
-        .trim();
-
-
-    const message =
-      document
-        .getElementById('message')
-        .value
-        .trim();
-
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from('messages')
-        .insert([
-          {
-            name,
-            phone,
-            message
-          }
-        ]);
-
+    const { error } = await window.supabaseClient
+      .from('messages')
+      .insert([
+        {
+          name,
+          phone,
+          message
+        }
+      ]);
 
     if (error) {
-
-      console.error(
-        'Message submission failed:',
-        error
-      );
-
+      console.error('Message submission failed:', error);
 
       showStatus(
         `Couldn't send — ${error.message}`,
         false
       );
 
-
-      btn.disabled =
-        false;
-
-      btn.textContent =
-        'Send message';
-
       return;
-
     }
-
 
     showStatus(
       "Message sent — we'll get back to you soon.",
       true
     );
 
-
     form.reset();
 
+  } catch (error) {
 
-    btn.disabled =
-      false;
+    console.error('Unexpected message submission error:', error);
 
-    btn.textContent =
-      'Send message';
+    showStatus(
+      'Something went wrong. Please try again later.',
+      false
+    );
+
+  } finally {
+
+    btn.disabled = false;
+    btn.textContent = 'Send message';
 
   }
-);
 
+});
 </script>
 
 <script>

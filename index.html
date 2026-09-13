@@ -39,10 +39,30 @@ body {
   box-sizing: border-box;
 }
 
-img {
-  max-width: 100%;
+
+
+
+/* NAVBAR BRAND / LOGO */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
 }
 
+.nav-logo-svg {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: block;
+  overflow: visible;
+  color: var(--accent);
+}
+
+@media (max-width: 700px) {
+  .brand { gap: 7px; }
+  .nav-logo-svg { width: 27px; height: 27px; flex-basis: 27px; }
+}
 
 /* =========================================================
    MENU PRODUCT
@@ -225,9 +245,16 @@ img {
 
 
 /* Hide textual cart count */
-.cart-toggle #cart-count,
-.cart-toggle #cart-total {
-  display: none;
+.cart-toggle #cart-count {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 
@@ -390,6 +417,7 @@ img {
 .cart-actions {
   flex:
     0 0 auto;
+  min-width: max-content;
 
   display: flex;
   align-items: center;
@@ -841,10 +869,29 @@ img {
     scale(.98);
 }
 
-.review-submit:disabled {
-  opacity: .6;
+.review-submit:disabled,
+.btn:disabled,
+#checkout-whatsapp:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
-  cursor: wait;
+.category-chip,
+.order-btn,
+.cart-actions button,
+.reward-reveal-btn {
+  touch-action: manipulation;
+}
+
+.category-chip:focus-visible,
+.order-btn:focus-visible,
+.cart-toggle:focus-visible,
+.cart-actions button:focus-visible,
+.reward-reveal-btn:focus-visible,
+.review-submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .review-status {
@@ -1341,7 +1388,13 @@ img {
 
   <div class="nav-inner">
 
-    <a href="index.html" class="brand">
+    <a href="index.html" class="brand" aria-label="Owl's Corner home">
+      <svg class="nav-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Owl's Corner logo">
+        <path fill="currentColor" d="M8 28c9-12 20-18 35-20-4 5-8 9-12 12 8-2 15-1 21 2-8 2-14 6-18 12-2 10-9 17-18 17 4-5 6-10 5-15-4 2-8 4-13 4 2-4 4-8 7-12-3 0-5 0-7 0z"/>
+        <circle cx="31" cy="35" r="12" fill="none" stroke="currentColor" stroke-width="5"/>
+        <circle cx="31" cy="35" r="4" fill="currentColor"/>
+        <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M23 45c4 3 12 3 16 0"/>
+      </svg>
       Owl's<span>Corner</span>
     </a>
 
@@ -1359,11 +1412,11 @@ img {
         </a>
       </li>
 
-      <li>
+      <!-- <li>
         <a href="admin.html">
           Admin
         </a>
-      </li>
+      </li> -->
 
     </ul>
 
@@ -1396,7 +1449,7 @@ img {
     <span>
       Timings
       <strong>
-        Mon-Sun: 12:00 AM - 3:00 AM
+        Mon-Sun: 6:00 PM - 3:00 AM
       </strong>
     </span>
 
@@ -1459,7 +1512,6 @@ img {
   <button
     id="cart-toggle"
     class="cart-toggle"
-    onclick="toggleCart()"
     aria-label="Open cart"
     data-count="0"
   >
@@ -1488,7 +1540,7 @@ img {
 
     <button
       class="btn btn-full"
-      onclick="checkoutWhatsapp()"
+      id="checkout-whatsapp"
     >
       Order on WhatsApp
     </button>
@@ -1700,6 +1752,14 @@ function escapeJs(value) {
 }
 
 
+function safeImageUrl(value) {
+  try {
+    const url = new URL(String(value), window.location.href);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
+  } catch (_) {}
+  return '';
+}
+
 function categoryId(category) {
 
   return 'cat-' +
@@ -1718,8 +1778,14 @@ function categoryId(category) {
 
 async function loadMenu() {
 
-  const root =
-    document.getElementById('menu-root');
+  const root = document.getElementById('menu-root');
+  if (!root) return;
+
+  if (!window.supabaseClient) {
+    root.innerHTML = '<p class="empty-state">Menu is temporarily unavailable.</p>';
+    console.error('supabaseClient is not available. Check supabase-config.js.');
+    return;
+  }
 
   const {
     data,
@@ -1839,7 +1905,7 @@ function renderMenu(menuData) {
 
           <button
             class="category-chip"
-            onclick="scrollToCategory('${escapeJs(category)}')"
+            data-category="${escapeHtml(category)}"
           >
 
             ${escapeHtml(category)}
@@ -1885,12 +1951,9 @@ function renderMenu(menuData) {
 
                       <img
                         class="item-image"
-                        src="${escapeHtml(item.image_url)}"
+                        src="${escapeHtml(safeImageUrl(item.image_url))}"
                         alt="${escapeHtml(item.name)}"
                         loading="lazy"
-                        onerror="
-                          this.parentElement.style.display='none';
-                        "
                       >
 
                     </div>
@@ -1910,7 +1973,7 @@ function renderMenu(menuData) {
 
                     <button
                       class="order-btn"
-                      onclick="addToCart('${escapeJs(item.id)}')"
+                      data-product-id="${escapeHtml(item.id)}"
                     >
                       Add to Cart
                     </button>
@@ -2096,21 +2159,14 @@ function checkRewardEligibility() {
 
 function getAvailableRewards() {
 
+  const rewardNames = REWARD_PRODUCT_NAMES.map(name =>
+    String(name).trim().toLowerCase()
+  );
+
   return products.filter(product => {
-
-    return (
-
-      REWARD_PRODUCT_NAMES
-        .includes(product.name)
-
-      &&
-
-      product.available !== false
-
-    );
-
+    const productName = String(product.name || '').trim().toLowerCase();
+    return rewardNames.includes(productName) && product.available !== false;
   });
-
 }
 
 
@@ -2212,7 +2268,7 @@ function renderMysteryReward() {
 
         <button
           class="reward-reveal-btn"
-          onclick="revealMysteryReward()"
+          data-action="reveal-reward"
         >
           TAP TO REVEAL
         </button>
@@ -2222,10 +2278,12 @@ function renderMysteryReward() {
     `;
 
   }
-
+  if (!mysteryReward) {
+    rewardRevealed = false;
+    return '';
+  }
 
   const rewardIcon =
-
     mysteryReward.name
       .toLowerCase()
       .includes('cola')
@@ -2269,6 +2327,8 @@ function renderCart() {
   const toggle =
     document.getElementById('cart-toggle');
 
+  const checkoutButton =
+    document.getElementById('checkout-whatsapp');
 
   checkRewardEligibility();
 
@@ -2285,6 +2345,8 @@ function renderCart() {
       'data-count',
       '0'
     );
+
+    if (checkoutButton) checkoutButton.disabled = true;
 
     return;
 
@@ -2332,7 +2394,7 @@ function renderCart() {
           <div class="cart-actions">
 
             <button
-              onclick="changeQty('${escapeJs(item.id)}', -1)"
+              data-action="decrease" data-product-id="${escapeHtml(item.id)}"
               aria-label="Decrease quantity"
             >
               −
@@ -2343,7 +2405,7 @@ function renderCart() {
             </span>
 
             <button
-              onclick="changeQty('${escapeJs(item.id)}', 1)"
+              data-action="increase" data-product-id="${escapeHtml(item.id)}"
               aria-label="Increase quantity"
             >
               +
@@ -2436,6 +2498,8 @@ function renderCart() {
     'data-count',
     totalItems
   );
+
+  if (checkoutButton) checkoutButton.disabled = false;
 
 }
 
@@ -2594,14 +2658,7 @@ ${order}${rewardMessage}
 Subtotal: ₹${subtotal}
 Delivery: ₹${DELIVERY_CHARGE}
 Total: ₹${grandTotal}
-
-${
-  rewardRevealed && mysteryReward
-
-    ? `🎁 Mystery Reward: ${mysteryReward.name} - FREE`
-
-    : ''
-}`;
+`;
 
 
   window.open(
@@ -2621,7 +2678,7 @@ ${
 
 document
   .getElementById('menuSearch')
-  .addEventListener(
+  ?.addEventListener(
     'input',
     function () {
 
@@ -2674,6 +2731,52 @@ document
 
 
 /* =========================================================
+   EVENT DELEGATION
+========================================================= */
+
+document.addEventListener('click', event => {
+  const target = event.target.closest('[data-action], [data-category], [data-product-id]');
+  if (!target) return;
+
+  if (target.dataset.category) {
+    scrollToCategory(target.dataset.category);
+    return;
+  }
+
+  if (target.dataset.productId && !target.dataset.action) {
+    addToCart(target.dataset.productId);
+    return;
+  }
+
+  switch (target.dataset.action) {
+    case 'decrease':
+      changeQty(target.dataset.productId, -1);
+      break;
+    case 'increase':
+      changeQty(target.dataset.productId, 1);
+      break;
+    case 'reveal-reward':
+      revealMysteryReward();
+      break;
+  }
+});
+
+document.getElementById('cart-toggle')?.addEventListener('click', toggleCart);
+document.getElementById('checkout-whatsapp')?.addEventListener('click', checkoutWhatsapp);
+
+document.addEventListener('error', event => {
+  if (event.target instanceof HTMLImageElement && event.target.classList.contains('item-image')) {
+    event.target.parentElement?.remove();
+  }
+}, true);
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    document.getElementById('cart-panel')?.classList.remove('show');
+  }
+});
+
+/* =========================================================
    LOAD REVIEWS
 ========================================================= */
 
@@ -2686,6 +2789,12 @@ async function loadReviews() {
 
 
   if (!root) return;
+
+  if (!window.supabaseClient) {
+    root.innerHTML = '<p class="reviews-empty">Reviews are temporarily unavailable.</p>';
+    console.error('supabaseClient is not available. Check supabase-config.js.');
+    return;
+  }
 
 
   const {
@@ -2910,6 +3019,12 @@ async function submitReview(event) {
 
   event.preventDefault();
 
+  if (!window.supabaseClient) {
+    const status = document.getElementById('reviewStatus');
+    if (status) status.textContent = 'Reviews are temporarily unavailable.';
+    return;
+  }
+
 
   const nameInput =
     document.getElementById(
@@ -3125,9 +3240,15 @@ if (reviewForm) {
 
 renderCart();
 
-loadReviews();
+loadReviews().catch(error => {
+  console.error('Unexpected review loading error:', error);
+});
 
-loadMenu();
+loadMenu().catch(error => {
+  console.error('Unexpected menu loading error:', error);
+  const root = document.getElementById('menu-root');
+  if (root) root.innerHTML = '<p class="empty-state">Couldn’t load the menu right now. Please try again.</p>';
+});
 
 </script>
 
