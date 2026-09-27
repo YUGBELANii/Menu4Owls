@@ -10,7 +10,7 @@
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>Menu</title>
+<title>Owlz Corner</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -62,6 +62,23 @@ body {
 @media (max-width: 700px) {
   .brand { gap: 7px; }
   .nav-logo-svg { width: 27px; height: 27px; flex-basis: 27px; }
+}
+
+/* STORE STATUS */
+.store-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 0;
+  font-weight: 800;
+}
+
+.store-status.open {
+  color: #58c27d;
+}
+
+.store-status.closed {
+  color: #e76f51;
 }
 
 /* =========================================================
@@ -461,6 +478,16 @@ body {
 }
 
 
+.cart-warning {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(231,111,81,.45);
+  border-radius: 8px;
+  color: #e76f51;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 /* =========================================================
    CART SUMMARY
 ========================================================= */
@@ -502,7 +529,7 @@ body {
 
 
 /* =========================================================
-   MYSTERY REWARD
+   MYSTERY REWARD — DISABLED FOR CURRENT SEASON
 ========================================================= */
 
 .mystery-reward {
@@ -1453,6 +1480,14 @@ body {
       </strong>
     </span>
 
+    <p
+      id="store-status"
+      class="store-status"
+      aria-live="polite"
+    >
+      Checking store status…
+    </p>
+
   </div>
 
 </header>
@@ -1704,6 +1739,9 @@ body {
 
 const DELIVERY_CHARGE = 20;
 
+// Rewards are temporarily disabled. Set to true when the reward season returns.
+const REWARDS_ENABLED = false;
+
 const REWARD_THRESHOLD = 250;
 
 const REWARD_PRODUCT_NAMES = [
@@ -1741,16 +1779,6 @@ function escapeHtml(value) {
 }
 
 
-function escapeJs(value) {
-
-  return String(value)
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n');
-
-}
-
 
 function safeImageUrl(value) {
   try {
@@ -1771,6 +1799,39 @@ function categoryId(category) {
 
 }
 
+
+/* =========================================================
+   STORE STATUS
+========================================================= */
+
+function isOwlzOpen() {
+  const parts = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false
+  }).formatToParts(new Date());
+
+  const hour = Number(
+    parts.find(part => part.type === 'hour')?.value
+  );
+
+  return hour >= 18 || hour < 3;
+}
+
+function updateStoreStatus() {
+  const status = document.getElementById('store-status');
+  if (!status) return;
+
+  const open = isOwlzOpen();
+
+  status.className = `store-status ${open ? 'open' : 'closed'}`;
+  status.textContent = open
+    ? '🟢 OPEN — Orders accepted'
+    : '🔴 CLOSED — Opens at 6:00 PM';
+
+  renderCart();
+}
 
 /* =========================================================
    LOAD MENU
@@ -2133,6 +2194,8 @@ function getCartSubtotal() {
 
 function checkRewardEligibility() {
 
+  if (!REWARDS_ENABLED) return false;
+
   const subtotal =
     getCartSubtotal();
 
@@ -2175,6 +2238,8 @@ function getAvailableRewards() {
 ========================================================= */
 
 function revealMysteryReward() {
+
+  if (!REWARDS_ENABLED) return;
 
   const subtotal =
     getCartSubtotal();
@@ -2237,6 +2302,8 @@ function revealMysteryReward() {
 ========================================================= */
 
 function renderMysteryReward() {
+
+  if (!REWARDS_ENABLED) return '';
 
   const eligible =
     checkRewardEligibility();
@@ -2311,6 +2378,21 @@ function renderMysteryReward() {
 
 }
 
+
+/* =========================================================
+   CHAI ORDER RULE
+========================================================= */
+
+function getChaiItem() {
+  return cart.find(
+    item => String(item.name).trim().toLowerCase() === 'chai'
+  );
+}
+
+function hasValidChaiQuantity() {
+  const chai = getChaiItem();
+  return !chai || chai.qty >= 5;
+}
 
 /* =========================================================
    RENDER CART
@@ -2422,9 +2504,12 @@ function renderCart() {
     .join('');
 
 
+  const chaiItem = getChaiItem();
+  const chaiValid = hasValidChaiQuantity();
+  const storeOpen = isOwlzOpen();
+
   const rewardHtml =
     renderMysteryReward();
-
 
   const grandTotal =
     subtotal +
@@ -2434,6 +2519,10 @@ function renderCart() {
   items.innerHTML = `
 
     ${cartHtml}
+
+    ${!chaiValid ? `
+      <p class="cart-warning">☕ Chai requires a minimum order of 5 cups.</p>
+    ` : ''}
 
     ${rewardHtml}
 
@@ -2499,7 +2588,7 @@ function renderCart() {
     totalItems
   );
 
-  if (checkoutButton) checkoutButton.disabled = false;
+  if (checkoutButton) checkoutButton.disabled = !storeOpen || !chaiValid;
 
 }
 
@@ -2595,6 +2684,16 @@ function scrollToCategory(category) {
 ========================================================= */
 
 function checkoutWhatsapp() {
+
+  if (!isOwlzOpen()) {
+    alert('Owlz is currently closed. Orders open at 6:00 PM.');
+    return;
+  }
+
+  if (!hasValidChaiQuantity()) {
+    alert('Chai requires a minimum order of 5 cups.');
+    return;
+  }
 
   if (!cart.length) {
 
@@ -2755,6 +2854,7 @@ document.addEventListener('click', event => {
     case 'increase':
       changeQty(target.dataset.productId, 1);
       break;
+    // Rewards are currently disabled.
     case 'reveal-reward':
       revealMysteryReward();
       break;
@@ -3238,7 +3338,8 @@ if (reviewForm) {
    INITIALIZE
 ========================================================= */
 
-renderCart();
+updateStoreStatus();
+setInterval(updateStoreStatus, 30000);
 
 loadReviews().catch(error => {
   console.error('Unexpected review loading error:', error);
