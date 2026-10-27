@@ -1573,12 +1573,24 @@ body {
       No items added yet.
     </div>
 
-    <button
-      class="btn btn-full"
-      id="checkout-whatsapp"
-    >
-      Order on WhatsApp
-    </button>
+   
+<div class="checkout-policy">
+  <label>
+    <input type="checkbox" id="policy-accepted">
+    I have read and accept the
+    <a href="/refund-policy.html" target="_blank" rel="noopener">
+      Refund &amp; Order Policy
+    </a>.
+  </label>
+</div>
+
+<button
+  class="btn btn-full"
+  id="checkout-whatsapp"
+>
+  Order on  WhatsApp
+</button>
+
 
   </div>
 
@@ -1732,6 +1744,12 @@ body {
 
 
 <script>
+
+
+
+
+
+
 
 /* =========================================================
    SETTINGS
@@ -2683,91 +2701,181 @@ function scrollToCategory(category) {
    WHATSAPP CHECKOUT
 ========================================================= */
 
-function checkoutWhatsapp() {
 
-  if (!isOwlzOpen()) {
-    alert('Owlz is currently closed. Orders open at 6:00 PM.');
+async function checkoutWhatsapp() {
+  const policyCheckbox = document.getElementById("policy-accepted");
+
+  // 1. Mandatory policy acceptance
+  if (!policyCheckbox || !policyCheckbox.checked) {
+    alert("Please read and accept the Refund & Order Policy before ordering.");
+    policyCheckbox?.focus();
     return;
   }
 
-  if (!hasValidChaiQuantity()) {
-    alert('Chai requires a minimum order of 5 cups.');
+  // 2. Validate cart
+  if (!Array.isArray(cart) || cart.length === 0) {
+    alert("Your cart is empty. Please add items before ordering.");
     return;
   }
 
-  if (!cart.length) {
+  // 3. Chai minimum: 5 cups in total
+  const chaiQuantity = cart
+    .filter(item => /chai/i.test(item.name))
+    .reduce((total, item) => total + item.qty, 0);
 
-    alert(
-      'Your cart is empty.'
-    );
-
+  if (chaiQuantity > 0 && chaiQuantity < 5) {
+    alert("Chai orders require a minimum of 5 cups.");
     return;
-
   }
 
-
-  let subtotal = 0;
-
-
-  const order =
-
-    cart.map(item => {
-
-      const itemTotal =
-        item.price * item.qty;
-
-
-      subtotal +=
-        itemTotal;
-
-
-      return `• ${item.name} x${item.qty} - ₹${itemTotal}`;
-
-    })
-
-    .join('\n');
-
-
-  let rewardMessage = '';
-
-
-  if (
-    rewardRevealed &&
-    mysteryReward
-  ) {
-
-    rewardMessage =
-
-      `\n• 🎁 FREE ${mysteryReward.name} x1 - ₹0`;
-
-  }
-
-
-  const grandTotal =
-    subtotal +
-    DELIVERY_CHARGE;
-
-
-  const message =
-
-`Hi Owlzz Cafe! I'd like to order:
-
-${order}${rewardMessage}
-
-Subtotal: ₹${subtotal}
-Delivery: ₹${DELIVERY_CHARGE}
-Total: ₹${grandTotal}
-`;
-
-
-  window.open(
-
-    `https://wa.me/919370693869?text=${encodeURIComponent(message)}`,
-
-    '_blank'
-
+  // 4. Check Owlzz Cafe hours: 6 PM–3 AM, India time
+  const indiaHour = Number(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      hourCycle: "h23"
+    }).format(new Date())
   );
 
+  if (!(indiaHour >= 18 || indiaHour < 3)) {
+    alert("Owlzz Cafe is currently closed. Ordering is available from 6 PM to 3 AM.");
+    return;
+  }
+
+  // 5. Prepare cart details
+  const orderItems = cart.map(item => ({
+    id: item.id,
+    qty: item.qty
+  }));
+
+  const cartKey = JSON.stringify(
+    [...orderItems].sort((a, b) => a.id.localeCompare(b.id))
+  );
+
+  // Reuse the same request ID for retries of the same cart.
+  // This helps prevent duplicate orders after a network failure.
+  let requestId;
+
+  try {
+    const storageKey = "owlzz_checkout_request_" + cartKey;
+    requestId = sessionStorage.getItem(storageKey);
+
+    if (!requestId) {
+      requestId = crypto.randomUUID();
+      sessionStorage.setItem(storageKey, requestId);
+    }
+  } catch (error) {
+    alert("Secure checkout could not be initialized. Please reload and try again.");
+    return;
+  }
+
+  // Open a window now so the browser is less likely to block WhatsApp.
+  const whatsappWindow = window.open("about:blank", "_blank");
+
+  if (!whatsappWindow) {
+    alert("Please allow pop-ups for this website to continue to WhatsApp.");
+    return;
+  }
+
+  const checkoutButton = document.querySelector(
+    '[onclick="checkoutWhatsapp()"]'
+  );
+
+  const originalButtonText = checkoutButton?.textContent;
+
+  if (checkoutButton) {
+    checkoutButton.disabled = true;
+    checkoutButton.textContent = "Preparing order…";
+  }
+
+  try {
+    // 6. Create the order securely on the server.
+    const response = await fetch("/api/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        request_id: requestId,
+        items: orderItems,
+        policy_accepted: true
+      })
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.token || !result?.order_id) {
+      throw new Error(
+        result?.error || "Couldn't create your order. Please try again."
+      );
+    }
+
+    // 7. Build the WhatsApp message.
+    const subtotal = cart.reduce(
+      (sum, item) => sum + Number(item.price) * item.qty,
+      0
+    );
+
+    const delivery = DELIVERY_CHARGE;
+    const total = subtotal + delivery;
+
+    const lines = cart.map(item =>
+      `${item.name} x ${item.qty} = ₹${(
+        Number(item.price) * item.qty
+      ).toFixed(2)}`
+    );
+
+    let message = [
+      "*New Order — Owlzz Cafe*",
+      "",
+      `Order Token: ${result.token}`,
+      `Order Reference: ${result.order_id}`,
+      "",
+      "*Items:*",
+      ...lines,
+      "",
+      `Subtotal: ₹${subtotal.toFixed(2)}`,
+      `Delivery: ₹${delivery.toFixed(2)}`,
+      `*Total: ₹${total.toFixed(2)}*`
+    ];
+
+    if (rewardRevealed && mysteryReward) {
+      message.push(
+        "",
+        `Mystery Reward: ${mysteryReward.name} (free, subject to cafe confirmation)`
+      );
+    }
+
+    message.push(
+      "",
+      "I have reviewed and accepted the Refund & Order Policy.",
+      "Please confirm my order."
+    );
+
+    // 8. Continue to WhatsApp. The customer must send the message.
+    const whatsappUrl =
+      "https://wa.me/919370693869?text=" +
+      encodeURIComponent(message.join("\n"));
+
+    whatsappWindow.location.href = whatsappUrl;
+
+  } catch (error) {
+    console.error("Checkout failed:", error);
+
+    whatsappWindow.close();
+
+    alert(
+      error.message ||
+      "Checkout failed. Please try again in a moment."
+    );
+
+  } finally {
+    if (checkoutButton) {
+      checkoutButton.disabled = false;
+      checkoutButton.textContent =
+        originalButtonText || "Order on WhatsApp";
+    }
+  }
 }
 
 
