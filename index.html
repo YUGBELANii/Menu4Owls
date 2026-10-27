@@ -2825,18 +2825,38 @@ async function checkoutWhatsapp() {
       ).toFixed(2)}`
     );
 
-    let message = [
-      "*New Order — Owlzz Cafe*",
-      "",
-      `Order Token: ${result.token}`,
-      "",
-      "*Items:*",
-      ...lines,
-      "",
-      `Subtotal: ₹${subtotal.toFixed(2)}`,
-      `Delivery: ₹${delivery.toFixed(2)}`,
-      `*Total: ₹${total.toFixed(2)}*`
-    ];
+
+let message = [
+  "🦉 *OWLZZ CAFE*",
+  "━━━━━━━━━━━━━━",
+  "",
+  "🧾 *ORDER SUMMARY*",
+  `🎟️ Order Token: *${result.token}*`,
+  "",
+  "━━━━━━━━━━━━━━",
+  "🛒 *YOUR ITEMS*",
+  "",
+  ...lines,
+  "",
+  "━━━━━━━━━━━━━━",
+  "💰 *PAYMENT SUMMARY*",
+  "",
+  `Subtotal: ₹${subtotal.toFixed(2)}`,
+  `Delivery Fee: ₹${delivery.toFixed(2)}`,
+  "━━━━━━━━━━━━━━",
+  `*TOTAL: ₹${total.toFixed(2)}*`,
+  "",
+  "━━━━━━━━━━━━━━",
+  "📜 Policy: Accepted ✅",
+  "",
+  "Hey! 👋 I'd like to place this order.",
+  "Please confirm availability and delivery details.",
+  "",
+  "Thank you! ❤️",
+  "*OWLZZ CAFE — Good Food, Good Mood* 🦉"
+];
+
+    
 
     if (rewardRevealed && mysteryReward) {
       message.push(
