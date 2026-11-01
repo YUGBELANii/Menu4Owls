@@ -1,23 +1,141 @@
-# Owlzz Cafe — Refund & Order Policy
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11100e">
+  <meta name="description" content="Owlzz Cafe order, cancellation and refund policy.">
+  <title>Refund & Order Policy · Owlzz Cafe</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Refund policy page — follows the shared Owlzz Cafe dark theme. */
+    .policy-page { padding: 64px 0 90px; }
+    .policy-wrap { width: min(860px, calc(100% - 40px)); margin: 0 auto; }
+    .policy-intro { text-align: center; margin: 0 auto 38px; max-width: 690px; }
+    .policy-intro .eyebrow { margin-bottom: 12px; }
+    .policy-intro h2 { font-family: 'Fraunces', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; margin: 0 0 12px; }
+    .policy-intro p { max-width: 590px; margin: 0 auto; line-height: 1.75; opacity: .7; }
+    .policy-updated { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 8px 13px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted, inherit); font-size: .78rem; letter-spacing: .04em; }
+    .policy-highlight { display: flex; align-items: flex-start; gap: 15px; padding: 20px 22px; margin-bottom: 18px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border)); border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); border-radius: 5px; }
+    .policy-highlight-icon { flex: 0 0 36px; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-size: 17px; }
+    .policy-highlight strong { display: block; margin-bottom: 4px; font-size: .95rem; }
+    .policy-highlight p { margin: 0; line-height: 1.65; font-size: .9rem; opacity: .76; }
+    .policy-list { display: grid; gap: 12px; }
+    .policy-card { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 16px; padding: 23px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; transition: border-color .2s ease, transform .2s ease; }
+    .policy-card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); transform: translateY(-2px); }
+    .policy-number { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border)); color: var(--accent); font-family: 'Fraunces', serif; font-size: 1.05rem; border-radius: 50%; }
+    .policy-card h3 { margin: 2px 0 8px; font-family: 'Fraunces', serif; font-size: 1.22rem; font-weight: 500; }
+    .policy-card p { margin: 0; line-height: 1.75; font-size: .92rem; opacity: .75; }
+    .policy-card a, .policy-contact a { color: var(--accent); text-decoration: none; }
+    .policy-card a:hover, .policy-contact a:hover { text-decoration: underline; }
+    .policy-contact { margin-top: 20px; padding: 25px; text-align: center; border: 1px solid var(--border); background: var(--surface); border-radius: 5px; }
+    .policy-contact .eyebrow { margin: 0 0 8px; }
+    .policy-contact h3 { margin: 0 0 8px; font-family: 'Fraunces', serif; font-weight: 500; font-size: 1.45rem; }
+    .policy-contact p { margin: 0; line-height: 1.7; opacity: .72; font-size: .92rem; }
+    .policy-whatsapp { display: inline-flex; align-items: center; justify-content: center; gap: 9px; margin-top: 18px; padding: 12px 19px; border-radius: 4px; background: var(--accent); color: var(--background, #171513) !important; font-weight: 750; font-size: .9rem; text-decoration: none !important; transition: transform .2s ease, opacity .2s ease; }
+    .policy-whatsapp:hover { transform: translateY(-2px); opacity: .92; }
+    .policy-disclaimer { margin: 22px auto 0; max-width: 680px; text-align: center; font-size: .78rem; line-height: 1.65; opacity: .48; }
+    .brand { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+    .nav-logo-svg { width: 30px; height: 30px; flex-shrink: 0; color: var(--accent); }
+    @media (max-width: 760px) {
+      .policy-page { padding: 45px 0 65px; }
+      .policy-wrap { width: min(100% - 32px, 860px); }
+      .policy-card { grid-template-columns: 34px minmax(0,1fr); gap: 12px; padding: 19px 16px; }
+      .policy-number { width: 32px; height: 32px; font-size: .95rem; }
+      .policy-highlight { padding: 17px; }
+      .policy-contact { padding: 22px 17px; }
+      .nav-logo-svg { width: 27px; height: 27px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .policy-card, .policy-whatsapp { transition: none; } .policy-card:hover, .policy-whatsapp:hover { transform: none; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Owl's Corner home">
+      <svg class="nav-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Owl's Corner logo">
+        <path fill="currentColor" d="M8 28c9-12 20-18 35-20-4 5-8 9-12 12 8-2 15-1 21 2-8 2-14 6-18 12-2 10-9 17-18 17 4-5 6-10 5-15-4 2-8 4-13 4 2-4 4-8 7-12-3 0-5 0-7 0z"/>
+        <circle cx="31" cy="35" r="12" fill="none" stroke="currentColor" stroke-width="5"/>
+        <circle cx="31" cy="35" r="4" fill="currentColor"/>
+        <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M23 45c4 3 12 3 16 0"/>
+      </svg>
+      Owl's<span>Corner</span>
+    </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Menu</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
 
-**Last updated:** 27 October 2026
+  <header class="hero">
+    <div class="container">
+      <p class="eyebrow">The important details</p>
+      <h1>Refund Policy</h1>
+      <p>Clear information about order confirmation, cancellations and refunds at Owlzz Cafe.</p>
+    </div>
+  </header>
 
-## 1. Order Confirmation
-Orders are initiated through our website and completed through WhatsApp. Generating an order token does not, by itself, mean Owlzz Cafe has accepted or confirmed the order. Please send the WhatsApp message to submit your order.
+  <main class="policy-page">
+    <div class="policy-wrap">
+      <div class="policy-intro">
+        <p class="eyebrow">A little clarity goes a long way</p>
+        <h2>Good food. Clear expectations.</h2>
+        <p>Please take a moment to read how we handle orders and any issues that may come up. If something isn't right, reach out — we'll review it with you.</p>
+        <span class="policy-updated"><span aria-hidden="true">◷</span> Last updated · 27 October 2026</span>
+      </div>
 
-## 2. Cancellation
-Please contact us on WhatsApp as soon as possible if you need to cancel or change an order. Once preparation has started, cancellation may not be possible.
+      <div class="policy-highlight">
+        <span class="policy-highlight-icon" aria-hidden="true">i</span>
+        <div>
+          <strong>Important: your order is confirmed on WhatsApp</strong>
+          <p>Generating an order token on the website does not mean Owlzz Cafe has accepted or confirmed your order. Please send the prepared WhatsApp message to submit it.</p>
+        </div>
+      </div>
 
-## 3. Incorrect, Missing, or Damaged Items
-If your order arrives with an incorrect or missing item, or an item is damaged, contact us promptly through WhatsApp with your order token and details so we can review the issue.
+      <section class="policy-list" aria-label="Refund and order policy details">
+        <article class="policy-card">
+          <span class="policy-number">01</span>
+          <div><h3>Order Confirmation</h3><p>Orders are initiated through our website and completed through WhatsApp. Generating an order token does not, by itself, mean Owlzz Cafe has accepted or confirmed the order. Please send the WhatsApp message to submit your order.</p></div>
+        </article>
+        <article class="policy-card">
+          <span class="policy-number">02</span>
+          <div><h3>Cancellation</h3><p>Please contact us on WhatsApp as soon as possible if you need to cancel or change an order. Once preparation has started, cancellation may not be possible.</p></div>
+        </article>
+        <article class="policy-card">
+          <span class="policy-number">03</span>
+          <div><h3>Incorrect, Missing, or Damaged Items</h3><p>If your order arrives with an incorrect or missing item, or an item is damaged, contact us promptly through WhatsApp with your order token and details so we can review the issue.</p></div>
+        </article>
+        <article class="policy-card">
+          <span class="policy-number">04</span>
+          <div><h3>Refunds</h3><p>Refunds are considered case by case, including where an order was paid for but could not be fulfilled. Any approved refund will be discussed with the customer directly.</p></div>
+        </article>
+        <article class="policy-card">
+          <span class="policy-number">05</span>
+          <div><h3>Delivery Fee</h3><p>The website currently lists a ₹20 delivery fee. If an order cannot be fulfilled, the treatment of any delivery fee will be discussed with the customer.</p></div>
+        </article>
+        <article class="policy-card">
+          <span class="policy-number">06</span>
+          <div><h3>Contact</h3><p>For order issues, cancellations, or refund requests, contact Owlzz Cafe through our official WhatsApp ordering number: <a href="https://wa.me/919370693869" target="_blank" rel="noopener">+91 93706 93869</a>.</p></div>
+        </article>
+      </section>
 
-## 4. Refunds
-Refunds are considered case by case, including where an order was paid for but could not be fulfilled. Any approved refund will be discussed with the customer directly.
+      <section class="policy-contact">
+        <p class="eyebrow">Need a hand?</p>
+        <h3>We're one message away.</h3>
+        <p>Keep your order token and a short explanation ready so we can understand the issue and help you faster.</p>
+        <a class="policy-whatsapp" href="https://wa.me/919370693869" target="_blank" rel="noopener"><span aria-hidden="true">↗</span> Contact us on WhatsApp</a>
+      </section>
 
-## 5. Delivery Fee
-The website currently lists a ₹20 delivery fee. If an order cannot be fulfilled, the treatment of any delivery fee will be discussed with the customer.
+      <p class="policy-disclaimer">By accepting this policy at checkout, you confirm that you have read and understood it.</p>
+    </div>
+  </main>
 
-## 6. Contact
-For order issues, cancellations, or refund requests, contact Owlzz Cafe through our official WhatsApp ordering number: **+91 93706 93869**.
-
-By accepting this policy at checkout, you confirm that you have read and understood it.
+  <footer class="site-footer">
+    <div class="container" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:16px;">
+      <span><a href="index.html">Back to the menu</a> </span>
+      <span>Powered by <a href="https://instagram.com/yugbelanii" target="_blank" rel="noopener">Yug Belani</a></span>
+    </div>
+  </footer>
+</body>
+</html>
