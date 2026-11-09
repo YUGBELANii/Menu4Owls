@@ -233,6 +233,80 @@ p {
 }
 
 /* ============================================================
+   DIWALI GREETING
+   ============================================================ */
+.diwali-banner {
+  position: relative;
+  overflow: hidden;
+  margin: 20px auto 0;
+  width: min(732px, calc(100% - 48px));
+  padding: 18px 28px 16px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232, 163, 61, 0.15), transparent 68%),
+    linear-gradient(135deg, rgba(154, 68, 54, 0.16), rgba(36, 32, 25, 0.96) 48%, rgba(232, 163, 61, 0.08));
+  border: 1px solid rgba(232, 163, 61, 0.34);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.2), 0 0 24px rgba(232, 163, 61, 0.08);
+}
+
+.diwali-banner::before,
+.diwali-banner::after {
+  content: "✦";
+  position: absolute;
+  top: 50%;
+  color: rgba(240, 179, 92, 0.58);
+  font-size: 1rem;
+  transform: translateY(-50%);
+}
+
+.diwali-banner::before { left: 18px; }
+.diwali-banner::after { right: 18px; }
+
+.diwali-banner-inner p { margin: 0; }
+
+.diwali-title {
+  color: var(--accent-strong);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+}
+
+.diwali-title span {
+  display: inline-block;
+  margin: 0 5px;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0;
+  vertical-align: -1px;
+}
+
+.diwali-wish {
+  margin-top: 3px !important;
+  color: var(--text);
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.08rem, 2.5vw, 1.35rem);
+  line-height: 1.35;
+}
+
+.diwali-message {
+  margin-top: 3px !important;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.diwali-signoff {
+  margin-top: 5px !important;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
    HERO — matches .hero > .container > .eyebrow/h1/p
    ============================================================ */
 .hero {
@@ -1204,6 +1278,12 @@ select {
     padding: 46px 0 32px;
   }
 
+  .diwali-banner {
+    width: calc(100% - 36px);
+    margin-top: 16px;
+    padding: 16px 24px 14px;
+  }
+
   .hero::before {
     width: 220px;
     height: 220px;
@@ -1433,6 +1513,17 @@ select {
   .hero {
     padding: 38px 0 26px;
   }
+
+  .diwali-banner {
+    margin-top: 12px;
+    padding: 14px 22px 13px;
+    border-radius: var(--radius-md);
+  }
+
+  .diwali-title { font-size: 0.7rem; }
+  .diwali-message { font-size: 0.76rem; }
+  .diwali-banner::before { left: 9px; }
+  .diwali-banner::after { right: 9px; }
 
   .hero h1 {
     font-size: 1.75rem;
