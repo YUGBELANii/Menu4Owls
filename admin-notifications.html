@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications · Owlz Corner Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .notification-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .template-form { display:grid; grid-template-columns:1fr 2fr auto; align-items:center; gap:12px; margin-top:16px; }
+    .template-form input { min-width:0; }
+    .template-list .product-row { gap:14px; flex-wrap:wrap; }
+    .template-list .p-info { display:grid; grid-template-columns:1fr 2fr; gap:12px; flex:1 1 420px; }
+    .template-list label { display:flex; align-items:center; gap:8px; }
+    .notification-status { display:block; min-height:1.4em; margin-top:10px; }
+    .notification-settings label { display:inline-flex; align-items:center; gap:8px; margin:6px 20px 6px 0; }
+    @media(max-width:680px) { .notification-form-grid,.template-list .p-info { grid-template-columns:1fr; } .template-form { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">Owlz<span> Corner</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Menu</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="admin.html">Products</a></li>
+        <li><a href="admin-orders.html">Orders</a></li>
+        <li><a href="admin-notifications.html" class="active">Notifications</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="login-card" id="login-view">
+    <h2>Admin login</h2>
+    <p class="sub">Sign in with your authorized Supabase admin account.</p>
+    <form id="login-form">
+      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required></div>
+      <div class="field"><label for="login-password">Password</label><input type="password" id="login-password" autocomplete="current-password" required></div>
+      <button type="submit" class="btn btn-full" id="login-btn">Log in</button>
+      <div class="status-msg" id="login-status" role="status"></div>
+    </form>
+  </div>
+
+  <main class="admin-shell" id="admin-view" style="display:none">
+    <div class="container">
+      <header class="admin-topbar">
+        <div>
+          <p class="eyebrow" style="margin-bottom:4px">Admin · Notifications</p>
+          <h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.8rem">Notification center</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <a class="btn btn-ghost" href="admin.html">Products</a>
+          <a class="btn btn-ghost" href="admin-orders.html">Orders</a>
+          <span class="who" id="who-label"></span>
+          <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
+        </div>
+      </header>
+
+      <section class="panel" id="notifications-panel">
+        <h3>Browser notifications</h3>
+        <p class="sub">Active customer subscriptions: <strong id="push-subscriber-count">—</strong></p>
+        <form id="campaign-form">
+          <div class="field"><label for="campaign-title">Title</label><input id="campaign-title" maxlength="120" required></div>
+          <div class="field"><label for="campaign-body">Message</label><textarea id="campaign-body" maxlength="500" required></textarea></div>
+          <div class="notification-form-grid">
+            <div class="field"><label for="campaign-image">Image URL (optional)</label><input type="url" id="campaign-image" placeholder="https://…"></div>
+            <div class="field"><label for="campaign-url">Destination URL (optional)</label><input type="text" id="campaign-url" placeholder="https://your-site/ or /"></div>
+          </div>
+          <button class="btn" id="campaign-send" type="submit">Send now</button>
+          <span id="campaign-status" class="status-msg notification-status" role="status"></span>
+        </form>
+      </section>
+
+      <section class="panel notification-settings">
+        <h3>Automatic campaigns</h3>
+        <p class="sub">Opening sends at 6:00 PM IST. Closing sends at 2:55 AM IST, only while the cafe's clock-based schedule is open.</p>
+        <label><input type="checkbox" id="opening-enabled"> Enable opening notification</label>
+        <label><input type="checkbox" id="closing-enabled"> Enable closing notification</label>
+      </section>
+
+      <section class="panel">
+        <h3>Opening messages</h3>
+        <div class="template-list" id="opening-templates"></div>
+        <form class="template-form" data-type="opening">
+          <input name="title" maxlength="120" required placeholder="Notification title" aria-label="New opening notification title">
+          <input name="message" maxlength="500" required placeholder="Message" aria-label="New opening notification message">
+          <button class="btn" type="submit">Add opening message</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h3>Closing messages</h3>
+        <div class="template-list" id="closing-templates"></div>
+        <form class="template-form" data-type="closing">
+          <input name="title" maxlength="120" required placeholder="Notification title" aria-label="New closing notification title">
+          <input name="message" maxlength="500" required placeholder="Message" aria-label="New closing notification message">
+          <button class="btn" type="submit">Add closing message</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h3>Campaign history</h3>
+        <div id="campaign-history"><p class="loading-state">Loading…</p></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-push-campaigns.js"></script>
+  <script>
+    'use strict';
+    const loginView = document.getElementById('login-view');
+    const adminView = document.getElementById('admin-view');
+    const whoLabel = document.getElementById('who-label');
+    function setLoginStatus(message, type = '') {
+      const el = document.getElementById('login-status');
+      el.textContent = message;
+      el.className = type ? `status-msg show ${type}` : 'status-msg';
+    }
+    async function checkSession() {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) console.error(error);
+      if (data?.session) {
+        loginView.style.display = 'none';
+        adminView.style.display = 'block';
+        whoLabel.textContent = data.session.user.email || '';
+        await window.loadAdminPushCampaigns();
+      } else {
+        loginView.style.display = 'block';
+        adminView.style.display = 'none';
+      }
+    }
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        loginView.style.display = 'none';
+        adminView.style.display = 'block';
+        whoLabel.textContent = session.user.email || '';
+        setTimeout(() => window.loadAdminPushCampaigns(), 0);
+      } else {
+        loginView.style.display = 'block';
+        adminView.style.display = 'none';
+      }
+    });
+    document.getElementById('login-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = document.getElementById('login-btn');
+      button.disabled = true;
+      button.textContent = 'Logging in…';
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email: document.getElementById('login-email').value.trim(),
+          password: document.getElementById('login-password').value
+        });
+        if (error) throw error;
+        setLoginStatus('Signed in successfully.', 'ok');
+        await checkSession();
+      } catch (error) {
+        setLoginStatus(error.message || 'Login failed.', 'err');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Log in';
+      }
+    });
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) alert(`Couldn't log out: ${error.message}`);
+      await checkSession();
+    });
+    checkSession();
+  </script>
+</body>
+</html>

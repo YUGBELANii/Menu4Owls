@@ -61,7 +61,7 @@
     }
 
     if ('Notification' in window && Notification.permission === 'granted') {
-      const notification = new Notification('New Owlzz Cafe order', {
+      const notification = new Notification('New Owlz Corner order', {
         body: message,
         tag: `owlzz-order-${order.id}`,
         renotify: false

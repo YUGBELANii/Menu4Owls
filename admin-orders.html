@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Owlzz Cafe — Customer Orders</title>
+  <title>Owlz Corner — Customer Orders</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .orders-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
@@ -34,12 +34,13 @@
 <body>
   <nav class="nav">
     <div class="nav-inner">
-      <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+      <a href="index.html" class="brand">Owlz<span> Corner</span></a>
       <ul class="nav-links">
         <li><a href="index.html">Menu</a></li>
         <li><a href="contact.html">Contact</a></li>
         <li><a href="admin.html">Products</a></li>
         <li><a href="admin-orders.html" class="active">Orders</a></li>
+        <li><a href="admin-notifications.html">Notifications</a></li>
       </ul>
     </div>
   </nav>
@@ -96,7 +97,7 @@
   </main>
 
   <div id="new-order-toast" class="new-order-toast" role="status" aria-live="polite">
-    <strong>New Owlzz Cafe order!</strong>
+    <strong>New Owlz Corner order!</strong>
     <p id="new-order-toast-message"></p>
     <a class="btn" href="admin-orders.html#orders-panel">View orders</a>
     <button type="button" class="btn btn-ghost" id="dismiss-new-order-btn">Dismiss</button>

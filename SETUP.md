@@ -1,4 +1,4 @@
-# Owlzz Cafe — background push notifications
+# Owlz Corner — background push notifications
 
 This adds Web Push to the existing plain HTML/CSS/JS Vercel site. It uses small Vercel serverless functions under `/api`; it does not convert the frontend into a Node application.
 

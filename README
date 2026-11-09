@@ -1,6 +1,6 @@
-# Owlzz Cafe Website — Development Documentation
+# Owlz Corner Website — Development Documentation
 
-> **Project:** Owlzz Cafe / Owl's Corner digital menu and ordering website  
+> **Project:** Owlz Corner digital menu and ordering website  
 > **Repository/project name:** `menu-4-owls`  
 > **Live deployment:** `https://menu-4-owls.vercel.app/`  
 > **Purpose:** Turn a small local cafe menu into a live, maintainable web product that customers can use to browse items, build a cart, and send a structured order to WhatsApp.
@@ -9,7 +9,7 @@
 
 ## 1. Project Overview
 
-The Owlzz Cafe website was developed as a real-world business project rather than a static portfolio demo.
+The Owlz Corner website was developed as a real-world business project rather than a static portfolio demo.
 
 The original problem was simple:
 
@@ -44,7 +44,7 @@ Optional mystery reward
    ↓
 WhatsApp checkout message
    ↓
-Owlzz Cafe receives structured order
+Owlz Corner receives structured order
 ```
 
 This deliberately avoids pretending to be a full food-delivery platform. The website handles discovery, selection and order preparation; WhatsApp remains the final communication channel.
@@ -603,7 +603,7 @@ The website evolved because actual business behavior revealed what mattered. Tha
 
 ## 15. Evidence Base for This Documentation
 
-This README was reconstructed from the historical project material available in the working conversation/library, including multiple saved HTML/CSS/JavaScript versions of the Owlzz menu and review implementation.
+This README was reconstructed from the historical project material available in the working conversation/library, including multiple saved HTML/CSS/JavaScript versions of the Owlz Corner menu and review implementation.
 
 Important observed artifacts include:
 

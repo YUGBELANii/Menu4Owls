@@ -1399,6 +1399,260 @@ body {
 
 }
 
+/* Cart layout: fixed action, independently scrolling items, stable checkout. */
+.cart-widget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  left: auto;
+  width: auto;
+  height: auto;
+  z-index: 9999;
+}
+
+.cart-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: auto;
+  min-width: 132px;
+  height: 56px;
+  padding: 0 20px;
+  border: 1px solid rgba(240, 179, 92, .48);
+  border-radius: 999px;
+  background: var(--gradient-accent);
+  color: var(--bg);
+  font: 700 15px "Inter", sans-serif;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .36), 0 0 0 4px rgba(232, 163, 61, .1);
+}
+
+.cart-toggle::before {
+  content: "Your cart";
+  white-space: nowrap;
+}
+
+.cart-toggle[data-count="0"]::after {
+  display: none;
+}
+
+.cart-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 14px);
+  left: auto;
+  display: none;
+  flex-direction: column;
+  width: min(410px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: min(650px, calc(100vh - 112px));
+  max-height: min(650px, calc(100dvh - 112px));
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.cart-panel.show {
+  display: flex;
+}
+
+.cart-panel h3 {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: "Fraunces", serif;
+  font-size: 1.25rem;
+}
+
+#cart-items {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 4px 4px 4px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--border) transparent;
+}
+
+.cart-item {
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-item > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.cart-item strong {
+  margin-bottom: 3px;
+  color: var(--text);
+  font-size: .94rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.cart-actions {
+  flex: 0 0 auto;
+  min-width: 88px;
+  gap: 8px;
+  justify-content: flex-end;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.cart-actions button {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 19px;
+}
+
+.cart-summary {
+  padding: 4px 0 2px;
+}
+
+.cart-summary-row {
+  margin: 0;
+  padding: 5px 0;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.cart-summary-total {
+  margin-top: 5px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.cart-panel hr {
+  margin: 8px 0;
+  border-top-color: var(--border);
+}
+
+.checkout-policy {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.checkout-policy label {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.checkout-policy input {
+  flex: 0 0 auto;
+  margin: 3px 0 0;
+  accent-color: var(--accent);
+}
+
+.checkout-policy a {
+  color: var(--accent-strong);
+}
+
+#checkout-whatsapp {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  min-height: 48px;
+}
+
+#checkout-whatsapp:disabled {
+  filter: grayscale(.5);
+  opacity: .56;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cart-panel.is-empty .checkout-policy {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .cart-widget {
+    right: 16px;
+    bottom: 16px;
+    left: auto;
+    width: auto;
+  }
+
+  .cart-toggle {
+    width: auto;
+    min-width: 128px;
+    height: 54px;
+    padding: 0 18px;
+  }
+
+  .cart-panel {
+    right: 0;
+    bottom: calc(100% + 12px);
+    left: auto;
+    width: min(410px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    max-height: min(620px, calc(100vh - 100px));
+    max-height: min(620px, calc(100dvh - 100px));
+    padding: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .cart-widget {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .cart-toggle {
+    min-width: 118px;
+    height: 50px;
+    padding: 0 16px;
+  }
+
+  .cart-panel {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    max-height: min(590px, calc(100vh - 88px));
+    max-height: min(590px, calc(100dvh - 88px));
+    padding: 14px;
+  }
+
+  .cart-item {
+    gap: 8px;
+  }
+
+  .cart-actions {
+    gap: 5px;
+    min-width: 80px;
+  }
+
+  .cart-actions button {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
 </style>
 
 </head>
@@ -1415,14 +1669,14 @@ body {
 
   <div class="nav-inner">
 
-    <a href="index.html" class="brand" aria-label="Owl's Corner home">
-      <svg class="nav-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Owl's Corner logo">
+    <a href="index.html" class="brand" aria-label="Owlz Corner home">
+      <svg class="nav-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Owlz Corner logo">
         <path fill="currentColor" d="M8 28c9-12 20-18 35-20-4 5-8 9-12 12 8-2 15-1 21 2-8 2-14 6-18 12-2 10-9 17-18 17 4-5 6-10 5-15-4 2-8 4-13 4 2-4 4-8 7-12-3 0-5 0-7 0z"/>
         <circle cx="31" cy="35" r="12" fill="none" stroke="currentColor" stroke-width="5"/>
         <circle cx="31" cy="35" r="4" fill="currentColor"/>
         <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M23 45c4 3 12 3 16 0"/>
       </svg>
-      Owl's<span>Corner</span>
+      Owlz<span> Corner</span>
     </a>
 
     <ul class="nav-links">
@@ -1463,7 +1717,7 @@ body {
       <p class="diwali-title"><span aria-hidden="true">🪔</span> HAPPY DIWALI <span aria-hidden="true">🪔</span></p>
       <p class="diwali-wish">Wishing You a Bright &amp; Joyful Diwali!</p>
       <p class="diwali-message">May your celebrations be filled with happiness, warmth and delicious food.</p>
-      <p class="diwali-signoff">— Team Owlzz Cafe</p>
+      <p class="diwali-signoff">— Team Owlz Corner</p>
     </div>
   </section>
 
@@ -1607,7 +1861,7 @@ body {
   class="btn btn-full"
   id="checkout-whatsapp"
 >
-  Order on  WhatsApp
+  Order on WhatsApp
 </button>
 
 
@@ -1635,7 +1889,7 @@ body {
       </h2>
 
       <p>
-        Ordered from Owl's Corner?
+        Ordered from Owlz Corner?
         Tell us how we did.
       </p>
 
@@ -1734,6 +1988,12 @@ body {
       </a>.
     </span>
 
+    <span class="push-preferences">
+      <button class="btn btn-ghost" type="button" id="customer-push-enable">Enable notifications</button>
+      <button class="btn btn-ghost" type="button" id="customer-push-disable" hidden>Unsubscribe</button>
+      <span id="customer-push-status" role="status" aria-live="polite">Get cafe updates on this device.</span>
+    </span>
+
     <span>
 
       Powered by
@@ -1760,6 +2020,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase-config.js"></script>
+<script src="customer-push.js" defer></script>
 
 
 <script>
@@ -2547,6 +2808,8 @@ function renderCart() {
 
   if (!cart.length) {
 
+    document.getElementById('cart-panel')?.classList.add('is-empty');
+
     items.innerHTML =
       'No items added yet.';
 
@@ -2568,6 +2831,8 @@ function renderCart() {
 
   }
 
+
+  document.getElementById('cart-panel')?.classList.remove('is-empty');
 
   let subtotal = 0;
 
@@ -2870,7 +3135,7 @@ async function checkoutWhatsapp() {
     return;
   }
 
-  // 4. Check Owlzz Cafe hours: 6 PM–3 AM, India time
+  // 4. Check Owlz Corner hours: 6 PM–3 AM, India time
   const indiaHour = Number(
     new Intl.DateTimeFormat("en-GB", {
       timeZone: "Asia/Kolkata",
@@ -2880,7 +3145,7 @@ async function checkoutWhatsapp() {
   );
 
   if (!(indiaHour >= 18 || indiaHour < 3)) {
-    alert("Owlzz Cafe is currently closed. Ordering is available from 6 PM to 3 AM.");
+    alert("Owlz Corner is currently closed. Ordering is available from 6 PM to 3 AM.");
     return;
   }
 
@@ -2973,7 +3238,7 @@ async function checkoutWhatsapp() {
 
 
 let message = [
-  "🦉 *OWLZZ CAFE*",
+  "🦉 *OWLZ CORNER*",
   "━━━━━━━━━━━━━━",
   "",
   "🧾 *ORDER SUMMARY*",
