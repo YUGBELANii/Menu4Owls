@@ -238,13 +238,11 @@ p {
 .diwali-banner {
   position: relative;
   overflow: hidden;
-  margin: 20px auto 0;
+  margin: 0 auto 68px;
   width: min(732px, calc(100% - 48px));
   padding: 18px 28px 16px;
   text-align: center;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(232, 163, 61, 0.15), transparent 68%),
-    linear-gradient(135deg, rgba(154, 68, 54, 0.16), rgba(36, 32, 25, 0.96) 48%, rgba(232, 163, 61, 0.08));
+  background: var(--bg);
   border: 1px solid rgba(232, 163, 61, 0.34);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.2), 0 0 24px rgba(232, 163, 61, 0.08);
@@ -310,7 +308,7 @@ p {
    HERO — matches .hero > .container > .eyebrow/h1/p
    ============================================================ */
 .hero {
-  padding: 68px 0 44px;
+  padding: 20px 0 44px;
   border-bottom: 1px solid var(--border);
   position: relative;
   overflow: hidden;
@@ -375,6 +373,15 @@ p {
 .search-bar {
   margin: 0 0 32px;
 }
+
+.search-status {
+  min-height: 1.35em;
+  margin: -24px 2px 16px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.search-status:empty { display: none; }
 
 .search-input {
   position: relative;
@@ -1275,12 +1282,12 @@ select {
   }
 
   .hero {
-    padding: 46px 0 32px;
+    padding: 16px 0 32px;
   }
 
   .diwali-banner {
     width: calc(100% - 36px);
-    margin-top: 16px;
+    margin-bottom: 46px;
     padding: 16px 24px 14px;
   }
 
@@ -1511,11 +1518,11 @@ select {
   }
 
   .hero {
-    padding: 38px 0 26px;
+    padding: 12px 0 26px;
   }
 
   .diwali-banner {
-    margin-top: 12px;
+    margin-bottom: 38px;
     padding: 14px 22px 13px;
     border-radius: var(--radius-md);
   }

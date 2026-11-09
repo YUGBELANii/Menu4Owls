@@ -137,5 +137,25 @@
       <span>Powered by <a href="https://instagram.com/yugbelanii" target="_blank" rel="noopener">Yug Belani</a></span>
     </div>
   </footer>
+
+  <script>
+    document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
+      link.addEventListener('click', () => {
+        if (typeof window.va === 'function') {
+          window.va('event', { name: 'WhatsApp Contact Opened' });
+        }
+      });
+    });
+  </script>
+  <script>
+    window.va = window.va || function () {
+      (window.vaq = window.vaq || []).push(arguments);
+    };
+    window.si = window.si || function () {
+      (window.siq = window.siq || []).push(arguments);
+    };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>

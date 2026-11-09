@@ -1451,22 +1451,21 @@ body {
 
 </nav>
 
-<!-- Diwali greeting -->
-<section class="diwali-banner" aria-label="Diwali greeting">
-  <div class="diwali-banner-inner">
-    <p class="diwali-title"><span aria-hidden="true">🪔</span> HAPPY DIWALI <span aria-hidden="true">🪔</span></p>
-    <p class="diwali-wish">Wishing You a Bright &amp; Joyful Diwali!</p>
-    <p class="diwali-message">May your celebrations be filled with happiness, warmth and delicious food.</p>
-    <p class="diwali-signoff">— Team Owlzz Cafe</p>
-  </div>
-</section>
-
-
 <!-- =======================================================
      HERO
 ======================================================= -->
 
 <header class="hero">
+
+  <!-- Diwali greeting -->
+  <section class="diwali-banner" aria-label="Diwali greeting">
+    <div class="diwali-banner-inner">
+      <p class="diwali-title"><span aria-hidden="true">🪔</span> HAPPY DIWALI <span aria-hidden="true">🪔</span></p>
+      <p class="diwali-wish">Wishing You a Bright &amp; Joyful Diwali!</p>
+      <p class="diwali-message">May your celebrations be filled with happiness, warmth and delicious food.</p>
+      <p class="diwali-signoff">— Team Owlzz Cafe</p>
+    </div>
+  </section>
 
   <div class="container">
 
@@ -1518,15 +1517,21 @@ body {
         <span>⌕</span>
 
         <input
-          type="text"
+          type="search"
           id="menuSearch"
           placeholder="Search coffee, maggi, fries…"
+          aria-label="Search the menu"
+          aria-controls="menu-root"
+          aria-describedby="menu-search-status"
+          enterkeyhint="search"
           autocomplete="off"
         >
 
       </div>
 
     </div>
+
+    <p id="menu-search-status" class="search-status" aria-live="polite"></p>
 
 
     <div
@@ -1558,10 +1563,12 @@ body {
     id="cart-toggle"
     class="cart-toggle"
     aria-label="Open cart"
+    aria-expanded="false"
+    aria-controls="cart-panel"
     data-count="0"
   >
 
-    <span id="cart-count">
+    <span id="cart-count" aria-live="polite" aria-atomic="true">
       0
     </span>
 
@@ -1573,6 +1580,8 @@ body {
   <div
     id="cart-panel"
     class="cart-panel"
+    role="region"
+    aria-label="Your cart"
   >
 
     <h3>
@@ -1784,6 +1793,9 @@ const REWARD_PRODUCT_NAMES = [
 
 let products = [];
 
+let weeklyLeaderboardData = null;
+let weeklyLeaderboardStatus = 'loading';
+
 let cart = [];
 
 let mysteryReward = null;
@@ -1814,6 +1826,46 @@ function safeImageUrl(value) {
     if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
   } catch (_) {}
   return '';
+}
+
+function trackVercelEvent(name, data = {}) {
+  if (typeof window.va !== 'function') return;
+  window.va('event', { name, data });
+}
+
+const reportedMenuSections = new Set();
+let menuSectionObserver;
+
+function observeMenuSections() {
+  if (!('IntersectionObserver' in window)) return;
+  if (!menuSectionObserver) {
+    menuSectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const section = entry.target;
+        const sectionName = section.classList.contains('leaderboard-section')
+          ? 'weekly_favorites'
+          : section.id;
+        if (reportedMenuSections.has(sectionName)) {
+          menuSectionObserver.unobserve(section);
+          return;
+        }
+        reportedMenuSections.add(sectionName);
+        trackVercelEvent('Menu Section Viewed', { section: sectionName.slice(0, 120) });
+        menuSectionObserver.unobserve(section);
+      });
+    }, { threshold: 0.15 });
+  }
+
+  menuSectionObserver.disconnect();
+
+  document.querySelectorAll('#menu-root .category-block, #menu-root .leaderboard-section')
+    .forEach(section => {
+      const sectionName = section.classList.contains('leaderboard-section')
+        ? 'weekly_favorites'
+        : section.id;
+      if (!reportedMenuSections.has(sectionName)) menuSectionObserver.observe(section);
+    });
 }
 
 function categoryId(category) {
@@ -1871,7 +1923,8 @@ async function loadMenu() {
   if (!root) return;
 
   if (!window.supabaseClient) {
-    root.innerHTML = '<p class="empty-state">Menu is temporarily unavailable.</p>';
+    root.innerHTML = weeklyLeaderboardSectionHtml() + '<p class="empty-state">Menu is temporarily unavailable.</p>';
+    renderWeeklyLeaderboard();
     console.error('supabaseClient is not available. Check supabase-config.js.');
     return;
   }
@@ -1897,7 +1950,7 @@ async function loadMenu() {
 
   if (error) {
 
-    root.innerHTML = `
+    root.innerHTML = weeklyLeaderboardSectionHtml() + `
 
       <p class="empty-state">
         Couldn't load the menu right now.
@@ -1905,6 +1958,8 @@ async function loadMenu() {
       </p>
 
     `;
+    renderWeeklyLeaderboard();
+    observeMenuSections();
 
     return;
   }
@@ -1912,7 +1967,7 @@ async function loadMenu() {
 
   if (!data || !data.length) {
 
-    root.innerHTML = `
+    root.innerHTML = weeklyLeaderboardSectionHtml() + `
 
       <p class="empty-state">
         No items on the menu yet —
@@ -1920,15 +1975,151 @@ async function loadMenu() {
       </p>
 
     `;
+    renderWeeklyLeaderboard();
+    observeMenuSections();
 
     return;
   }
 
 
   products = data;
+  const search = document.getElementById('menuSearch')?.value.trim().toLowerCase() || '';
+  const visibleProducts = search ? filterMenuProducts(search) : products;
+  renderMenu(visibleProducts);
+  const searchStatus = document.getElementById('menu-search-status');
+  if (searchStatus && search) {
+    searchStatus.textContent = `${visibleProducts.length} ${visibleProducts.length === 1 ? 'item' : 'items'} found.`;
+  }
 
-  renderMenu(products);
+}
 
+
+/* =========================================================
+   WEEKLY PRODUCT LEADERBOARD
+========================================================= */
+
+function renderProductRow(item, options = {}) {
+  const imageUrl = typeof item.image_url === 'string' && item.image_url.trim()
+    ? safeImageUrl(item.image_url)
+    : '';
+  const imageHtml = imageUrl
+    ? `
+      <div class="item-image-wrap">
+        <img
+          class="item-image"
+          src="${escapeHtml(imageUrl)}"
+          alt="${escapeHtml(item.name || 'Menu item')}"
+          loading="lazy"
+        >
+      </div>
+    `
+    : '';
+
+  const canOrder = options.canOrder !== false && item.available !== false;
+  const buttonHtml = canOrder
+    ? `
+      <button
+        class="order-btn"
+        data-product-id="${escapeHtml(item.id)}"
+        aria-label="Add ${escapeHtml(item.name || 'menu item')} to cart"
+      >
+        Add to Cart
+      </button>
+    `
+    : '';
+
+  const description = options.detailText || item.description;
+  const descriptionHtml = description
+    ? `<p class="item-desc">${escapeHtml(description)}</p>`
+    : '';
+
+  const price = Number(item.price);
+
+  return `
+    <div class="item-row ${item.available === false ? 'item-unavailable' : ''}">
+      <div class="item-content">
+        ${imageHtml}
+        <div class="item-details">
+          <div class="item-name-row">
+            <span class="item-name">${escapeHtml(item.name || 'Menu item')}</span>
+            <span class="item-leader"></span>
+            <span class="item-price">₹${Number.isFinite(price) ? price.toFixed(0) : '—'}</span>
+            ${buttonHtml}
+          </div>
+          ${descriptionHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function weeklyLeaderboardSectionHtml() {
+  return `
+    <section class="category-block leaderboard-section" aria-labelledby="leaderboard-title">
+      <h2 id="leaderboard-title" class="category-title">Most Ordered This Week</h2>
+      <div id="weekly-leaderboard" aria-live="polite">
+        ${weeklyLeaderboardContentHtml()}
+      </div>
+    </section>
+  `;
+}
+
+function weeklyLeaderboardContentHtml() {
+  if (weeklyLeaderboardStatus === 'loading') {
+    return '<p class="loading-state">Loading weekly favorites…</p>';
+  }
+  if (weeklyLeaderboardStatus === 'error') {
+    return '<p class="empty-state">Weekly favorites couldn’t load. Please try again later.</p>';
+  }
+  if (!weeklyLeaderboardData?.length) {
+    return '<p class="empty-state">No weekly orders to show yet.</p>';
+  }
+
+  return weeklyLeaderboardData.map((item, index) => {
+    const quantity = Number(item.total_quantity);
+    const quantityText = Number.isFinite(quantity) ? quantity.toLocaleString() : '0';
+    const menuProduct = products.find(product => String(product.id) === String(item.product_id));
+
+    return renderProductRow({
+      id: menuProduct?.id ?? item.product_id,
+      name: item.product_name,
+      price: item.product_price,
+      image_url: item.product_image,
+      available: menuProduct?.available
+    }, {
+      canOrder: Boolean(menuProduct && menuProduct.available !== false),
+      detailText: `#${index + 1} this week · ${quantityText} ordered`
+    });
+  }).join('');
+}
+
+function renderWeeklyLeaderboard() {
+  const root = document.getElementById('weekly-leaderboard');
+  if (root) root.innerHTML = weeklyLeaderboardContentHtml();
+}
+
+async function loadWeeklyLeaderboard() {
+  if (!window.supabaseClient) {
+    weeklyLeaderboardStatus = 'error';
+    renderWeeklyLeaderboard();
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      'get_weekly_product_leaderboard'
+    );
+
+    if (error) throw error;
+
+    weeklyLeaderboardData = Array.isArray(data) ? data : [];
+    weeklyLeaderboardStatus = 'loaded';
+    renderWeeklyLeaderboard();
+  } catch (error) {
+    console.error('Could not load weekly product leaderboard:', error);
+    weeklyLeaderboardStatus = 'error';
+    renderWeeklyLeaderboard();
+  }
 }
 
 
@@ -1949,13 +2140,15 @@ function renderMenu(menuData) {
 
     nav.innerHTML = '';
 
-    root.innerHTML = `
+    root.innerHTML = weeklyLeaderboardSectionHtml() + `
 
       <p class="empty-state">
         No items found 😔
       </p>
 
     `;
+    renderWeeklyLeaderboard();
+    observeMenuSections();
 
     return;
   }
@@ -2010,7 +2203,7 @@ function renderMenu(menuData) {
 
   /* PRODUCTS */
 
-  root.innerHTML =
+  root.innerHTML = weeklyLeaderboardSectionHtml() +
 
     Object.entries(groups)
 
@@ -2028,106 +2221,7 @@ function renderMenu(menuData) {
             </h2>
 
 
-            ${items.map(item => {
-
-              const imageHtml =
-
-                item.image_url
-
-                  ? `
-
-                    <div class="item-image-wrap">
-
-                      <img
-                        class="item-image"
-                        src="${escapeHtml(safeImageUrl(item.image_url))}"
-                        alt="${escapeHtml(item.name)}"
-                        loading="lazy"
-                      >
-
-                    </div>
-
-                  `
-
-                  : '';
-
-
-              const buttonHtml =
-
-                item.available === false
-
-                  ? ''
-
-                  : `
-
-                    <button
-                      class="order-btn"
-                      data-product-id="${escapeHtml(item.id)}"
-                    >
-                      Add to Cart
-                    </button>
-
-                  `;
-
-
-              return `
-
-                <div
-                  class="
-                    item-row
-                    ${item.available === false
-                      ? 'item-unavailable'
-                      : ''}
-                  "
-                >
-
-                  <div class="item-content">
-
-                    ${imageHtml}
-
-
-                    <div class="item-details">
-
-                      <div class="item-name-row">
-
-                        <span class="item-name">
-                          ${escapeHtml(item.name)}
-                        </span>
-
-                        <span class="item-leader"></span>
-
-                        <span class="item-price">
-                          ₹${Number(item.price).toFixed(0)}
-                        </span>
-
-                        ${buttonHtml}
-
-                      </div>
-
-
-                      ${
-                        item.description
-
-                          ? `
-
-                            <p class="item-desc">
-                              ${escapeHtml(item.description)}
-                            </p>
-
-                          `
-
-                          : ''
-                      }
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              `;
-
-            }).join('')}
+            ${items.map(item => renderProductRow(item)).join('')}
 
           </section>
 
@@ -2136,6 +2230,9 @@ function renderMenu(menuData) {
       })
 
       .join('');
+
+  renderWeeklyLeaderboard();
+  observeMenuSections();
 
 }
 
@@ -2158,6 +2255,11 @@ function addToCart(productId) {
   if (product.available === false) {
     return;
   }
+
+  trackVercelEvent('Item Added to Cart', {
+    product: String(product.name || 'Menu item').slice(0, 120),
+    category: String(product.category || 'General').slice(0, 80)
+  });
 
 
   const existing =
@@ -2456,6 +2558,10 @@ function renderCart() {
       '0'
     );
 
+    if (toggle.getAttribute('aria-expanded') !== 'true') {
+      toggle.setAttribute('aria-label', 'Open cart, empty');
+    }
+
     if (checkoutButton) checkoutButton.disabled = true;
 
     return;
@@ -2505,7 +2611,7 @@ function renderCart() {
 
             <button
               data-action="decrease" data-product-id="${escapeHtml(item.id)}"
-              aria-label="Decrease quantity"
+              aria-label="Remove one ${escapeHtml(item.name)} from cart"
             >
               −
             </button>
@@ -2516,7 +2622,7 @@ function renderCart() {
 
             <button
               data-action="increase" data-product-id="${escapeHtml(item.id)}"
-              aria-label="Increase quantity"
+              aria-label="Add one ${escapeHtml(item.name)} to cart"
             >
               +
             </button>
@@ -2616,6 +2722,13 @@ function renderCart() {
     totalItems
   );
 
+  if (toggle.getAttribute('aria-expanded') !== 'true') {
+    toggle.setAttribute(
+      'aria-label',
+      `Open cart, ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`
+    );
+  }
+
   if (checkoutButton) checkoutButton.disabled = !storeOpen || !chaiValid;
 
 }
@@ -2634,6 +2747,10 @@ function changeQty(productId, amount) {
 
 
   if (!item) return;
+
+  trackVercelEvent('Cart Quantity Changed', {
+    direction: amount > 0 ? 'increase' : 'decrease'
+  });
 
 
   item.qty +=
@@ -2660,13 +2777,28 @@ function changeQty(productId, amount) {
 ========================================================= */
 
 function toggleCart() {
+  const panel = document.getElementById('cart-panel');
+  if (!panel) return;
+  setCartOpen(!panel.classList.contains('show'));
+}
 
-  const panel =
-    document.getElementById('cart-panel');
+function setCartOpen(open) {
+  const panel = document.getElementById('cart-panel');
+  const toggle = document.getElementById('cart-toggle');
+  if (!panel || !toggle) return;
 
-
-  panel.classList.toggle('show');
-
+  panel.classList.toggle('show', open);
+  toggle.setAttribute('aria-expanded', String(open));
+  const itemCount = Number(toggle.dataset.count || 0);
+  toggle.setAttribute(
+    'aria-label',
+    open
+      ? 'Close cart'
+      : itemCount === 0
+        ? 'Open cart, empty'
+        : `Open cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`
+  );
+  if (open) trackVercelEvent('Cart Opened');
 }
 
 
@@ -2787,6 +2919,8 @@ async function checkoutWhatsapp() {
     return;
   }
 
+  trackVercelEvent('Checkout Started');
+
   const checkoutButton = document.querySelector(
     '[onclick="checkoutWhatsapp()"]'
   );
@@ -2819,6 +2953,8 @@ async function checkoutWhatsapp() {
         result?.error || "Couldn't create your order. Please try again."
       );
     }
+
+    trackVercelEvent('Order Token Created');
 
     // 7. Build the WhatsApp message.
     const subtotal = cart.reduce(
@@ -2884,9 +3020,11 @@ let message = [
       "https://wa.me/919370693869?text=" +
       encodeURIComponent(message.join("\n"));
 
+    trackVercelEvent('WhatsApp Order Opened');
     whatsappWindow.location.href = whatsappUrl;
 
   } catch (error) {
+    trackVercelEvent('Checkout Failed');
     console.error("Checkout failed:", error);
 
     whatsappWindow.close();
@@ -2910,6 +3048,19 @@ let message = [
    SEARCH
 ========================================================= */
 
+let searchAnalyticsTimer;
+let lastSearchValue = '';
+
+function filterMenuProducts(search) {
+  const query = String(search || '').toLowerCase().trim();
+  if (!query) return products;
+
+  return products.filter(item =>
+    [item.name, item.category, item.description]
+      .some(value => String(value || '').toLowerCase().includes(query))
+  );
+}
+
 document
   .getElementById('menuSearch')
   ?.addEventListener(
@@ -2922,43 +3073,31 @@ document
           .trim();
 
 
-      const filtered =
-
-        products.filter(item => {
-
-          const name =
-            (item.name || '')
-              .toLowerCase();
-
-
-          const category =
-            (item.category || '')
-              .toLowerCase();
-
-
-          const description =
-            (item.description || '')
-              .toLowerCase();
-
-
-          return (
-
-            name.includes(search)
-
-            ||
-
-            category.includes(search)
-
-            ||
-
-            description.includes(search)
-
-          );
-
-        });
+      const filtered = filterMenuProducts(search);
 
 
       renderMenu(filtered);
+
+      const searchStatus = document.getElementById('menu-search-status');
+      if (searchStatus) {
+        searchStatus.textContent = search
+          ? `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'} found.`
+          : '';
+      }
+
+      window.clearTimeout(searchAnalyticsTimer);
+      if (search) {
+        searchAnalyticsTimer = window.setTimeout(() => {
+          trackVercelEvent('Menu Search', {
+            query_length: Math.min(search.length, 100),
+            results_count: filtered.length
+          });
+        }, 700);
+      } else if (lastSearchValue) {
+        trackVercelEvent('Menu Search Cleared');
+      }
+
+      lastSearchValue = search;
 
     }
   );
@@ -2973,6 +3112,9 @@ document.addEventListener('click', event => {
   if (!target) return;
 
   if (target.dataset.category) {
+    trackVercelEvent('Category Selected', {
+      category: target.dataset.category.slice(0, 120)
+    });
     scrollToCategory(target.dataset.category);
     return;
   }
@@ -2999,6 +3141,14 @@ document.addEventListener('click', event => {
 document.getElementById('cart-toggle')?.addEventListener('click', toggleCart);
 document.getElementById('checkout-whatsapp')?.addEventListener('click', checkoutWhatsapp);
 
+document.addEventListener('click', event => {
+  const widget = document.querySelector('.cart-widget');
+  const panel = document.getElementById('cart-panel');
+  if (panel?.classList.contains('show') && widget && !widget.contains(event.target)) {
+    setCartOpen(false);
+  }
+});
+
 document.addEventListener('error', event => {
   if (event.target instanceof HTMLImageElement && event.target.classList.contains('item-image')) {
     event.target.parentElement?.remove();
@@ -3007,7 +3157,11 @@ document.addEventListener('error', event => {
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
-    document.getElementById('cart-panel')?.classList.remove('show');
+    const panel = document.getElementById('cart-panel');
+    if (panel?.classList.contains('show')) {
+      setCartOpen(false);
+      document.getElementById('cart-toggle')?.focus();
+    }
   }
 });
 
@@ -3071,7 +3225,6 @@ async function loadReviews() {
     return;
 
   }
-
 
   renderReviews(
     data || []
@@ -3373,6 +3526,8 @@ async function submitReview(event) {
 
   }
 
+  trackVercelEvent('Review Submitted');
+
 
   const root =
     document.getElementById(
@@ -3483,10 +3638,26 @@ loadReviews().catch(error => {
 loadMenu().catch(error => {
   console.error('Unexpected menu loading error:', error);
   const root = document.getElementById('menu-root');
-  if (root) root.innerHTML = '<p class="empty-state">Couldn’t load the menu right now. Please try again.</p>';
+  if (root) {
+    root.innerHTML = weeklyLeaderboardSectionHtml() + '<p class="empty-state">Couldn’t load the menu right now. Please try again.</p>';
+    renderWeeklyLeaderboard();
+  }
 });
 
+loadWeeklyLeaderboard();
+
 </script>
+
+<script>
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+  window.si = window.si || function () {
+    (window.siq = window.siq || []).push(arguments);
+  };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
 </html>

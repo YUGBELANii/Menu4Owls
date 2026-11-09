@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owlzz Cafe — Customer Orders</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .orders-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .orders-filters { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
+    .orders-filters button.active { outline:2px solid var(--border); }
+    .order-card { border:1px solid var(--border); border-radius:10px; padding:16px; margin-top:12px; }
+    .order-card-head { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .order-token { font-size:1.15rem; font-weight:700; }
+    .order-meta { font-size:.85rem; opacity:.75; margin-top:4px; }
+    .order-status { font-weight:600; text-transform:capitalize; }
+    .order-items { margin:14px 0; }
+    .order-item { display:flex; justify-content:space-between; gap:12px; padding:5px 0; }
+    .order-total { border-top:1px solid var(--border); padding-top:10px; margin-top:10px; }
+    .order-total strong { font-size:1.1rem; }
+    .order-actions { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+    .order-alert-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .live-indicator { font-size:.82rem; opacity:.8; }
+    .live-indicator::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:#d69b36; margin-right:7px; }
+    .live-indicator.connected::before { background:#28a56a; }
+    .new-order-toast { position:fixed; right:20px; bottom:20px; z-index:9999; width:min(360px,calc(100vw - 40px)); padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--surface); box-shadow:0 12px 40px #0005; display:none; }
+    .new-order-toast.show { display:block; }
+    .new-order-toast strong { display:block; margin-bottom:5px; }
+    .new-order-toast p { margin:0 0 10px; }
+    .new-order-toast button { margin-right:6px; }
+    @media(max-width:600px) { .order-card { padding:12px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">Owl's<span>Corner</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Menu</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="admin.html">Products</a></li>
+        <li><a href="admin-orders.html" class="active">Orders</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="login-card" id="login-view">
+    <h2>Admin login</h2>
+    <p class="sub">Sign in with your authorized Supabase admin account.</p>
+    <form id="login-form">
+      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required></div>
+      <div class="field"><label for="login-password">Password</label><input type="password" id="login-password" autocomplete="current-password" required></div>
+      <button type="submit" class="btn btn-full" id="login-btn">Log in</button>
+      <div class="status-msg" id="login-status" role="status"></div>
+    </form>
+  </div>
+
+  <main class="admin-shell" id="admin-view" style="display:none">
+    <div class="container">
+      <header class="admin-topbar">
+        <div>
+          <p class="eyebrow" style="margin-bottom:4px">Admin · Orders</p>
+          <h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.8rem">Customer orders</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <a class="btn btn-ghost" href="admin.html">Manage Products </a>
+          <span class="who" id="who-label"></span>
+          <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
+        </div>
+      </header>
+
+      <section class="panel" id="orders-panel">
+        <div class="orders-toolbar">
+          <div>
+            <h3 style="margin-bottom:4px">🧾 Customer orders</h3>
+            <p class="sub" style="margin:0">Review new orders and update their status.</p>
+          </div>
+          <div class="order-alert-toolbar">
+            <span id="realtime-status" class="live-indicator">Live updates connecting…</span>
+            <button class="btn btn-ghost" id="enable-alerts-btn" type="button">Enable sound &amp; push notifications</button>
+            <button class="btn btn-ghost" id="refresh-orders-btn" type="button">Refresh orders</button>
+          </div>
+        </div>
+        <div class="orders-filters" id="orders-filters">
+          <button class="btn btn-ghost active" type="button" data-order-filter="all">All</button>
+          <button class="btn btn-ghost" type="button" data-order-filter="pending">Pending</button>
+          <button class="btn btn-ghost" type="button" data-order-filter="confirmed">Confirmed</button>
+          <button class="btn btn-ghost" type="button" data-order-filter="preparing">Preparing</button>
+          <button class="btn btn-ghost" type="button" data-order-filter="completed">Completed</button>
+          <button class="btn btn-ghost" type="button" data-order-filter="cancelled">Cancelled</button>
+        </div>
+        <p id="orders-status" class="upload-status" role="status">Orders will load after login.</p>
+        <div id="orders-list"><p class="loading-state">Loading orders…</p></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="new-order-toast" class="new-order-toast" role="status" aria-live="polite">
+    <strong>New Owlzz Cafe order!</strong>
+    <p id="new-order-toast-message"></p>
+    <a class="btn" href="admin-orders.html#orders-panel">View orders</a>
+    <button type="button" class="btn btn-ghost" id="dismiss-new-order-btn">Dismiss</button>
+  </div>
+
+  <!-- Realtime prerequisite: enable public.orders in the Supabase supabase_realtime publication. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-notifications.js"></script>
+  <script>
+    'use strict';
+
+    const loginView = document.getElementById('login-view');
+    const adminView = document.getElementById('admin-view');
+    const whoLabel = document.getElementById('who-label');
+    let orderFilter = 'all';
+    let cachedOrders = [];
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value ?? '';
+      return div.innerHTML;
+    }
+
+    function money(value) {
+      return Number(value || 0).toFixed(2);
+    }
+
+    function renderOrders() {
+      const list = document.getElementById('orders-list');
+      const filtered = orderFilter === 'all'
+        ? cachedOrders
+        : cachedOrders.filter(order => order.status === orderFilter);
+      const pendingCount = cachedOrders.filter(order => order.status === 'pending').length;
+      document.getElementById('orders-status').textContent =
+        `${cachedOrders.length} order(s) loaded · ${pendingCount} pending approval`;
+
+      if (!filtered.length) {
+        list.innerHTML = `<p class="empty-state">No ${orderFilter === 'all' ? 'orders' : `${escapeHtml(orderFilter)} orders`} found.</p>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const itemRows = items.map(item => {
+          const quantity = Number(item.qty || item.quantity || 0);
+          const lineTotal = Number(item.price || item.unit_price || 0) * quantity;
+          return `<div class="order-item"><span>${escapeHtml(item.name || 'Item')} × ${quantity}</span><span>₹${money(lineTotal)}</span></div>`;
+        }).join('');
+        const created = new Date(order.created_at).toLocaleString('en-IN', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+          timeZone: 'Asia/Kolkata'
+        });
+        const statuses = ['pending', 'confirmed', 'preparing', 'completed', 'rejected', 'cancelled'];
+        const statusOptions = statuses.map(status =>
+          `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status[0].toUpperCase()}${status.slice(1)}</option>`
+        ).join('');
+
+        return `
+          <article class="order-card">
+            <div class="order-card-head">
+              <div>
+                <div class="order-token">🦉 Order ${escapeHtml(order.order_token || '—')}</div>
+                <div class="order-meta">${escapeHtml(created)}</div>
+              </div>
+              <div class="order-status">${escapeHtml(order.status)}</div>
+            </div>
+            <div class="order-items">${itemRows || '<p>No item details available.</p>'}</div>
+            <div class="order-total">
+              <div>Subtotal: ₹${money(order.subtotal)}</div>
+              <div>Delivery: ₹${money(order.delivery_fee)}</div>
+              ${Number(order.discount || 0) > 0 ? `<div>Discount: −₹${money(order.discount)}</div>` : ''}
+              <strong>Total: ₹${money(order.total)}</strong>
+            </div>
+            <div class="order-actions">
+              ${order.status === 'pending' ? `<button type="button" class="btn approve-order-btn" data-order-id="${escapeHtml(order.id)}">✓ Approve order</button>` : ''}
+              <label style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                Status
+                <select class="order-status-select" data-order-id="${escapeHtml(order.id)}" aria-label="Update status for order ${escapeHtml(order.order_token || '')}">${statusOptions}</select>
+              </label>
+              <button type="button" class="btn btn-ghost save-order-status" data-order-id="${escapeHtml(order.id)}">Update status</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function loadOrders() {
+      const list = document.getElementById('orders-list');
+      list.innerHTML = '<p class="loading-state">Loading orders…</p>';
+      document.getElementById('orders-status').textContent = 'Loading orders…';
+
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select('id, order_token, items, subtotal, discount, delivery_fee, total, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (error) {
+        console.error('Orders loading failed:', error);
+        document.getElementById('orders-status').textContent =
+          'Could not load orders. Check the admin account and orders-table RLS policies.';
+        list.innerHTML = `<p class="empty-state">${escapeHtml(error.message)}</p>`;
+        return;
+      }
+
+      cachedOrders = data || [];
+      cachedOrders.sort((a, b) => {
+        if (a.status === 'pending' && b.status !== 'pending') return -1;
+        if (b.status === 'pending' && a.status !== 'pending') return 1;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      renderOrders();
+    }
+
+    async function checkSession() {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) console.error(error);
+      const session = data?.session;
+
+      if (!session) {
+        window.stopAdminOrderNotifications();
+        loginView.style.display = 'block';
+        adminView.style.display = 'none';
+        return;
+      }
+
+      loginView.style.display = 'none';
+      adminView.style.display = 'block';
+      whoLabel.textContent = session.user.email || '';
+      window.initAdminOrderNotifications();
+      await loadOrders();
+    }
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        loginView.style.display = 'none';
+        adminView.style.display = 'block';
+        whoLabel.textContent = session.user.email || '';
+        setTimeout(() => {
+          window.initAdminOrderNotifications();
+          loadOrders();
+        }, 0);
+      } else {
+        window.stopAdminOrderNotifications();
+        loginView.style.display = 'block';
+        adminView.style.display = 'none';
+      }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = document.getElementById('login-btn');
+      const status = document.getElementById('login-status');
+      button.disabled = true;
+      button.textContent = 'Logging in…';
+
+      try {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        status.textContent = 'Signed in successfully.';
+        status.className = 'status-msg show ok';
+        await checkSession();
+      } catch (error) {
+        status.textContent = error.message || 'Login failed.';
+        status.className = 'status-msg show err';
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Log in';
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) alert(`Couldn't log out: ${error.message}`);
+      await checkSession();
+    });
+
+    document.getElementById('refresh-orders-btn').addEventListener('click', loadOrders);
+    document.getElementById('orders-filters').addEventListener('click', event => {
+      const button = event.target.closest('[data-order-filter]');
+      if (!button) return;
+      orderFilter = button.dataset.orderFilter;
+      document.querySelectorAll('[data-order-filter]').forEach(filterButton => {
+        filterButton.classList.toggle('active', filterButton === button);
+      });
+      renderOrders();
+    });
+
+    document.getElementById('orders-list').addEventListener('click', async event => {
+      const approveButton = event.target.closest('.approve-order-btn');
+      const saveButton = event.target.closest('.save-order-status');
+      if (!approveButton && !saveButton) return;
+
+      const button = approveButton || saveButton;
+      const order = cachedOrders.find(item => item.id === button.dataset.orderId);
+      if (!order) return;
+
+      let newStatus;
+      if (approveButton) {
+        if (order.status !== 'pending') return;
+        if (!confirm(`Approve order ${order.order_token}? This marks it as confirmed in the admin panel.`)) return;
+        newStatus = 'confirmed';
+      } else {
+        const select = document.querySelector(
+          `.order-status-select[data-order-id="${CSS.escape(order.id)}"]`
+        );
+        newStatus = select?.value;
+        if (!newStatus) return;
+        if (newStatus === order.status) {
+          alert('This order already has that status.');
+          return;
+        }
+        if (!confirm(`Change order ${order.order_token} from ${order.status} to ${newStatus}?`)) return;
+      }
+
+      button.disabled = true;
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', order.id)
+        .eq('status', order.status)
+        .select('id,status');
+
+      if (error) {
+        console.error('Order status update failed:', error);
+        alert(`Couldn't update order — ${error.message}`);
+        button.disabled = false;
+        return;
+      }
+      if (!data?.length) {
+        alert('Order status changed elsewhere or permissions prevented the update. Refreshing.');
+      }
+      await loadOrders();
+    });
+
+    document.addEventListener('owlzz:new-order', () => loadOrders());
+    checkSession();
+  </script>
+</body>
+</html>

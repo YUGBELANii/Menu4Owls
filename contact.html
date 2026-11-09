@@ -558,6 +558,10 @@ form.addEventListener('submit', async (e) => {
       return;
     }
 
+    if (typeof window.va === 'function') {
+      window.va('event', { name: 'Contact Message Sent' });
+    }
+
     showStatus(
       "Message sent — we'll get back to you soon.",
       true
@@ -591,6 +595,14 @@ form.addEventListener('submit', async (e) => {
 </script>
 
 <script defer src="/_vercel/insights/script.js"></script>
+
+<script>
+  window.si = window.si || function () {
+    (window.siq = window.siq || []).push(arguments);
+  };
+</script>
+
+<script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
 

@@ -12,31 +12,30 @@
 .image-preview-text,.upload-status{font-size:.85rem;opacity:.8;margin-top:8px}
 .product-row.editing{display:block;padding:18px}.edit-product-form{width:100%}.edit-product-form .field{margin-bottom:12px}
 .edit-product-form input,.edit-product-form textarea{width:100%;box-sizing:border-box}.edit-product-form textarea{min-height:80px;resize:vertical}
-.edit-actions,.order-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.edit-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 .edit-preview{display:flex;align-items:center;gap:12px;margin-bottom:16px}.edit-preview img,.edit-preview-placeholder{width:64px;height:64px;object-fit:cover;border-radius:4px;background:var(--surface-2)}
-.orders-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.orders-filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.orders-filters button.active{outline:2px solid var(--border)}
-.order-card{border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px}.order-card-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.order-token{font-size:1.15rem;font-weight:700}.order-meta{font-size:.85rem;opacity:.75;margin-top:4px}.order-status{font-weight:600;text-transform:capitalize}.order-items{margin:14px 0}.order-item{display:flex;justify-content:space-between;gap:12px;padding:5px 0}.order-total{border-top:1px solid var(--border);padding-top:10px;margin-top:10px}.order-total strong{font-size:1.1rem}.danger-btn{border-color:#b44;color:#b44}
+.orders-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .order-alert-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.live-indicator{font-size:.82rem;opacity:.8}.live-indicator::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:#d69b36;margin-right:7px}.live-indicator.connected::before{background:#28a56a}.new-order-toast{position:fixed;right:20px;bottom:20px;z-index:9999;width:min(360px,calc(100vw - 40px));padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:0 12px 40px #0005;display:none}.new-order-toast.show{display:block}.new-order-toast strong{display:block;margin-bottom:5px}.new-order-toast p{margin:0 0 10px}.new-order-toast button{margin-right:6px}
-@media(max-width:600px){.edit-product-form .form-row{display:block}.image-preview img{width:100px;height:100px}.order-card{padding:12px}}
+@media(max-width:600px){.edit-product-form .form-row{display:block}.image-preview img{width:100px;height:100px}}
 </style>
 </head>
 <body>
-<nav class="nav"><div class="nav-inner"><a href="index.html" class="brand">Owl's<span>Corner</span></a><ul class="nav-links"><li><a href="index.html">Menu</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin.html" class="active">Admin</a></li></ul></div></nav>
+<nav class="nav"><div class="nav-inner"><a href="index.html" class="brand">Owl's<span>Corner</span></a><ul class="nav-links"><li><a href="index.html">Menu</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin.html" class="active">Products</a></li><li><a href="admin-orders.html">Orders</a></li></ul></div></nav>
 
 <div class="login-card" id="login-view"><h2>Admin login</h2><p class="sub">Sign in with your authorized Supabase admin account.</p><form id="login-form"><div class="field"><label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required></div><div class="field"><label for="login-password">Password</label><input type="password" id="login-password" autocomplete="current-password" required></div><button type="submit" class="btn btn-full" id="login-btn">Log in</button><div class="status-msg" id="login-status" role="status"></div></form></div>
 
 <main class="admin-shell" id="admin-view" style="display:none"><div class="container">
 <header class="admin-topbar"><div><p class="eyebrow" style="margin-bottom:4px">Admin</p><h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.8rem">Cafe dashboard</h1></div><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span class="who" id="who-label"></span><button class="btn btn-ghost" id="logout-btn" type="button">Log out</button></div></header>
 
-<section class="panel" id="orders-panel"><div class="orders-toolbar"><div><h3 style="margin-bottom:4px">🧾 Customer orders</h3><p class="sub" style="margin:0">Review new orders and update their status.</p></div><div class="order-alert-toolbar"><span id="realtime-status" class="live-indicator">Live updates connecting…</span><button class="btn btn-ghost" id="enable-alerts-btn" type="button">Enable sound & push notifications</button><button class="btn btn-ghost" id="refresh-orders-btn" type="button">Refresh orders</button></div></div><div class="orders-filters" id="orders-filters"><button class="btn btn-ghost active" type="button" data-order-filter="all">All</button><button class="btn btn-ghost" type="button" data-order-filter="pending">Pending</button><button class="btn btn-ghost" type="button" data-order-filter="confirmed">Confirmed</button><button class="btn btn-ghost" type="button" data-order-filter="preparing">Preparing</button><button class="btn btn-ghost" type="button" data-order-filter="completed">Completed</button><button class="btn btn-ghost" type="button" data-order-filter="cancelled">Cancelled</button></div><p id="orders-status" class="upload-status" role="status">Orders will load after login.</p><div id="orders-list"><p class="loading-state">Loading orders…</p></div></section>
+<section class="panel"><div class="orders-toolbar"><div><h3 style="margin-bottom:4px">🧾 Customer orders</h3><p class="sub" style="margin:0">Order management now has its own page.</p></div><div class="order-alert-toolbar"><span id="realtime-status" class="live-indicator">Live updates connecting…</span><button class="btn btn-ghost" id="enable-alerts-btn" type="button">Enable sound & push notifications</button><a class="btn" href="admin-orders.html">Manage orders</a></div></div></section>
 
 <section class="panel"><h3>Add a new product</h3><form id="product-form"><div class="form-row"><div class="field"><label for="p-name">Name</label><input type="text" id="p-name" required maxlength="120" placeholder="e.g. Masala Chai"></div><div class="field"><label for="p-price">Price (₹)</label><input type="number" id="p-price" step="0.01" min="0" required placeholder="60"></div></div><div class="form-row"><div class="field"><label for="p-category">Category</label><input type="text" id="p-category" required maxlength="80" placeholder="e.g. Beverages"></div><div class="field"><label for="p-image">Image URL (optional)</label><input type="url" id="p-image" placeholder="https://…"></div></div><div class="image-upload-box"><label for="p-image-file" class="image-upload-label">Or upload an image</label><input type="file" id="p-image-file" class="image-upload-input" accept="image/png,image/jpeg,image/webp,image/gif"><div id="p-image-preview" class="image-preview"></div><div id="p-upload-status" class="upload-status"></div></div><div class="field"><label for="p-desc">Description (optional)</label><textarea id="p-desc" placeholder="Short one-line description"></textarea></div><button type="submit" class="btn" id="add-btn">Add product</button><div class="status-msg" id="product-status" role="status"></div></form></section>
 
 <section class="panel"><div class="orders-toolbar"><h3>Current products</h3><button type="button" class="btn btn-ghost" id="refresh-products-btn">Refresh products</button></div><div class="product-list" id="product-list"><p class="loading-state">Loading products…</p></div></section>
 </div></main>
-<div id="new-order-toast" class="new-order-toast" role="status" aria-live="polite"><strong>New Owlzz Cafe order!</strong><p id="new-order-toast-message"></p><button type="button" class="btn" id="view-new-order-btn">View orders</button><button type="button" class="btn btn-ghost" id="dismiss-new-order-btn">Dismiss</button></div>
+<div id="new-order-toast" class="new-order-toast" role="status" aria-live="polite"><strong>New Owlzz Cafe order!</strong><p id="new-order-toast-message"></p><a class="btn" href="admin-orders.html#orders-panel">View orders</a><button type="button" class="btn btn-ghost" id="dismiss-new-order-btn">Dismiss</button></div>
 <!-- Realtime prerequisite: enable the public.orders table in Supabase Database > Publications > supabase_realtime. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="admin-notifications.js"></script>
 <script>
 'use strict';
 const STORAGE_BUCKET='menu-images';
@@ -44,126 +43,23 @@ const MAX_IMAGE_SIZE=5*1024*1024;
 const loginView=document.getElementById('login-view');
 const adminView=document.getElementById('admin-view');
 const whoLabel=document.getElementById('who-label');
-let orderFilter='all';
-let cachedOrders=[];
-let ordersChannel=null;
-let audioContext=null;
-const knownOrderIds=new Set();
-let toastOrderId=null;
 function escapeHtml(value){const div=document.createElement('div');div.textContent=value??'';return div.innerHTML;}
 function setStatus(el,message,type=''){el.textContent=message;el.className=type?`status-msg show ${type}`:'status-msg';}
 function createImageFileName(file){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');return `${Date.now()}-${crypto.randomUUID()}.${ext||'jpg'}`;}
 async function uploadImage(file,statusElement){if(!file)return null;const allowed=['image/jpeg','image/png','image/webp','image/gif'];if(!allowed.includes(file.type))throw new Error('Please upload a JPG, PNG, WEBP or GIF image.');if(file.size>MAX_IMAGE_SIZE)throw new Error('Image must be smaller than 5 MB.');if(statusElement)statusElement.textContent='Uploading image…';const name=createImageFileName(file);const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).upload(name,file,{cacheControl:'3600',upsert:false});if(error)throw error;const {data}=supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(name);if(!data?.publicUrl)throw new Error('Image uploaded but public URL could not be generated.');if(statusElement)statusElement.textContent='Image uploaded successfully.';return data.publicUrl;}
 function previewFile(input,preview){const file=input.files?.[0];preview.replaceChildren();if(!file)return;if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)||file.size>MAX_IMAGE_SIZE){preview.textContent=file.size>MAX_IMAGE_SIZE?'Image must be smaller than 5 MB.':'Invalid image format.';input.value='';return;}const img=document.createElement('img');img.alt='Image preview';img.src=URL.createObjectURL(file);const label=document.createElement('div');label.className='image-preview-text';label.textContent=file.name;preview.append(img,label);}
 document.getElementById('p-image-file').addEventListener('change',function(){previewFile(this,document.getElementById('p-image-preview'));});
-function showNewOrderAlert(order){
-  const token=order.order_token||'New order';
-  const amount=money(order.total);
-  const message=`Order ${token} · ₹${amount}`;
-  const toast=document.getElementById('new-order-toast');
-  document.getElementById('new-order-toast-message').textContent=message;
-  toastOrderId=order.id;
-  toast.classList.add('show');
-  if(audioContext){
-    try{
-      const oscillator=audioContext.createOscillator();
-      const gain=audioContext.createGain();
-      oscillator.type='sine';
-      oscillator.frequency.setValueAtTime(880,audioContext.currentTime);
-      oscillator.frequency.setValueAtTime(660,audioContext.currentTime+0.18);
-      gain.gain.setValueAtTime(0.0001,audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.18,audioContext.currentTime+0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+0.48);
-      oscillator.connect(gain);gain.connect(audioContext.destination);
-      oscillator.start();oscillator.stop(audioContext.currentTime+0.5);
-    }catch(error){console.warn('Order alert sound could not play:',error);}
-  }
-  if('Notification' in window && Notification.permission==='granted'){
-    const notification=new Notification('New Owlzz Cafe order',{
-      body:message,
-      tag:`owlzz-order-${order.id}`,
-      renotify:false
-    });
-    notification.onclick=()=>{window.focus();document.getElementById('orders-panel').scrollIntoView({behavior:'smooth'});notification.close();};
-  }
-}
-async function enableOrderAlerts(){
-  const button=document.getElementById('enable-alerts-btn');
-  button.disabled=true;
-  try{
-    const AudioCtx=window.AudioContext||window.webkitAudioContext;
-    if(AudioCtx){audioContext=audioContext||new AudioCtx();if(audioContext.state==='suspended')await audioContext.resume();}
-    let permission='unsupported';
-    if('Notification' in window){permission=Notification.permission;if(permission==='default')permission=await Notification.requestPermission();}
-    if(permission==='granted'){
-      if(!('serviceWorker' in navigator) || !('PushManager' in window)) throw new Error('This browser does not support background push notifications.');
-      const { data: sessionData } = await supabaseClient.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-      if(!accessToken) throw new Error('Please sign in again.');
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      const keyResponse = await fetch('/api/push-public-key');
-      if(!keyResponse.ok) throw new Error('Could not load push notification configuration.');
-      const { publicKey } = await keyResponse.json();
-      const applicationServerKey = Uint8Array.from(atob(publicKey.replace(/-/g,'+').replace(/_/g,'/')), c => c.charCodeAt(0));
-      let subscription = await registration.pushManager.getSubscription();
-      if(!subscription) subscription = await registration.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey });
-      const saved = await fetch('/api/push-subscribe', { method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${accessToken}`}, body:JSON.stringify({subscription:subscription.toJSON()}) });
-      if(!saved.ok){const result=await saved.json().catch(()=>({}));throw new Error(result.error||'Could not save this device subscription.');}
-      button.textContent='Push notifications enabled';
-    }
-    else if(permission==='denied')button.textContent='Browser notifications blocked';
-    else button.textContent='Sound enabled · notifications unavailable';
-  }catch(error){console.error('Could not enable order alerts:',error);button.textContent='Try enabling alerts again';}
-  finally{button.disabled=false;}
-}
-function subscribeToNewOrders(){
-  if(ordersChannel){supabaseClient.removeChannel(ordersChannel);ordersChannel=null;}
-  const status=document.getElementById('realtime-status');
-  ordersChannel=supabaseClient.channel('admin-orders-live')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},payload=>{
-      const order=payload.new;
-      if(!order?.id||knownOrderIds.has(order.id))return;
-      knownOrderIds.add(order.id);
-      showNewOrderAlert(order);
-      loadOrders();
-    })
-    .subscribe(state=>{
-      if(state==='SUBSCRIBED'){
-        status.textContent='Live order updates connected';
-        status.classList.add('connected');
-      }else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT'||state==='CLOSED'){
-        status.textContent='Live updates disconnected · refresh or reconnect';
-        status.classList.remove('connected');
-        console.warn('Orders Realtime channel state:',state);
-      }
-    });
-}
-function unsubscribeFromNewOrders(){
-  if(ordersChannel){supabaseClient.removeChannel(ordersChannel);ordersChannel=null;}
-  const status=document.getElementById('realtime-status');
-  if(status){status.textContent='Live updates disconnected';status.classList.remove('connected');}
-}
-async function checkSession(){const {data,error}=await supabaseClient.auth.getSession();if(error)console.error(error);const session=data?.session;if(session){loginView.style.display='none';adminView.style.display='block';whoLabel.textContent=session.user.email||'';subscribeToNewOrders();await Promise.all([loadProducts(),loadOrders()]);}else{unsubscribeFromNewOrders();loginView.style.display='block';adminView.style.display='none';}}
-supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session){loginView.style.display='none';adminView.style.display='block';whoLabel.textContent=session.user.email||'';setTimeout(()=>{subscribeToNewOrders();loadProducts();loadOrders();},0);}else{unsubscribeFromNewOrders();loginView.style.display='block';adminView.style.display='none';}});
+async function checkSession(){const {data,error}=await supabaseClient.auth.getSession();if(error)console.error(error);const session=data?.session;if(session){loginView.style.display='none';adminView.style.display='block';whoLabel.textContent=session.user.email||'';window.initAdminOrderNotifications();await loadProducts();}else{window.stopAdminOrderNotifications();loginView.style.display='block';adminView.style.display='none';}}
+supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session){loginView.style.display='none';adminView.style.display='block';whoLabel.textContent=session.user.email||'';setTimeout(()=>{window.initAdminOrderNotifications();loadProducts();},0);}else{window.stopAdminOrderNotifications();loginView.style.display='block';adminView.style.display='none';}});
 document.getElementById('login-form').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('login-btn');const status=document.getElementById('login-status');btn.disabled=true;btn.textContent='Logging in…';const email=document.getElementById('login-email').value.trim();const password=document.getElementById('login-password').value;try{const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;setStatus(status,'Signed in successfully.','ok');await checkSession();}catch(error){setStatus(status,error.message||'Login failed.','err');}finally{btn.disabled=false;btn.textContent='Log in';}});
 document.getElementById('logout-btn').addEventListener('click',async()=>{const {error}=await supabaseClient.auth.signOut();if(error)alert(`Couldn't log out: ${error.message}`);await checkSession();});
 document.getElementById('refresh-products-btn').addEventListener('click',loadProducts);
-document.getElementById('refresh-orders-btn').addEventListener('click',loadOrders);
-document.getElementById('enable-alerts-btn').addEventListener('click',enableOrderAlerts);
-document.getElementById('dismiss-new-order-btn').addEventListener('click',()=>document.getElementById('new-order-toast').classList.remove('show'));
-document.getElementById('view-new-order-btn').addEventListener('click',()=>{document.getElementById('new-order-toast').classList.remove('show');document.getElementById('orders-panel').scrollIntoView({behavior:'smooth'});if(orderFilter!=='all'){orderFilter='all';document.querySelectorAll('[data-order-filter]').forEach(b=>b.classList.toggle('active',b.dataset.orderFilter==='all'));renderOrders();}});
-
 document.getElementById('product-form').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('add-btn');const status=document.getElementById('product-status');const uploadStatus=document.getElementById('p-upload-status');btn.disabled=true;btn.textContent='Adding…';try{const name=document.getElementById('p-name').value.trim();const price=Number(document.getElementById('p-price').value);const category=document.getElementById('p-category').value.trim();const url=document.getElementById('p-image').value.trim();const file=document.getElementById('p-image-file').files[0];const description=document.getElementById('p-desc').value.trim();if(!name)throw new Error('Product name is required.');if(!Number.isFinite(price)||price<0)throw new Error('Please enter a valid price.');if(!category)throw new Error('Category is required.');let imageUrl=url||null;if(file)imageUrl=await uploadImage(file,uploadStatus);const {error}=await supabaseClient.from('products').insert({name,price,category,image_url:imageUrl,description:description||null});if(error)throw error;setStatus(status,'Product added successfully.','ok');e.target.reset();document.getElementById('p-image-preview').replaceChildren();uploadStatus.textContent='';await loadProducts();}catch(error){console.error('Product creation failed:',error);setStatus(status,`Couldn't add product — ${error.message}`,'err');}finally{btn.disabled=false;btn.textContent='Add product';}});
 
 async function loadProducts(){const list=document.getElementById('product-list');list.innerHTML='<p>Loading products…</p>';const {data,error}=await supabaseClient.from('products').select('*').order('created_at',{ascending:false});if(error){list.innerHTML=`<p class="empty-state">${escapeHtml(error.message)}</p>`;return;}if(!data?.length){list.innerHTML='<p class="empty-state">No products yet — add your first one above.</p>';return;}list.innerHTML=data.map(item=>`<div class="product-row" data-id="${escapeHtml(item.id)}">${item.image_url?`<img src="${escapeHtml(item.image_url)}" alt="" loading="lazy">`:'<div style="width:44px;height:44px;background:var(--surface-2);flex-shrink:0"></div>'}<div class="p-info"><div class="p-name">${escapeHtml(item.name)}</div><div class="p-meta">${escapeHtml(item.category)} · ₹${Number(item.price).toFixed(2)} · ${item.available===false?'hidden':'visible'}</div></div><div class="p-actions"><button type="button" class="icon-btn edit-btn">Edit</button><button type="button" class="icon-btn toggle-btn">${item.available===false?'Show':'Hide'}</button><button type="button" class="icon-btn danger delete-btn">Delete</button></div></div>`).join('');list.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',e=>{const id=e.currentTarget.closest('.product-row').dataset.id;const item=data.find(x=>x.id===id);if(item)startEdit(item);}));list.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',async e=>{const b=e.currentTarget;const id=b.closest('.product-row').dataset.id;const item=data.find(x=>x.id===id);if(!item)return;b.disabled=true;const {error}=await supabaseClient.from('products').update({available:item.available===false}).eq('id',id);if(error){alert(`Couldn't update product — ${error.message}`);b.disabled=false;return;}await loadProducts();}));list.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',async e=>{const b=e.currentTarget;const id=b.closest('.product-row').dataset.id;const item=data.find(x=>x.id===id);if(!item||!confirm(`Delete “${item.name}”? This cannot be undone.`))return;b.disabled=true;b.textContent='Deleting…';const {error}=await supabaseClient.from('products').delete().eq('id',id);if(error){alert(`Couldn't delete product — ${error.message}`);b.disabled=false;b.textContent='Delete';return;}await loadProducts();}));}
 function startEdit(item){const row=document.querySelector(`.product-row[data-id="${CSS.escape(item.id)}"]`);if(!row)return;row.classList.add('editing');row.innerHTML=`<div class="edit-product-form"><div class="edit-preview">${item.image_url?`<img src="${escapeHtml(item.image_url)}" alt="">`:'<div class="edit-preview-placeholder"></div>'}<div><strong>Editing product</strong><div>${escapeHtml(item.name)}</div></div></div><div class="form-row"><div class="field"><label>Name</label><input class="edit-name" maxlength="120" value="${escapeHtml(item.name)}" required></div><div class="field"><label>Price (₹)</label><input class="edit-price" type="number" min="0" step="0.01" value="${Number(item.price)}" required></div></div><div class="field"><label>Category</label><input class="edit-category" maxlength="80" value="${escapeHtml(item.category)}" required></div><div class="image-upload-box"><label class="image-upload-label">Change image (optional)</label><input type="file" class="edit-image-file image-upload-input" accept="image/png,image/jpeg,image/webp,image/gif"><div class="edit-image-preview image-preview"></div><div class="edit-upload-status upload-status"></div><div class="image-source-divider">OR use image URL</div><input type="url" class="edit-image-url" value="${escapeHtml(item.image_url||'')}" placeholder="https://…"></div><div class="field"><label>Description</label><textarea class="edit-description">${escapeHtml(item.description||'')}</textarea></div><div class="edit-actions"><button type="button" class="btn save-edit-btn">Save changes</button><button type="button" class="btn btn-ghost cancel-edit-btn">Cancel</button></div><div class="edit-status status-msg" role="status"></div></div>`;const fileInput=row.querySelector('.edit-image-file');fileInput.addEventListener('change',()=>previewFile(fileInput,row.querySelector('.edit-image-preview')));row.querySelector('.cancel-edit-btn').addEventListener('click',loadProducts);row.querySelector('.save-edit-btn').addEventListener('click',()=>saveEdit(item.id,row));}
 async function saveEdit(id,row){const btn=row.querySelector('.save-edit-btn');const status=row.querySelector('.edit-status');const name=row.querySelector('.edit-name').value.trim();const price=Number(row.querySelector('.edit-price').value);const category=row.querySelector('.edit-category').value.trim();const url=row.querySelector('.edit-image-url').value.trim();const file=row.querySelector('.edit-image-file').files[0];const description=row.querySelector('.edit-description').value.trim();try{if(!name)throw new Error('Product name is required.');if(!Number.isFinite(price)||price<0)throw new Error('Enter a valid price.');if(!category)throw new Error('Category is required.');btn.disabled=true;btn.textContent='Saving…';let imageUrl=url||null;if(file)imageUrl=await uploadImage(file,row.querySelector('.edit-upload-status'));const {error}=await supabaseClient.from('products').update({name,price,category,image_url:imageUrl,description:description||null}).eq('id',id);if(error)throw error;await loadProducts();}catch(error){console.error('Product update failed:',error);setStatus(status,`Couldn't save — ${error.message}`,'err');btn.disabled=false;btn.textContent='Save changes';}}
 
-function money(value){return Number(value||0).toFixed(2);}
-function renderOrders(){const list=document.getElementById('orders-list');const filtered=orderFilter==='all'?cachedOrders:cachedOrders.filter(o=>o.status===orderFilter);const pending=cachedOrders.filter(o=>o.status==='pending').length;document.getElementById('orders-status').textContent=`${cachedOrders.length} order(s) loaded · ${pending} pending approval`;if(!filtered.length){list.innerHTML=`<p class="empty-state">No ${orderFilter==='all'?'orders':escapeHtml(orderFilter)+' orders'} found.</p>`;return;}list.innerHTML=filtered.map(order=>{const items=Array.isArray(order.items)?order.items:[];const itemRows=items.map(item=>`<div class="order-item"><span>${escapeHtml(item.name||'Item')} × ${Number(item.qty||item.quantity||0)}</span><span>₹${money(Number(item.price||item.unit_price||0)*Number(item.qty||item.quantity||0))}</span></div>`).join('');const created=new Date(order.created_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'});const nextOptions=['pending','confirmed','preparing','completed','rejected','cancelled'].map(s=>`<option value="${s}" ${order.status===s?'selected':''}>${s[0].toUpperCase()+s.slice(1)}</option>`).join('');return `<article class="order-card"><div class="order-card-head"><div><div class="order-token">🦉 Order ${escapeHtml(order.order_token||'—')}</div><div class="order-meta">${escapeHtml(created)}</div></div><div class="order-status">${escapeHtml(order.status)}</div></div><div class="order-items">${itemRows||'<p>No item details available.</p>'}</div><div class="order-total"><div>Subtotal: ₹${money(order.subtotal)}</div><div>Delivery: ₹${money(order.delivery_fee)}</div>${Number(order.discount||0)>0?`<div>Discount: −₹${money(order.discount)}</div>`:''}<strong>Total: ₹${money(order.total)}</strong></div><div class="order-actions">${order.status==='pending'?`<button type="button" class="btn approve-order-btn" data-order-id="${escapeHtml(order.id)}">✓ Approve order</button>`:''}<label style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Status <select class="order-status-select" data-order-id="${escapeHtml(order.id)}" aria-label="Update status for order ${escapeHtml(order.order_token||'')}">${nextOptions}</select></label><button type="button" class="btn btn-ghost save-order-status" data-order-id="${escapeHtml(order.id)}">Update status</button></div></article>`;}).join('');}
-async function loadOrders(){const list=document.getElementById('orders-list');list.innerHTML='<p>Loading orders…</p>';document.getElementById('orders-status').textContent='Loading orders…';const {data,error}=await supabaseClient.from('orders').select('id, order_token, items, subtotal, discount, delivery_fee, total, status, created_at').order('created_at',{ascending:false}).limit(100);if(error){console.error('Orders loading failed:',error);document.getElementById('orders-status').textContent='Could not load orders. Check the admin account and orders-table RLS policies.';list.innerHTML=`<p class="empty-state">${escapeHtml(error.message)}</p>`;return;}cachedOrders=data||[];cachedOrders.forEach(order=>knownOrderIds.add(order.id));cachedOrders.sort((a,b)=>{if(a.status==='pending'&&b.status!=='pending')return -1;if(b.status==='pending'&&a.status!=='pending')return 1;return new Date(b.created_at)-new Date(a.created_at);});renderOrders();}
-document.getElementById('orders-filters').addEventListener('click',e=>{const btn=e.target.closest('[data-order-filter]');if(!btn)return;orderFilter=btn.dataset.orderFilter;document.querySelectorAll('[data-order-filter]').forEach(b=>b.classList.toggle('active',b===btn));renderOrders();});
-document.getElementById('orders-list').addEventListener('click',async e=>{const approve=e.target.closest('.approve-order-btn');const save=e.target.closest('.save-order-status');if(!approve&&!save)return;const button=approve||save;const id=button.dataset.orderId;const order=cachedOrders.find(o=>o.id===id);if(!order)return;let newStatus;if(approve){if(order.status!=='pending')return;if(!confirm(`Approve order ${order.order_token}? This marks it as confirmed in the admin panel.`))return;newStatus='confirmed';}else{const select=document.querySelector(`.order-status-select[data-order-id="${CSS.escape(id)}"]`);newStatus=select?.value;if(!newStatus)return;if(newStatus===order.status){alert('This order already has that status.');return;}if(!confirm(`Change order ${order.order_token} from ${order.status} to ${newStatus}?`))return;}button.disabled=true;const {data,error}=await supabaseClient.from('orders').update({status:newStatus}).eq('id',id).eq('status',order.status).select('id,status');if(error){console.error('Order status update failed:',error);alert(`Couldn't update order — ${error.message}`);button.disabled=false;return;}if(!data?.length){alert('Order status changed elsewhere or permissions prevented the update. Refreshing.');await loadOrders();return;}await loadOrders();});
 checkSession();
 </script>
 </body>
