@@ -232,6 +232,29 @@ p {
   transform-origin: left;
 }
 
+.push-nav-button {
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+
+.push-nav-button:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.push-nav-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 /* ============================================================
    DIWALI GREETING
    ============================================================ */
@@ -1279,6 +1302,11 @@ select {
   .nav-links a {
     font-size: 0.78rem;
     padding: 4px 2px;
+  }
+
+  .push-nav-button {
+    padding: 8px 12px;
+    font-size: 0.74rem;
   }
 
   .hero {

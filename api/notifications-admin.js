@@ -26,15 +26,45 @@ async function deliver(db, campaign) {
   const { data: subscriptions, error } = await db.from('push_subscriptions').select('id,endpoint,p256dh,auth').eq('active', true);
   if (error) throw error;
   const payload = JSON.stringify({ title: campaign.title, body: campaign.body, image: campaign.image_url, url: campaign.destination_url, tag: `owlzz-campaign-${campaign.id}` });
-  let successes = 0, failures = 0;
-  await Promise.all((subscriptions || []).map(async sub => {
+  const attempts = subscriptions || [];
+  let successes = 0, failures = 0, logFailures = 0;
+  await Promise.all(attempts.map(async sub => {
     let status = 'sent', details = null;
     try { await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, payload); successes++; }
-    catch (error) { status = 'failed'; details = String(error.statusCode || error.message).slice(0, 500); failures++; if (error.statusCode === 404 || error.statusCode === 410) await db.from('push_subscriptions').update({ active: false, updated_at: new Date().toISOString() }).eq('id', sub.id); }
-    await db.from('notification_logs').insert({ campaign_id: campaign.id, subscription_id: sub.id, delivery_status: status, error_details: details });
+    catch (error) {
+      status = 'failed';
+      details = String(error.statusCode || error.message).slice(0, 500);
+      failures++;
+      if (error.statusCode === 404 || error.statusCode === 410) {
+        try {
+          const { error: deactivateError } = await db.from('push_subscriptions').update({ active: false, updated_at: new Date().toISOString() }).eq('id', sub.id);
+          if (deactivateError) throw deactivateError;
+        } catch (deactivateError) {
+          details = `${details}; subscription deactivation failed: ${deactivateError.message}`.slice(0, 500);
+        }
+      }
+    }
+    try {
+      const { error: logError } = await db.from('notification_logs').insert({ campaign_id: campaign.id, subscription_id: sub.id, delivery_status: status, error_details: details });
+      if (logError) throw logError;
+    } catch (logError) {
+      logFailures++;
+      console.error('Notification delivery log failed:', { campaignId: campaign.id, subscriptionId: sub.id, message: logError.message });
+    }
   }));
-  await db.from('notification_campaigns').update({ status: 'sent', sent_at: new Date().toISOString(), success_count: successes, failure_count: failures }).eq('id', campaign.id);
-  return { successes, failures };
+  const finalStatus = attempts.length === 0 ? 'no_subscriptions' : failures === 0 && logFailures === 0 ? 'sent' : successes > 0 ? 'partial' : 'failed';
+  const counts = {
+    status: finalStatus,
+    sent_at: new Date().toISOString(),
+    success_count: successes,
+    failure_count: failures,
+    log_failure_count: logFailures,
+    error_details: logFailures ? `${logFailures} delivery log write(s) failed.` : null
+  };
+  Object.assign(campaign, counts);
+  const { error: updateError } = await db.from('notification_campaigns').update(counts).eq('id', campaign.id);
+  if (updateError) throw updateError;
+  return { successes, failures, logFailures, status: finalStatus };
 }
 
 module.exports = async function handler(req, res) {
@@ -45,8 +75,8 @@ module.exports = async function handler(req, res) {
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res.status(500).json({ error: 'Notification service is not configured.' });
   if ((automatic || req.body?.action === 'send') && (!process.env.VAPID_SUBJECT || !process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY)) return res.status(500).json({ error: 'Push delivery is not configured.' });
   const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+  let campaign = null;
   try {
-    let campaign;
     if (automatic) {
       const kind = req.body?.type;
       if (!['opening', 'closing'].includes(kind)) return res.status(400).json({ error: 'Invalid automatic campaign type.' });
@@ -59,7 +89,7 @@ module.exports = async function handler(req, res) {
       if (action === 'summary') {
         const [{ count: subscriptions }, { data: campaigns }] = await Promise.all([
           db.from('push_subscriptions').select('id', { count: 'exact', head: true }).eq('active', true),
-          db.from('notification_campaigns').select('id,campaign_type,title,body,status,created_at,success_count,failure_count').order('created_at', { ascending: false }).limit(50)
+          db.from('notification_campaigns').select('id,campaign_type,title,body,status,created_at,success_count,failure_count,log_failure_count,error_details').order('created_at', { ascending: false }).limit(50)
         ]);
         const { data: templates } = await db.from('notification_templates').select('*').order('created_at');
         const { data: settings } = await db.from('notification_settings').select('*').eq('id', 1).maybeSingle();
@@ -87,5 +117,23 @@ module.exports = async function handler(req, res) {
     webpush.setVapidDetails(process.env.VAPID_SUBJECT, process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
     const result = await deliver(db, campaign);
     return res.status(200).json({ ok: true, ...result });
-  } catch (error) { console.error('Notification request failed:', error.message); return res.status(500).json({ error: error.message || 'Notification request failed.' }); }
+  } catch (error) {
+    console.error('Notification request failed:', error.message);
+    if (campaign?.id) {
+      try {
+        const { error: finalizeError } = await db.from('notification_campaigns').update({
+          status: 'failed',
+          sent_at: new Date().toISOString(),
+          success_count: campaign.success_count || 0,
+          failure_count: campaign.failure_count || 0,
+          log_failure_count: campaign.log_failure_count || 0,
+          error_details: String(error.message || 'Notification processing failed.').slice(0, 1000)
+        }).eq('id', campaign.id);
+        if (finalizeError) throw finalizeError;
+      } catch (finalizeError) {
+        console.error('Could not finalize failed campaign:', { campaignId: campaign.id, message: finalizeError.message });
+      }
+    }
+    return res.status(500).json({ error: error.message || 'Notification request failed.' });
+  }
 };

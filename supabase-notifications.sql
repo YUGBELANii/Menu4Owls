@@ -2,7 +2,7 @@
 create extension if not exists pgcrypto;
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
-create extension if not exists supabase_vault;
+create extension if not exists supabase_vault with schema vault;
 
 create table if not exists public.push_subscriptions (
   id uuid primary key default gen_random_uuid(), endpoint text not null unique,
@@ -23,27 +23,53 @@ create table if not exists public.notification_campaigns (
   id uuid primary key default gen_random_uuid(), campaign_type text not null check(campaign_type in ('manual','opening','closing')),
   business_day date, title text not null, body text not null, image_url text, destination_url text,
   scheduled_at timestamptz, status text not null default 'queued', sent_at timestamptz,
-  success_count integer not null default 0, failure_count integer not null default 0, created_at timestamptz not null default now(),
+  success_count integer not null default 0, failure_count integer not null default 0,
+  log_failure_count integer not null default 0, error_details text,
+  created_at timestamptz not null default now(),
   unique(campaign_type,business_day)
 );
+alter table public.notification_campaigns
+  add column if not exists log_failure_count integer not null default 0;
+alter table public.notification_campaigns
+  add column if not exists error_details text;
 create table if not exists public.notification_logs (
   id bigint generated always as identity primary key, campaign_id uuid not null references public.notification_campaigns(id) on delete cascade,
   subscription_id uuid references public.push_subscriptions(id) on delete set null,
   delivery_status text not null check(delivery_status in ('sent','failed')), error_details text,
   sent_at timestamptz not null default now()
 );
+
+-- Indexes used by active-subscription reads, campaign history, template selection,
+-- and delivery-log lookups. Primary/unique constraints create their own indexes.
+create index if not exists push_subscriptions_active_idx
+  on public.push_subscriptions (active) where active = true;
+create index if not exists notification_templates_type_enabled_idx
+  on public.notification_templates (type, enabled);
+create index if not exists notification_templates_created_at_idx
+  on public.notification_templates (created_at);
+create index if not exists notification_campaigns_created_at_idx
+  on public.notification_campaigns (created_at desc);
+create index if not exists notification_logs_campaign_id_idx
+  on public.notification_logs (campaign_id);
+create index if not exists notification_logs_subscription_id_idx
+  on public.notification_logs (subscription_id);
+
 alter table public.push_subscriptions enable row level security;
 alter table public.notification_templates enable row level security;
 alter table public.notification_settings enable row level security;
 alter table public.notification_campaigns enable row level security;
 alter table public.notification_logs enable row level security;
-revoke all on public.push_subscriptions, public.notification_templates, public.notification_settings, public.notification_campaigns, public.notification_logs from anon, authenticated;
+revoke all on public.push_subscriptions, public.notification_templates, public.notification_settings, public.notification_campaigns, public.notification_logs from public, anon, authenticated;
+grant usage on schema public to service_role;
+grant all on public.push_subscriptions, public.notification_templates, public.notification_settings, public.notification_campaigns, public.notification_logs to service_role;
+grant usage, select on sequence public.notification_logs_id_seq to service_role;
 
 create or replace function public.claim_automatic_notification(p_type text)
 returns jsonb language plpgsql security definer set search_path=public,extensions as $$
 declare
   local_now timestamp := timezone('Asia/Kolkata', now());
   v_business_day date := (local_now::date - case when local_now::time < time '03:00' then 1 else 0 end);
+  -- Mirrors index.html:isOwlzOpen(); the site has no manual open/close override.
   cafe_open boolean := (local_now::time >= time '18:00' or local_now::time < time '03:00');
   enabled boolean; chosen public.notification_templates%rowtype; campaign public.notification_campaigns%rowtype;
 begin
@@ -63,25 +89,82 @@ begin
   return jsonb_build_object('id',campaign.id,'title',campaign.title,'body',campaign.body,'image_url',campaign.image_url,'destination_url',campaign.destination_url);
 end; $$;
 revoke all on function public.claim_automatic_notification(text) from public, anon, authenticated;
+grant execute on function public.claim_automatic_notification(text) to service_role;
 
-insert into public.notification_templates(type,title,message) values
-('opening','Owlz Corner is open','The Owl has awakened! Your cravings may begin.'),
-('opening','Owlz Corner is open','Lights on, kitchen ready, stomachs beware!'),
-('opening','Owlz Corner is open','Your midnight food destination is OPEN!'),
-('closing','Owlz Corner closing soon','Five minutes left before the Owl goes to sleep!'),
-('closing','Owlz Corner closing soon','Last flight departing! Place your order before closing.'),
-('closing','Owlz Corner closing soon','The kitchen is about to call it a night!');
+with seed(type,title,message) as (values
+  ('opening','Owlz Corner is open','The Owl has awakened! Your cravings may begin.'),
+  ('opening','Owlz Corner is open','Lights on, kitchen ready, stomachs beware!'),
+  ('opening','Owlz Corner is open','Your midnight food destination is OPEN!'),
+  ('closing','Owlz Corner closing soon','Five minutes left before the Owl goes to sleep!'),
+  ('closing','Owlz Corner closing soon','Last flight departing! Place your order before closing.'),
+  ('closing','Owlz Corner closing soon','The kitchen is about to call it a night!')
+)
+insert into public.notification_templates(type,title,message)
+select s.type,s.title,s.message from seed s
+where not exists (
+  select 1 from public.notification_templates t
+  where t.type=s.type and t.title=s.title and t.message=s.message
+);
 
--- Store endpoint/secret in Vault before scheduling; replace URL with the production domain.
+-- Create these two Vault secrets manually before running the migration.
 -- select vault.create_secret('https://YOUR_DOMAIN/api/notifications-admin','owlzz_notification_url');
 -- select vault.create_secret('YOUR_NOTIFICATION_CRON_SECRET','owlzz_notification_cron_secret');
-select cron.schedule('owlzz-opening-push','30 12 * * *', $$
- select net.http_post(url:= (select decrypted_secret from vault.decrypted_secrets where name='owlzz_notification_url'),
-   headers:=jsonb_build_object('Content-Type','application/json','x-owlzz-cron-secret',(select decrypted_secret from vault.decrypted_secrets where name='owlzz_notification_cron_secret')),
-   body:='{"type":"opening"}'::jsonb);
-$$);
-select cron.schedule('owlzz-closing-push','25 21 * * *', $$
- select net.http_post(url:= (select decrypted_secret from vault.decrypted_secrets where name='owlzz_notification_url'),
-   headers:=jsonb_build_object('Content-Type','application/json','x-owlzz-cron-secret',(select decrypted_secret from vault.decrypted_secrets where name='owlzz_notification_cron_secret')),
-   body:='{"type":"closing"}'::jsonb);
-$$);
+-- Replace only these two named jobs. Unrelated cron jobs are never touched.
+do $schedule_jobs$
+declare
+  job record;
+  endpoint_url text;
+  cron_secret text;
+begin
+  for job in select jobid from cron.job where jobname in ('owlzz-opening-push','owlzz-closing-push') loop
+    perform cron.unschedule(job.jobid);
+  end loop;
+
+  select decrypted_secret into endpoint_url from vault.decrypted_secrets where name='owlzz_notification_url';
+  select decrypted_secret into cron_secret from vault.decrypted_secrets where name='owlzz_notification_cron_secret';
+  if nullif(endpoint_url,'') is null or nullif(cron_secret,'') is null then
+    raise notice 'Notification cron jobs were removed but not recreated: required Vault secrets are missing.';
+    return;
+  end if;
+
+  perform cron.schedule('owlzz-opening-push','30 12 * * *', $opening_job$
+    do $opening_request$
+    declare endpoint_url text; cron_secret text;
+    begin
+      select decrypted_secret into endpoint_url from vault.decrypted_secrets where name='owlzz_notification_url';
+      select decrypted_secret into cron_secret from vault.decrypted_secrets where name='owlzz_notification_cron_secret';
+      if nullif(endpoint_url,'') is null or nullif(cron_secret,'') is null then
+        raise warning 'Opening notification skipped: required Vault secrets are missing.';
+        return;
+      end if;
+      perform net.http_post(
+        url:=endpoint_url,
+        headers:=jsonb_build_object('Content-Type','application/json','x-owlzz-cron-secret',cron_secret),
+        body:='{"type":"opening"}'::jsonb
+      );
+    end
+    $opening_request$;
+  $opening_job$);
+
+  perform cron.schedule('owlzz-closing-push','25 21 * * *', $closing_job$
+    do $closing_request$
+    declare endpoint_url text; cron_secret text;
+    begin
+      select decrypted_secret into endpoint_url from vault.decrypted_secrets where name='owlzz_notification_url';
+      select decrypted_secret into cron_secret from vault.decrypted_secrets where name='owlzz_notification_cron_secret';
+      if nullif(endpoint_url,'') is null or nullif(cron_secret,'') is null then
+        raise warning 'Closing notification skipped: required Vault secrets are missing.';
+        return;
+      end if;
+      perform net.http_post(
+        url:=endpoint_url,
+        headers:=jsonb_build_object('Content-Type','application/json','x-owlzz-cron-secret',cron_secret),
+        body:='{"type":"closing"}'::jsonb
+      );
+    end
+    $closing_request$;
+  $closing_job$);
+end;
+$schedule_jobs$;
+
+notify pgrst, 'reload schema';

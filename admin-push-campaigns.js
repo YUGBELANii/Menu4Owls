@@ -29,7 +29,7 @@
           catch (error) { alert(error.message); }
         }));
       }
-      $('campaign-history').innerHTML = data.campaigns.length ? data.campaigns.map(c => `<div class="product-row"><div class="p-info"><strong>${esc(c.title)}</strong><div class="p-meta">${esc(c.campaign_type)} · ${new Date(c.created_at).toLocaleString()} · ${esc(c.status)}</div></div><span>${Number(c.success_count || 0)} delivered / ${Number(c.failure_count || 0)} failed</span></div>`).join('') : '<p>No campaigns sent yet.</p>';
+      $('campaign-history').innerHTML = data.campaigns.length ? data.campaigns.map(c => `<div class="product-row"><div class="p-info"><strong>${esc(c.title)}</strong><div class="p-meta">${esc(c.campaign_type)} · ${new Date(c.created_at).toLocaleString()} · ${esc(c.status)}${c.error_details ? ` · ${esc(c.error_details)}` : ''}</div></div><span>${Number(c.success_count || 0)} delivered / ${Number(c.failure_count || 0)} failed${Number(c.log_failure_count || 0) ? ` · ${Number(c.log_failure_count)} logs failed` : ''}</span></div>`).join('') : '<p>No campaigns sent yet.</p>';
     } catch (error) { $('campaign-history').textContent = error.message; }
   }
   $('campaign-form').addEventListener('submit', async event => {
@@ -38,7 +38,7 @@
       const destination = $('campaign-url').value.trim();
       if (destination && !destination.startsWith('/') && !/^https:\/\//i.test(destination)) throw new Error('Destination must be a site path or HTTPS URL.');
       const result = await request({ action: 'send', title: $('campaign-title').value, body: $('campaign-body').value, image_url: $('campaign-image').value.trim(), destination_url: destination });
-      status(`Sent: ${result.successes} delivered, ${result.failures} failed.`, true); event.target.reset(); await load();
+      status(`${result.status}: ${result.successes} delivered, ${result.failures} failed${result.logFailures ? `, ${result.logFailures} log writes failed` : ''}.`, result.status === 'sent'); event.target.reset(); await load();
     } catch (error) { status(error.message); } finally { button.disabled = false; }
   });
   document.querySelectorAll('.template-form').forEach(form => form.addEventListener('submit', async event => {

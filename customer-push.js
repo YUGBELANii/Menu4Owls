@@ -4,51 +4,116 @@
   const disable = document.getElementById('customer-push-disable');
   const status = document.getElementById('customer-push-status');
   if (!enable || !disable || !status) return;
+
+  const defaultLabel = '🔔 Enable notifications';
+  const supported = window.isSecureContext && 'Notification' in window &&
+    'serviceWorker' in navigator && 'PushManager' in window;
   const message = text => { status.textContent = text; };
-  const supported = 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
-  if (!supported) { enable.disabled = true; message('Push notifications are not supported in this browser.'); return; }
+
+  function deniedState() {
+    enable.hidden = false;
+    enable.disabled = true;
+    enable.textContent = 'Permission denied';
+    message('Notifications are blocked. Allow them for this site in your browser settings, then reload.');
+  }
 
   async function state() {
-    const reg = await navigator.serviceWorker.getRegistration('/');
-    const sub = reg && await reg.pushManager.getSubscription();
-    enable.hidden = !!sub;
-    disable.hidden = !sub;
-    if (Notification.permission === 'denied') { enable.disabled = true; enable.hidden = false; message('Notifications are blocked in browser settings.'); }
-    else message(sub ? 'Notifications are enabled on this device.' : 'Get occasional cafe updates on this device.');
+    if (!supported) {
+      enable.hidden = false;
+      enable.disabled = true;
+      enable.textContent = 'Notifications unavailable';
+      disable.hidden = true;
+      message('Push notifications are not supported in this browser or connection.');
+      return;
+    }
+    if (Notification.permission === 'denied') {
+      disable.hidden = true;
+      deniedState();
+      return;
+    }
+    const registration = await navigator.serviceWorker.getRegistration('/');
+    const subscription = registration && await registration.pushManager.getSubscription();
+    enable.hidden = !!subscription;
+    enable.disabled = false;
+    enable.textContent = defaultLabel;
+    disable.hidden = !subscription;
+    message(subscription ? 'Notifications enabled on this device.' : 'Get cafe updates on this device.');
   }
+
   enable.addEventListener('click', async () => {
+    if (!supported || Notification.permission === 'denied') {
+      if (Notification.permission === 'denied') deniedState();
+      return;
+    }
     enable.disabled = true;
+    enable.textContent = 'Enabling…';
+    message('Enabling notifications…');
     try {
-      if (Notification.permission === 'denied') throw new Error('Notifications are blocked in browser settings.');
-      const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
-      if (permission !== 'granted') throw new Error('Notification permission was not granted.');
-      const reg = await navigator.serviceWorker.register('/sw.js');
-      const keyResponse = await fetch('/api/push-public-key');
-      if (!keyResponse.ok) throw new Error('Notifications are not configured yet.');
+      // Permission is requested only in response to this explicit customer click.
+      const permission = Notification.permission === 'default'
+        ? await Notification.requestPermission()
+        : Notification.permission;
+      if (permission !== 'granted') {
+        if (permission === 'denied') deniedState();
+        else throw new Error('Permission was not granted. You can try again when ready.');
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      const keyResponse = await fetch('/api/push-public-key', { cache: 'no-store' });
+      if (!keyResponse.ok) throw new Error('Notification setup is unavailable right now.');
       const { publicKey } = await keyResponse.json();
-      const padded = publicKey.replace(/-/g, '+').replace(/_/g, '/');
-      const applicationServerKey = Uint8Array.from(atob(padded + '='.repeat((4 - padded.length % 4) % 4)), c => c.charCodeAt(0));
-      const subscription = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
-      const response = await fetch('/api/push-register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subscription: subscription.toJSON() }) });
-      if (!response.ok) { await subscription.unsubscribe(); throw new Error((await response.json().catch(() => ({}))).error || 'Could not save subscription.'); }
-      message('Notifications enabled.');
+      if (typeof publicKey !== 'string' || !publicKey) throw new Error('Notification setup is unavailable right now.');
+      const paddedKey = publicKey.replace(/-/g, '+').replace(/_/g, '/');
+      const applicationServerKey = Uint8Array.from(
+        atob(paddedKey + '='.repeat((4 - paddedKey.length % 4) % 4)),
+        character => character.charCodeAt(0)
+      );
+
+      // Reuse an existing browser subscription; the API upserts by endpoint as well.
+      const subscription = await registration.pushManager.getSubscription() ||
+        await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+      const response = await fetch('/api/push-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: subscription.toJSON() })
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || 'Could not save this device subscription.');
+      }
       await state();
-    } catch (error) { message(error.message || 'Could not enable notifications.'); enable.disabled = false; }
+      message('Notifications enabled on this device.');
+    } catch (error) {
+      enable.disabled = false;
+      enable.textContent = defaultLabel;
+      message(`Subscription failed: ${error.message || 'Please try again.'}`);
+    }
   });
+
   disable.addEventListener('click', async () => {
     disable.disabled = true;
     try {
-      const reg = await navigator.serviceWorker.getRegistration('/');
-      const sub = reg && await reg.pushManager.getSubscription();
-      if (sub) {
-        const response = await fetch('/api/push-unsubscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint }) });
-        if (!response.ok) throw new Error('Could not remove the subscription from the server.');
-        await sub.unsubscribe();
+      const registration = await navigator.serviceWorker.getRegistration('/');
+      const subscription = registration && await registration.pushManager.getSubscription();
+      if (subscription) {
+        const response = await fetch('/api/push-unsubscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: subscription.endpoint })
+        });
+        if (!response.ok) throw new Error('Could not remove this subscription from the server.');
+        await subscription.unsubscribe();
       }
-      message('Notifications disabled.');
+      message('Notifications disabled on this device.');
       await state();
-    } catch (error) { message(error.message || 'Could not disable notifications.'); }
-    finally { disable.disabled = false; }
+      message('Notifications disabled on this device.');
+    } catch (error) {
+      message(`Unsubscribe failed: ${error.message || 'Please try again.'}`);
+    } finally {
+      disable.disabled = false;
+    }
   });
+
   state().catch(() => message('Notification settings could not be loaded.'));
 })();
