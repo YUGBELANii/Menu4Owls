@@ -32,16 +32,26 @@
   </style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
+  <nav class="nav admin-nav">
+    <div class="nav-inner admin-nav-inner">
       <a href="index.html" class="brand">Owlz<span> Corner</span></a>
-      <ul class="nav-links">
+      <ul class="nav-links admin-desktop-links">
         <li><a href="index.html">Menu</a></li>
         <li><a href="contact.html">Contact</a></li>
         <li><a href="admin.html">Products</a></li>
         <li><a href="admin-orders.html" class="active">Orders</a></li>
         <li><a href="admin-notifications.html">Notifications</a></li>
       </ul>
+      <details class="admin-mobile-menu">
+        <summary aria-label="Open admin navigation">☰ <span>Menu</span></summary>
+        <ul class="admin-mobile-links">
+          <li><a href="index.html">Menu</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="admin.html">Products</a></li>
+          <li><a href="admin-orders.html" aria-current="page">Orders</a></li>
+          <li><a href="admin-notifications.html">Notifications</a></li>
+        </ul>
+      </details>
     </div>
   </nav>
 

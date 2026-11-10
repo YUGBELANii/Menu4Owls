@@ -31,8 +31,9 @@
       deniedState();
       return;
     }
-    const registration = await navigator.serviceWorker.getRegistration('/');
-    const subscription = registration && await registration.pushManager.getSubscription();
+    // Registering the unchanged root scope also checks for updated worker code.
+    const registration = await navigator.serviceWorker.register('/sw.js');
+    const subscription = await registration.pushManager.getSubscription();
     enable.hidden = !!subscription;
     enable.disabled = false;
     enable.textContent = defaultLabel;

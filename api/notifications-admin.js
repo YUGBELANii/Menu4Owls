@@ -7,7 +7,16 @@ function validateContent(body) {
   if (!title || title.length > 120 || !text || text.length > 500) throw new Error('Title (1–120 characters) and body (1–500 characters) are required.');
   for (const field of ['image_url', 'destination_url']) {
     const value = body[field];
-    if (value && (!/^https:\/\//i.test(value) || value.length > 2048)) throw new Error(`${field} must be a valid HTTPS URL.`);
+    if (!value) continue;
+    if (typeof value !== 'string' || value.length > 2048) throw new Error(`${field} must be a valid HTTPS URL.`);
+    if (field === 'destination_url' && value.startsWith('/') && !value.startsWith('//') && !value.startsWith('/\\')) continue;
+    let parsed;
+    try { parsed = new URL(value); }
+    catch (_) { throw new Error(`${field} must be a valid HTTPS URL.`); }
+    const hostname = parsed.hostname.toLowerCase().replace(/\.$/, '');
+    if (parsed.protocol !== 'https:' || !hostname || parsed.username || parsed.password || hostname === 'localhost' || hostname.endsWith('.localhost') || hostname.endsWith('.local')) {
+      throw new Error(`${field} must be a publicly accessible HTTPS URL.`);
+    }
   }
   return { title, body: text, image_url: body.image_url || null, destination_url: body.destination_url || '/' };
 }

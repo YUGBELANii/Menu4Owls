@@ -1704,3 +1704,91 @@ select {
     padding: 12px 16px;
   }
 }
+
+/* Admin navigation collapses on phones instead of wrapping five links. */
+.admin-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .admin-nav-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .admin-desktop-links {
+    display: none;
+  }
+
+  .admin-mobile-menu {
+    display: block;
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  .admin-mobile-menu summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 8px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .admin-mobile-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .admin-mobile-menu summary::after {
+    content: "⌄";
+    color: var(--accent);
+    font-size: 1rem;
+  }
+
+  .admin-mobile-menu[open] summary {
+    border-color: var(--accent);
+  }
+
+  .admin-mobile-links {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 30;
+    display: grid;
+    gap: 4px;
+    width: min(280px, calc(100vw - 24px));
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+  }
+
+  .admin-mobile-links a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 5px;
+    color: var(--text);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .admin-mobile-links a:hover,
+  .admin-mobile-links a[aria-current="page"] {
+    background: var(--surface-2);
+    color: var(--accent);
+  }
+}
