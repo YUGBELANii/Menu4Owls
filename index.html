@@ -1693,10 +1693,6 @@ body {
         </a>
       </li>
 
-      <li>
-        <button class="push-nav-button" type="button" id="customer-push-enable">🔔 Enable notifications</button>
-      </li>
-
       <!-- <li>
         <a href="admin.html">
           Admin
@@ -1992,11 +1988,6 @@ body {
       </a>.
     </span>
 
-    <span class="push-preferences">
-      <button class="btn btn-ghost" type="button" id="customer-push-disable" hidden>Unsubscribe</button>
-      <span id="customer-push-status" role="status" aria-live="polite">Get cafe updates on this device.</span>
-    </span>
-
     <span>
 
       Powered by
@@ -2015,6 +2006,17 @@ body {
 
 </footer>
 
+<dialog id="push-opt-in" class="push-opt-in-dialog" aria-labelledby="push-opt-in-title">
+  <form method="dialog" class="push-opt-in-card">
+    <h2 id="push-opt-in-title">Get order updates?</h2>
+    <p>Allow notifications for order updates and relevant offers. You can continue checkout either way.</p>
+    <div class="push-opt-in-actions">
+      <button class="btn btn-ghost" type="button" id="push-opt-in-refuse">No thanks</button>
+      <button class="btn" type="button" id="push-opt-in-accept">Enable Notifications</button>
+    </div>
+  </form>
+</dialog>
+
 
 <!-- =======================================================
      SUPABASE
@@ -2023,7 +2025,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase-config.js"></script>
-<script src="customer-push.js" defer></script>
+<script src="customer-push.js"></script>
 
 
 <script>
@@ -2093,8 +2095,10 @@ function safeImageUrl(value) {
 }
 
 function trackVercelEvent(name, data = {}) {
-  if (typeof window.va !== 'function') return;
-  window.va('event', { name, data });
+  try {
+    if (typeof window.va === 'function') window.va('event', { name, data });
+  }
+  catch (error) { console.debug('Optional analytics event skipped:', error); }
 }
 
 const reportedMenuSections = new Set();
@@ -3111,96 +3115,74 @@ function scrollToCategory(category) {
    WHATSAPP CHECKOUT
 ========================================================= */
 
+let owlzzCheckoutAttemptInProgress = false;
 
 async function checkoutWhatsapp() {
-  const policyCheckbox = document.getElementById("policy-accepted");
-
-  // 1. Mandatory policy acceptance
-  if (!policyCheckbox || !policyCheckbox.checked) {
-    alert("Please read and accept the Refund & Order Policy before ordering.");
-    policyCheckbox?.focus();
-    return;
-  }
-
-  // 2. Validate cart
-  if (!Array.isArray(cart) || cart.length === 0) {
-    alert("Your cart is empty. Please add items before ordering.");
-    return;
-  }
-
-  // 3. Chai minimum: 5 cups in total
-  const chaiQuantity = cart
-    .filter(item => /chai/i.test(item.name))
-    .reduce((total, item) => total + item.qty, 0);
-
-  if (chaiQuantity > 0 && chaiQuantity < 5) {
-    alert("Chai orders require a minimum of 5 cups.");
-    return;
-  }
-
-  // 4. Check Owlz Corner hours: 6 PM–3 AM, India time
-  const indiaHour = Number(
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      hourCycle: "h23"
-    }).format(new Date())
-  );
-
-  if (!(indiaHour >= 18 || indiaHour < 3)) {
-    alert("Owlz Corner is currently closed. Ordering is available from 6 PM to 3 AM.");
-    return;
-  }
-
-  // 5. Prepare cart details
-  const orderItems = cart.map(item => ({
-    id: item.id,
-    qty: item.qty
-  }));
-
-  const cartKey = JSON.stringify(
-    [...orderItems].sort((a, b) => a.id.localeCompare(b.id))
-  );
-
-  // Reuse the same request ID for retries of the same cart.
-  // This helps prevent duplicate orders after a network failure.
-  let requestId;
-
-  try {
-    const storageKey = "owlzz_checkout_request_" + cartKey;
-    requestId = sessionStorage.getItem(storageKey);
-
-    if (!requestId) {
-      requestId = crypto.randomUUID();
-      sessionStorage.setItem(storageKey, requestId);
-    }
-  } catch (error) {
-    alert("Secure checkout could not be initialized. Please reload and try again.");
-    return;
-  }
-
-  // Open a window now so the browser is less likely to block WhatsApp.
-  const whatsappWindow = window.open("about:blank", "_blank");
-
-  if (!whatsappWindow) {
-    alert("Please allow pop-ups for this website to continue to WhatsApp.");
-    return;
-  }
-
-  trackVercelEvent('Checkout Started');
-
-  const checkoutButton = document.querySelector(
-    '[onclick="checkoutWhatsapp()"]'
-  );
-
+  if (owlzzCheckoutAttemptInProgress) return;
+  owlzzCheckoutAttemptInProgress = true;
+  const checkoutButton = document.getElementById('checkout-whatsapp');
   const originalButtonText = checkoutButton?.textContent;
-
   if (checkoutButton) {
     checkoutButton.disabled = true;
-    checkoutButton.textContent = "Preparing order…";
+    checkoutButton.textContent = 'Preparing order…';
   }
 
   try {
+    // The preference decision is the first checkout action. This promise only
+    // resolves after accept/refuse (including Escape) and best-effort processing.
+    if (typeof window.askCustomerPushOptIn === 'function') {
+      try { await window.askCustomerPushOptIn(); }
+      catch (error) { console.warn('Notification decision failed; continuing checkout:', error); }
+    }
+
+    const policyCheckbox = document.getElementById("policy-accepted");
+    if (!policyCheckbox || !policyCheckbox.checked) {
+      alert("Please read and accept the Refund & Order Policy before ordering.");
+      policyCheckbox?.focus();
+      return;
+    }
+
+    if (!Array.isArray(cart) || cart.length === 0) {
+      alert("Your cart is empty. Please add items before ordering.");
+      return;
+    }
+
+    const chaiQuantity = cart
+      .filter(item => /chai/i.test(item.name))
+      .reduce((total, item) => total + item.qty, 0);
+    if (chaiQuantity > 0 && chaiQuantity < 5) {
+      alert("Chai orders require a minimum of 5 cups.");
+      return;
+    }
+
+    const indiaHour = Number(
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        hourCycle: "h23"
+      }).format(new Date())
+    );
+    if (!(indiaHour >= 18 || indiaHour < 3)) {
+      alert("Owlz Corner is currently closed. Ordering is available from 6 PM to 3 AM.");
+      return;
+    }
+
+    const orderItems = cart.map(item => ({ id: item.id, qty: item.qty }));
+    const cartKey = JSON.stringify([...orderItems].sort((a, b) => a.id.localeCompare(b.id)));
+    let requestId;
+    try {
+      const storageKey = "owlzz_checkout_request_" + cartKey;
+      requestId = sessionStorage.getItem(storageKey);
+      if (!requestId) {
+        requestId = crypto.randomUUID();
+        sessionStorage.setItem(storageKey, requestId);
+      }
+    } catch (error) {
+      alert("Secure checkout could not be initialized. Please reload and try again.");
+      return;
+    }
+
+    trackVercelEvent('Checkout Started');
     // 6. Create the order securely on the server.
     const response = await fetch("/api/create-order", {
       method: "POST",
@@ -3217,9 +3199,10 @@ async function checkoutWhatsapp() {
     const result = await response.json().catch(() => null);
 
     if (!response.ok || !result?.token || !result?.order_id) {
-      throw new Error(
-        result?.error || "Couldn't create your order. Please try again."
-      );
+      const message = response.status === 405 || response.status === 404
+        ? 'The checkout API is unavailable from this server. Start the site with Vercel Dev (see LOCAL-DEVELOPMENT.md).'
+        : result?.error || "Couldn't create your order. Please try again.";
+      throw new Error(message);
     }
 
     trackVercelEvent('Order Token Created');
@@ -3289,13 +3272,13 @@ let message = [
       encodeURIComponent(message.join("\n"));
 
     trackVercelEvent('WhatsApp Order Opened');
-    whatsappWindow.location.href = whatsappUrl;
+    // A same-tab navigation does not depend on popup permission and happens
+    // only after the order API has returned a valid order ID and token.
+    window.location.href = whatsappUrl;
 
   } catch (error) {
     trackVercelEvent('Checkout Failed');
     console.error("Checkout failed:", error);
-
-    whatsappWindow.close();
 
     alert(
       error.message ||
@@ -3303,6 +3286,7 @@ let message = [
     );
 
   } finally {
+    owlzzCheckoutAttemptInProgress = false;
     if (checkoutButton) {
       checkoutButton.disabled = false;
       checkoutButton.textContent =
@@ -3924,8 +3908,7 @@ loadWeeklyLeaderboard();
     (window.siq = window.siq || []).push(arguments);
   };
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
-<script defer src="/_vercel/speed-insights/script.js"></script>
+<script defer src="/vercel-analytics-loader.js"></script>
 
 </body>
 </html>

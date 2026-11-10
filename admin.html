@@ -1,67 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Owlz Corner — Admin</title>
-<link rel="stylesheet" href="style.css">
-<style>
-.image-upload-box{border:1px dashed var(--border);padding:16px;margin-bottom:16px;background:var(--surface-2)}
-.image-upload-label{display:block;margin-bottom:8px;font-weight:500}.image-upload-input{width:100%}
-.image-preview{margin-top:12px}.image-preview img{width:120px;height:120px;object-fit:cover;border-radius:4px;display:block}
-.image-preview-text,.upload-status{font-size:.85rem;opacity:.8;margin-top:8px}
-.product-row.editing{display:block;padding:18px}.edit-product-form{width:100%}.edit-product-form .field{margin-bottom:12px}
-.edit-product-form input,.edit-product-form textarea{width:100%;box-sizing:border-box}.edit-product-form textarea{min-height:80px;resize:vertical}
-.edit-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.edit-preview{display:flex;align-items:center;gap:12px;margin-bottom:16px}.edit-preview img,.edit-preview-placeholder{width:64px;height:64px;object-fit:cover;border-radius:4px;background:var(--surface-2)}
-.orders-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.order-alert-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.live-indicator{font-size:.82rem;opacity:.8}.live-indicator::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:#d69b36;margin-right:7px}.live-indicator.connected::before{background:#28a56a}.new-order-toast{position:fixed;right:20px;bottom:20px;z-index:9999;width:min(360px,calc(100vw - 40px));padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:0 12px 40px #0005;display:none}.new-order-toast.show{display:block}.new-order-toast strong{display:block;margin-bottom:5px}.new-order-toast p{margin:0 0 10px}.new-order-toast button{margin-right:6px}
-@media(max-width:600px){.edit-product-form .form-row{display:block}.image-preview img{width:100px;height:100px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin overview · Owlz Corner</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .home-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:16px; }
+    .home-card { display:block; padding:22px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--gradient-surface); color:var(--text); text-decoration:none; }
+    .home-card:hover { border-color:var(--accent); }
+    .home-card strong { display:block; margin:8px 0; font-size:1.7rem; }
+    .home-card span { color:var(--muted); font-size:.85rem; }
+    .home-section-title { margin:30px 0 14px; }
+    .home-shortcuts { display:flex; gap:10px; flex-wrap:wrap; }
+  </style>
 </head>
 <body>
-<nav class="nav admin-nav"><div class="nav-inner admin-nav-inner"><a href="index.html" class="brand">Owlz<span> Corner</span></a><ul class="nav-links admin-desktop-links"><li><a href="index.html">Menu</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin.html" class="active">Products</a></li><li><a href="admin-orders.html">Orders</a></li><li><a href="admin-notifications.html">Notifications</a></li></ul><details class="admin-mobile-menu"><summary aria-label="Open admin navigation">☰ <span>Menu</span></summary><ul class="admin-mobile-links"><li><a href="index.html">Menu</a></li><li><a href="contact.html">Contact</a></li><li><a href="admin.html" aria-current="page">Products</a></li><li><a href="admin-orders.html">Orders</a></li><li><a href="admin-notifications.html">Notifications</a></li></ul></details></div></nav>
-
-<div class="login-card" id="login-view"><h2>Admin login</h2><p class="sub">Sign in with your authorized Supabase admin account.</p><form id="login-form"><div class="field"><label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required></div><div class="field"><label for="login-password">Password</label><input type="password" id="login-password" autocomplete="current-password" required></div><button type="submit" class="btn btn-full" id="login-btn">Log in</button><div class="status-msg" id="login-status" role="status"></div></form></div>
-
-<main class="admin-shell" id="admin-view" style="display:none"><div class="container">
-<header class="admin-topbar"><div><p class="eyebrow" style="margin-bottom:4px">Admin</p><h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.8rem">Cafe dashboard</h1></div><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span class="who" id="who-label"></span><button class="btn btn-ghost" id="logout-btn" type="button">Log out</button></div></header>
-
-<section class="panel"><div class="orders-toolbar"><div><h3 style="margin-bottom:4px">🧾 Customer orders</h3><p class="sub" style="margin:0">Order management now has its own page.</p></div><div class="order-alert-toolbar"><span id="realtime-status" class="live-indicator">Live updates connecting…</span><button class="btn btn-ghost" id="enable-alerts-btn" type="button">Enable sound & push notifications</button><a class="btn" href="admin-orders.html">Manage orders</a></div></div></section>
-
-<section class="panel"><h3>Add a new product</h3><form id="product-form"><div class="form-row"><div class="field"><label for="p-name">Name</label><input type="text" id="p-name" required maxlength="120" placeholder="e.g. Masala Chai"></div><div class="field"><label for="p-price">Price (₹)</label><input type="number" id="p-price" step="0.01" min="0" required placeholder="60"></div></div><div class="form-row"><div class="field"><label for="p-category">Category</label><input type="text" id="p-category" required maxlength="80" placeholder="e.g. Beverages"></div><div class="field"><label for="p-image">Image URL (optional)</label><input type="url" id="p-image" placeholder="https://…"></div></div><div class="image-upload-box"><label for="p-image-file" class="image-upload-label">Or upload an image</label><input type="file" id="p-image-file" class="image-upload-input" accept="image/png,image/jpeg,image/webp,image/gif"><div id="p-image-preview" class="image-preview"></div><div id="p-upload-status" class="upload-status"></div></div><div class="field"><label for="p-desc">Description (optional)</label><textarea id="p-desc" placeholder="Short one-line description"></textarea></div><button type="submit" class="btn" id="add-btn">Add product</button><div class="status-msg" id="product-status" role="status"></div></form></section>
-
-<section class="panel"><div class="orders-toolbar"><h3>Current products</h3><button type="button" class="btn btn-ghost" id="refresh-products-btn">Refresh products</button></div><div class="product-list" id="product-list"><p class="loading-state">Loading products…</p></div></section>
-
-</div></main>
-<div id="new-order-toast" class="new-order-toast" role="status" aria-live="polite"><strong>New Owlz Corner order!</strong><p id="new-order-toast-message"></p><a class="btn" href="admin-orders.html#orders-panel">View orders</a><button type="button" class="btn btn-ghost" id="dismiss-new-order-btn">Dismiss</button></div>
-<!-- Realtime prerequisite: enable the public.orders table in Supabase Database > Publications > supabase_realtime. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="admin-notifications.js"></script>
-<script>
-'use strict';
-const STORAGE_BUCKET='menu-images';
-const MAX_IMAGE_SIZE=5*1024*1024;
-const loginView=document.getElementById('login-view');
-const adminView=document.getElementById('admin-view');
-const whoLabel=document.getElementById('who-label');
-function escapeHtml(value){const div=document.createElement('div');div.textContent=value??'';return div.innerHTML;}
-function setStatus(el,message,type=''){el.textContent=message;el.className=type?`status-msg show ${type}`:'status-msg';}
-function createImageFileName(file){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');return `${Date.now()}-${crypto.randomUUID()}.${ext||'jpg'}`;}
-async function uploadImage(file,statusElement){if(!file)return null;const allowed=['image/jpeg','image/png','image/webp','image/gif'];if(!allowed.includes(file.type))throw new Error('Please upload a JPG, PNG, WEBP or GIF image.');if(file.size>MAX_IMAGE_SIZE)throw new Error('Image must be smaller than 5 MB.');if(statusElement)statusElement.textContent='Uploading image…';const name=createImageFileName(file);const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).upload(name,file,{cacheControl:'3600',upsert:false});if(error)throw error;const {data}=supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(name);if(!data?.publicUrl)throw new Error('Image uploaded but public URL could not be generated.');if(statusElement)statusElement.textContent='Image uploaded successfully.';return data.publicUrl;}
-function previewFile(input,preview){const file=input.files?.[0];preview.replaceChildren();if(!file)return;if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)||file.size>MAX_IMAGE_SIZE){preview.textContent=file.size>MAX_IMAGE_SIZE?'Image must be smaller than 5 MB.':'Invalid image format.';input.value='';return;}const img=document.createElement('img');img.alt='Image preview';img.src=URL.createObjectURL(file);const label=document.createElement('div');label.className='image-preview-text';label.textContent=file.name;preview.append(img,label);}
-document.getElementById('p-image-file').addEventListener('change',function(){previewFile(this,document.getElementById('p-image-preview'));});
-async function checkSession(){const {data,error}=await supabaseClient.auth.getSession();if(error)console.error(error);const session=data?.session;if(session){loginView.style.display='none';adminView.style.display='block';whoLabel.textContent=session.user.email||'';window.initAdminOrderNotifications();await loadProducts();}else{window.stopAdminOrderNotifications();loginView.style.display='block';adminView.style.display='none';}}
-supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session){loginView.style.display='none';adminView.style.display='block';whoLabel.textContent=session.user.email||'';setTimeout(()=>{window.initAdminOrderNotifications();loadProducts();},0);}else{window.stopAdminOrderNotifications();loginView.style.display='block';adminView.style.display='none';}});
-document.getElementById('login-form').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('login-btn');const status=document.getElementById('login-status');btn.disabled=true;btn.textContent='Logging in…';const email=document.getElementById('login-email').value.trim();const password=document.getElementById('login-password').value;try{const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;setStatus(status,'Signed in successfully.','ok');await checkSession();}catch(error){setStatus(status,error.message||'Login failed.','err');}finally{btn.disabled=false;btn.textContent='Log in';}});
-document.getElementById('logout-btn').addEventListener('click',async()=>{const {error}=await supabaseClient.auth.signOut();if(error)alert(`Couldn't log out: ${error.message}`);await checkSession();});
-document.getElementById('refresh-products-btn').addEventListener('click',loadProducts);
-document.getElementById('product-form').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('add-btn');const status=document.getElementById('product-status');const uploadStatus=document.getElementById('p-upload-status');btn.disabled=true;btn.textContent='Adding…';try{const name=document.getElementById('p-name').value.trim();const price=Number(document.getElementById('p-price').value);const category=document.getElementById('p-category').value.trim();const url=document.getElementById('p-image').value.trim();const file=document.getElementById('p-image-file').files[0];const description=document.getElementById('p-desc').value.trim();if(!name)throw new Error('Product name is required.');if(!Number.isFinite(price)||price<0)throw new Error('Please enter a valid price.');if(!category)throw new Error('Category is required.');let imageUrl=url||null;if(file)imageUrl=await uploadImage(file,uploadStatus);const {error}=await supabaseClient.from('products').insert({name,price,category,image_url:imageUrl,description:description||null});if(error)throw error;setStatus(status,'Product added successfully.','ok');e.target.reset();document.getElementById('p-image-preview').replaceChildren();uploadStatus.textContent='';await loadProducts();}catch(error){console.error('Product creation failed:',error);setStatus(status,`Couldn't add product — ${error.message}`,'err');}finally{btn.disabled=false;btn.textContent='Add product';}});
-
-async function loadProducts(){const list=document.getElementById('product-list');list.innerHTML='<p>Loading products…</p>';const {data,error}=await supabaseClient.from('products').select('*').order('created_at',{ascending:false});if(error){list.innerHTML=`<p class="empty-state">${escapeHtml(error.message)}</p>`;return;}if(!data?.length){list.innerHTML='<p class="empty-state">No products yet — add your first one above.</p>';return;}list.innerHTML=data.map(item=>`<div class="product-row" data-id="${escapeHtml(item.id)}">${item.image_url?`<img src="${escapeHtml(item.image_url)}" alt="" loading="lazy">`:'<div style="width:44px;height:44px;background:var(--surface-2);flex-shrink:0"></div>'}<div class="p-info"><div class="p-name">${escapeHtml(item.name)}</div><div class="p-meta">${escapeHtml(item.category)} · ₹${Number(item.price).toFixed(2)} · ${item.available===false?'hidden':'visible'}</div></div><div class="p-actions"><button type="button" class="icon-btn edit-btn">Edit</button><button type="button" class="icon-btn toggle-btn">${item.available===false?'Show':'Hide'}</button><button type="button" class="icon-btn danger delete-btn">Delete</button></div></div>`).join('');list.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',e=>{const id=e.currentTarget.closest('.product-row').dataset.id;const item=data.find(x=>x.id===id);if(item)startEdit(item);}));list.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',async e=>{const b=e.currentTarget;const id=b.closest('.product-row').dataset.id;const item=data.find(x=>x.id===id);if(!item)return;b.disabled=true;const {error}=await supabaseClient.from('products').update({available:item.available===false}).eq('id',id);if(error){alert(`Couldn't update product — ${error.message}`);b.disabled=false;return;}await loadProducts();}));list.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',async e=>{const b=e.currentTarget;const id=b.closest('.product-row').dataset.id;const item=data.find(x=>x.id===id);if(!item||!confirm(`Delete “${item.name}”? This cannot be undone.`))return;b.disabled=true;b.textContent='Deleting…';const {error}=await supabaseClient.from('products').delete().eq('id',id);if(error){alert(`Couldn't delete product — ${error.message}`);b.disabled=false;b.textContent='Delete';return;}await loadProducts();}));}
-function startEdit(item){const row=document.querySelector(`.product-row[data-id="${CSS.escape(item.id)}"]`);if(!row)return;row.classList.add('editing');row.innerHTML=`<div class="edit-product-form"><div class="edit-preview">${item.image_url?`<img src="${escapeHtml(item.image_url)}" alt="">`:'<div class="edit-preview-placeholder"></div>'}<div><strong>Editing product</strong><div>${escapeHtml(item.name)}</div></div></div><div class="form-row"><div class="field"><label>Name</label><input class="edit-name" maxlength="120" value="${escapeHtml(item.name)}" required></div><div class="field"><label>Price (₹)</label><input class="edit-price" type="number" min="0" step="0.01" value="${Number(item.price)}" required></div></div><div class="field"><label>Category</label><input class="edit-category" maxlength="80" value="${escapeHtml(item.category)}" required></div><div class="image-upload-box"><label class="image-upload-label">Change image (optional)</label><input type="file" class="edit-image-file image-upload-input" accept="image/png,image/jpeg,image/webp,image/gif"><div class="edit-image-preview image-preview"></div><div class="edit-upload-status upload-status"></div><div class="image-source-divider">OR use image URL</div><input type="url" class="edit-image-url" value="${escapeHtml(item.image_url||'')}" placeholder="https://…"></div><div class="field"><label>Description</label><textarea class="edit-description">${escapeHtml(item.description||'')}</textarea></div><div class="edit-actions"><button type="button" class="btn save-edit-btn">Save changes</button><button type="button" class="btn btn-ghost cancel-edit-btn">Cancel</button></div><div class="edit-status status-msg" role="status"></div></div>`;const fileInput=row.querySelector('.edit-image-file');fileInput.addEventListener('change',()=>previewFile(fileInput,row.querySelector('.edit-image-preview')));row.querySelector('.cancel-edit-btn').addEventListener('click',loadProducts);row.querySelector('.save-edit-btn').addEventListener('click',()=>saveEdit(item.id,row));}
-async function saveEdit(id,row){const btn=row.querySelector('.save-edit-btn');const status=row.querySelector('.edit-status');const name=row.querySelector('.edit-name').value.trim();const price=Number(row.querySelector('.edit-price').value);const category=row.querySelector('.edit-category').value.trim();const url=row.querySelector('.edit-image-url').value.trim();const file=row.querySelector('.edit-image-file').files[0];const description=row.querySelector('.edit-description').value.trim();try{if(!name)throw new Error('Product name is required.');if(!Number.isFinite(price)||price<0)throw new Error('Enter a valid price.');if(!category)throw new Error('Category is required.');btn.disabled=true;btn.textContent='Saving…';let imageUrl=url||null;if(file)imageUrl=await uploadImage(file,row.querySelector('.edit-upload-status'));const {error}=await supabaseClient.from('products').update({name,price,category,image_url:imageUrl,description:description||null}).eq('id',id);if(error)throw error;await loadProducts();}catch(error){console.error('Product update failed:',error);setStatus(status,`Couldn't save — ${error.message}`,'err');btn.disabled=false;btn.textContent='Save changes';}}
-
-checkSession();
-</script>
+  <div class="login-card" id="login-view">
+    <h2>Admin login</h2><p class="sub">Sign in with your authorized Supabase admin account.</p>
+    <form id="login-form">
+      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required></div>
+      <div class="field"><label for="login-password">Password</label><input type="password" id="login-password" autocomplete="current-password" required></div>
+      <button type="submit" class="btn btn-full" id="login-btn">Log in</button><div class="status-msg" id="login-status" role="status"></div>
+    </form>
+  </div>
+  <main class="admin-shell admin-workspace" id="admin-view" style="display:none">
+    <div class="container">
+      <header class="admin-topbar">
+        <div><p class="eyebrow" style="margin-bottom:4px">Owlz Corner · Admin</p><h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.9rem">Business overview</h1><p class="sub">Recent activity from the existing catalogue and order records.</p></div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="who" id="who-label"></span><button class="btn btn-ghost" id="logout-btn" type="button">Log out</button></div>
+      </header>
+      <p id="overview-status" class="upload-status" role="status">Loading overview…</p>
+      <section class="home-grid" aria-label="Recent business activity">
+        <a class="home-card" href="admin-products.html"><span>Products in catalogue</span><strong id="overview-products">—</strong><span>Manage products and categories →</span></a>
+        <a class="home-card" href="admin-orders.html"><span>Orders · last 3 India calendar days</span><strong id="overview-orders">—</strong><span>Open order history →</span></a>
+        <a class="home-card" href="admin-orders.html#analytics"><span>Completed · last 3 days</span><strong id="overview-completed">—</strong><span>See order analytics →</span></a>
+      </section>
+      <h2 class="home-section-title">Management</h2>
+      <section class="home-shortcuts" aria-label="Admin shortcuts">
+        <a class="btn" href="admin-orders.html">Orders</a><a class="btn btn-ghost" href="admin-products.html">Products &amp; categories</a><a class="btn btn-ghost" href="admin-notifications.html">Notifications</a><a class="btn btn-ghost" href="admin-finance.html">Finance</a><a class="btn btn-ghost" href="admin-promotions.html">Banners &amp; promotions</a><a class="btn btn-ghost" href="admin-store-status.html">Store status</a>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-navigation.js"></script>
+  <script>
+    'use strict';
+    const loginView = document.getElementById('login-view');
+    const adminView = document.getElementById('admin-view');
+    const setStatus = (el, text, type='') => { el.textContent=text; el.className=type?`status-msg show ${type}`:'upload-status'; };
+    function threeDayStart() {
+      const p = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+      const get = type => p.find(x=>x.type===type).value;
+      const day = new Date(Date.UTC(Number(get('year')),Number(get('month'))-1,Number(get('day'))-2)).toISOString().slice(0,10);
+      return new Date(`${day}T00:00:00+05:30`).toISOString();
+    }
+    async function loadOverview() {
+      document.getElementById('overview-status').textContent='Loading overview…';
+      const start=threeDayStart();
+      const [products, orders, completed] = await Promise.all([
+        supabaseClient.from('products').select('id,available',{count:'exact'}),
+        supabaseClient.from('orders').select('id',{count:'exact',head:true}).gte('created_at',start),
+        supabaseClient.from('orders').select('id',{count:'exact',head:true}).eq('status','completed').gte('created_at',start)
+      ]);
+      if(products.error) throw products.error;
+      if(orders.error) throw orders.error;
+      if(completed.error) throw completed.error;
+      document.getElementById('overview-products').textContent=String(products.count ?? products.data?.length ?? 0);
+      document.getElementById('overview-orders').textContent=String(orders.count ?? 0);
+      document.getElementById('overview-completed').textContent=String(completed.count ?? 0);
+      document.getElementById('overview-status').textContent='Overview uses saved records from the connected Supabase project.';
+    }
+    async function refresh() {
+      const {data,error}=await supabaseClient.auth.getSession(); if(error)console.error(error);
+      const session=data?.session; loginView.style.display=session?'none':'block'; adminView.style.display=session?'':'none';
+      if(session){document.getElementById('who-label').textContent=session.user.email||'';try{await loadOverview();}catch(e){document.getElementById('overview-status').textContent=`Could not load overview: ${e.message}`;}}
+    }
+    supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(refresh,0);else{loginView.style.display='block';adminView.style.display='none';}});
+    document.getElementById('login-form').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('login-btn');b.disabled=true;try{const{error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('login-email').value.trim(),password:document.getElementById('login-password').value});if(error)throw error;await refresh();}catch(error){setStatus(document.getElementById('login-status'),error.message||'Login failed.','err');}finally{b.disabled=false;}});
+    document.getElementById('logout-btn').addEventListener('click',async()=>{const{error}=await supabaseClient.auth.signOut();if(error)alert(`Could not log out: ${error.message}`);await refresh();});
+    refresh();
+  </script>
 </body>
 </html>

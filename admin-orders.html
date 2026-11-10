@@ -25,6 +25,10 @@
     .live-indicator.connected::before { background:#28a56a; }
     .new-order-toast { position:fixed; right:20px; bottom:20px; z-index:9999; width:min(360px,calc(100vw - 40px)); padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--surface); box-shadow:0 12px 40px #0005; display:none; }
     .new-order-toast.show { display:block; }
+    .history-controls { display:flex; gap:8px; flex-wrap:wrap; margin:16px 0; }
+    .history-controls input { min-width:150px; }
+    .source-badge { display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; background:var(--surface-2); font-size:.75rem; }
+    .dependency-note { margin:16px 0; padding:12px 14px; border-left:3px solid var(--accent); background:var(--surface-2); line-height:1.5; }
     .new-order-toast strong { display:block; margin-bottom:5px; }
     .new-order-toast p { margin:0 0 10px; }
     .new-order-toast button { margin-right:6px; }
@@ -38,7 +42,7 @@
       <ul class="nav-links admin-desktop-links">
         <li><a href="index.html">Menu</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="admin.html">Products</a></li>
+        <li><a href="admin-products.html">Products</a></li>
         <li><a href="admin-orders.html" class="active">Orders</a></li>
         <li><a href="admin-notifications.html">Notifications</a></li>
       </ul>
@@ -47,7 +51,7 @@
         <ul class="admin-mobile-links">
           <li><a href="index.html">Menu</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="admin.html">Products</a></li>
+          <li><a href="admin-products.html">Products</a></li>
           <li><a href="admin-orders.html" aria-current="page">Orders</a></li>
           <li><a href="admin-notifications.html">Notifications</a></li>
         </ul>
@@ -74,7 +78,7 @@
           <h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.8rem">Customer orders</h1>
         </div>
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-          <a class="btn btn-ghost" href="admin.html">Manage Products </a>
+          <a class="btn btn-ghost" href="admin-products.html">Manage Products</a>
           <span class="who" id="who-label"></span>
           <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
         </div>
@@ -88,17 +92,38 @@
           </div>
           <div class="order-alert-toolbar">
             <span id="realtime-status" class="live-indicator">Live updates connecting…</span>
+            <a class="btn btn-ghost" href="#create-order">Create order</a>
             <button class="btn btn-ghost" id="enable-alerts-btn" type="button">Enable sound &amp; push notifications</button>
             <button class="btn btn-ghost" id="refresh-orders-btn" type="button">Refresh orders</button>
           </div>
         </div>
+        <section class="orders-dashboard" id="analytics" aria-label="Order dashboard">
+          <h3>Order dashboard</h3>
+          <p class="sub">Statistics for the selected reporting period. Order sources show as unrecorded where the saved order data has no source field.</p>
+          <div class="orders-metrics">
+            <div class="metric-card"><span>Total orders</span><strong id="orders-metric-total">—</strong></div>
+            <div class="metric-card"><span>Completed / delivered</span><strong id="orders-metric-completed">—</strong></div>
+            <div class="metric-card"><span>Canceled</span><strong id="orders-metric-canceled">—</strong></div>
+            <div class="metric-card"><span>Website</span><strong id="orders-metric-website">—</strong></div>
+            <div class="metric-card"><span>WhatsApp</span><strong id="orders-metric-whatsapp">—</strong></div>
+            <div class="metric-card"><span>Phone</span><strong id="orders-metric-phone">—</strong></div>
+          </div>
+          <div id="orders-source-breakdown" class="source-list"></div>
+        </section>
+        <section class="admin-subpanel" id="create-order"><h3>Create order</h3><p class="dependency-note">Manual order creation needs a database RPC that safely snapshots catalogue prices and records customer details and whether the source was WhatsApp or phone. The repository exposes only the website checkout RPC, so this feature cannot be safely enabled until that schema is available.</p></section>
+        <h3>Order history</h3><p class="sub">Default history covers the latest three calendar days in India time. Search and date filters request older records when needed.</p>
+        <div class="history-controls">
+          <input id="order-search" type="search" placeholder="Search ID, customer, phone or items" aria-label="Search orders">
+          <label>From <input id="orders-from" type="date"></label>
+          <label>To <input id="orders-to" type="date"></label>
+          <button class="btn btn-ghost" id="apply-order-filters" type="button">Apply filters</button>
+          <button class="btn btn-ghost" id="older-orders-btn" type="button">Show older orders</button>
+          <button class="btn btn-ghost" id="more-orders-btn" type="button" hidden>Load more</button>
+        </div>
         <div class="orders-filters" id="orders-filters">
           <button class="btn btn-ghost active" type="button" data-order-filter="all">All</button>
-          <button class="btn btn-ghost" type="button" data-order-filter="pending">Pending</button>
-          <button class="btn btn-ghost" type="button" data-order-filter="confirmed">Confirmed</button>
-          <button class="btn btn-ghost" type="button" data-order-filter="preparing">Preparing</button>
           <button class="btn btn-ghost" type="button" data-order-filter="completed">Completed</button>
-          <button class="btn btn-ghost" type="button" data-order-filter="cancelled">Cancelled</button>
+          <button class="btn btn-ghost" type="button" data-order-filter="canceled">Canceled</button>
         </div>
         <p id="orders-status" class="upload-status" role="status">Orders will load after login.</p>
         <div id="orders-list"><p class="loading-state">Loading orders…</p></div>
@@ -117,6 +142,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="admin-notifications.js"></script>
+  <script src="admin-navigation.js"></script>
   <script>
     'use strict';
 
@@ -125,6 +151,18 @@
     const whoLabel = document.getElementById('who-label');
     let orderFilter = 'all';
     let cachedOrders = [];
+    const ORDER_PAGE_SIZE = 50;
+    let orderOffset = 0;
+    let olderMode = false;
+    let orderQuery = null;
+
+    function threeDayStart() {
+      const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+      const value = type => parts.find(part => part.type === type)?.value;
+      const date = new Date(Date.UTC(Number(value('year')), Number(value('month')) - 1, Number(value('day')) - 2));
+      const ymd = date.toISOString().slice(0, 10);
+      return new Date(`${ymd}T00:00:00+05:30`).toISOString();
+    }
 
     function escapeHtml(value) {
       const div = document.createElement('div');
@@ -138,12 +176,15 @@
 
     function renderOrders() {
       const list = document.getElementById('orders-list');
-      const filtered = orderFilter === 'all'
+      const term = (document.getElementById('order-search').value || '').trim().toLowerCase();
+      const filtered = (orderFilter === 'all'
         ? cachedOrders
-        : cachedOrders.filter(order => order.status === orderFilter);
+        : cachedOrders.filter(order => orderFilter === 'canceled'
+          ? ['cancelled', 'canceled', 'rejected'].includes(order.status)
+          : order.status === orderFilter)).filter(order => !term || [order.id, order.order_token, order.customer_name, order.phone, order.customer_phone, JSON.stringify(order.items || [])].some(value => String(value || '').toLowerCase().includes(term)));
       const pendingCount = cachedOrders.filter(order => order.status === 'pending').length;
       document.getElementById('orders-status').textContent =
-        `${cachedOrders.length} order(s) loaded · ${pendingCount} pending approval`;
+        `${cachedOrders.length} order(s) loaded · ${pendingCount} historical pending record(s)`;
 
       if (!filtered.length) {
         list.innerHTML = `<p class="empty-state">No ${orderFilter === 'all' ? 'orders' : `${escapeHtml(orderFilter)} orders`} found.</p>`;
@@ -162,19 +203,16 @@
           timeStyle: 'short',
           timeZone: 'Asia/Kolkata'
         });
-        const statuses = ['pending', 'confirmed', 'preparing', 'completed', 'rejected', 'cancelled'];
-        const statusOptions = statuses.map(status =>
-          `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status[0].toUpperCase()}${status.slice(1)}</option>`
-        ).join('');
+        const normalizedStatus = ['cancelled', 'canceled', 'rejected'].includes(order.status) ? 'canceled' : order.status;
 
         return `
           <article class="order-card">
             <div class="order-card-head">
               <div>
-                <div class="order-token">🦉 Order ${escapeHtml(order.order_token || '—')}</div>
+                <div class="order-token">🦉 Order ${escapeHtml(order.order_token || order.id || '—')} <span class="source-badge">${escapeHtml(order.source || order.order_source || 'Source not recorded')}</span></div>
                 <div class="order-meta">${escapeHtml(created)}</div>
               </div>
-              <div class="order-status">${escapeHtml(order.status)}</div>
+              <div class="order-status">${escapeHtml(normalizedStatus)}</div>
             </div>
             <div class="order-items">${itemRows || '<p>No item details available.</p>'}</div>
             <div class="order-total">
@@ -184,10 +222,13 @@
               <strong>Total: ₹${money(order.total)}</strong>
             </div>
             <div class="order-actions">
-              ${order.status === 'pending' ? `<button type="button" class="btn approve-order-btn" data-order-id="${escapeHtml(order.id)}">✓ Approve order</button>` : ''}
               <label style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 Status
-                <select class="order-status-select" data-order-id="${escapeHtml(order.id)}" aria-label="Update status for order ${escapeHtml(order.order_token || '')}">${statusOptions}</select>
+                <select class="order-status-select" data-order-id="${escapeHtml(order.id)}" aria-label="Update status for order ${escapeHtml(order.order_token || '')}">
+                  ${['completed', 'canceled'].includes(normalizedStatus) ? '' : '<option value="" selected disabled>Choose status</option>'}
+                  <option value="completed" ${normalizedStatus === 'completed' ? 'selected' : ''}>Completed</option>
+                  <option value="cancelled" ${normalizedStatus === 'canceled' ? 'selected' : ''}>Canceled</option>
+                </select>
               </label>
               <button type="button" class="btn btn-ghost save-order-status" data-order-id="${escapeHtml(order.id)}">Update status</button>
             </div>
@@ -196,16 +237,56 @@
       }).join('');
     }
 
-    async function loadOrders() {
-      const list = document.getElementById('orders-list');
-      list.innerHTML = '<p class="loading-state">Loading orders…</p>';
-      document.getElementById('orders-status').textContent = 'Loading orders…';
+    async function loadOrderDashboard() {
+      const makeQuery = offset => {
+        let query = supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+        if (orderQuery?.from) query = query.gte('created_at', new Date(`${orderQuery.from}T00:00:00+05:30`).toISOString());
+        else if (!orderQuery?.to) query = query.gte('created_at', threeDayStart());
+        if (orderQuery?.to) query = query.lt('created_at', new Date(new Date(`${orderQuery.to}T00:00:00+05:30`).getTime() + 86400000).toISOString());
+        return query.range(offset, offset + 499);
+      };
+      const rows = [];
+      const seen = new Set();
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await makeQuery(offset);
+        if (error) throw error;
+        for (const order of data || []) if (order.id && !seen.has(String(order.id))) { seen.add(String(order.id)); rows.push(order); }
+        if (!data || data.length < 500) break;
+      }
+      const completed = rows.filter(order => order.status === 'completed');
+      const canceled = rows.filter(order => ['canceled', 'cancelled', 'rejected'].includes(String(order.status || '').toLowerCase()));
+      const sources = new Map();
+      for (const order of rows) {
+        const raw = String(order.source || order.order_source || order.channel || 'Source not recorded').trim();
+        const key = raw.toLowerCase();
+        sources.set(raw, (sources.get(raw) || 0) + 1);
+      }
+      const countSource = group => rows.filter(order => {
+        const value = String(order.source || order.order_source || order.channel || '').toLowerCase();
+        return group === 'website' ? ['web', 'website'].includes(value) : group === 'whatsapp' ? ['wa', 'whatsapp'].includes(value) : ['call', 'phone'].includes(value);
+      }).length;
+      document.getElementById('orders-metric-total').textContent = String(rows.length);
+      document.getElementById('orders-metric-completed').textContent = String(completed.length);
+      document.getElementById('orders-metric-canceled').textContent = String(canceled.length);
+      document.getElementById('orders-metric-website').textContent = String(countSource('website'));
+      document.getElementById('orders-metric-whatsapp').textContent = String(countSource('whatsapp'));
+      document.getElementById('orders-metric-phone').textContent = String(countSource('phone'));
+      document.getElementById('orders-source-breakdown').innerHTML = [...sources.entries()].map(([source, count]) => `<div class="source-row"><span>${escapeHtml(source)}</span><strong>${count}</strong></div>`).join('') || '<p class="sub">No orders in this reporting period.</p>';
+    }
 
-      const { data, error } = await supabaseClient
-        .from('orders')
-        .select('id, order_token, items, subtotal, discount, delivery_fee, total, status, created_at')
-        .order('created_at', { ascending: false })
-        .limit(100);
+    async function loadOrders({ reset = true } = {}) {
+      const list = document.getElementById('orders-list');
+      if (reset) { orderOffset = 0; cachedOrders = []; list.innerHTML = '<p class="loading-state">Loading orders…</p>'; }
+      document.getElementById('orders-status').textContent = 'Loading orders…';
+      const term = (document.getElementById('order-search').value || '').trim();
+      const makeQuery = offset => {
+        let query = supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+        if (orderQuery?.from) query = query.gte('created_at', new Date(`${orderQuery.from}T00:00:00+05:30`).toISOString());
+        else if (!olderMode) query = query.gte('created_at', threeDayStart());
+        if (orderQuery?.to) query = query.lt('created_at', new Date(new Date(`${orderQuery.to}T00:00:00+05:30`).getTime() + 86400000).toISOString());
+        return query.range(offset, offset + ORDER_PAGE_SIZE - 1);
+      };
+      let { data, error } = await makeQuery(orderOffset);
 
       if (error) {
         console.error('Orders loading failed:', error);
@@ -215,13 +296,30 @@
         return;
       }
 
-      cachedOrders = data || [];
+      const rows = data || [];
+      cachedOrders = reset ? rows : cachedOrders.concat(rows);
+      orderOffset += (data || []).length;
+      let finalPageLength = rows.length;
+      if (reset && term && !orderQuery?.from && !orderQuery?.to) {
+        // Searches intentionally scan historical pages on demand; default dashboard loading stays bounded.
+        while (finalPageLength === ORDER_PAGE_SIZE) {
+          const next = await makeQuery(orderOffset);
+          if (next.error) { document.getElementById('orders-status').textContent = `Search stopped early: ${next.error.message}`; break; }
+          const page = next.data || [];
+          cachedOrders = cachedOrders.concat(page);
+          orderOffset += page.length;
+          finalPageLength = page.length;
+        }
+      }
+      document.getElementById('more-orders-btn').hidden = finalPageLength < ORDER_PAGE_SIZE || (!!term && !orderQuery?.from && !orderQuery?.to);
       cachedOrders.sort((a, b) => {
-        if (a.status === 'pending' && b.status !== 'pending') return -1;
-        if (b.status === 'pending' && a.status !== 'pending') return 1;
         return new Date(b.created_at) - new Date(a.created_at);
       });
       renderOrders();
+      if (reset) loadOrderDashboard().catch(error => {
+        console.error('Order dashboard loading failed:', error);
+        document.getElementById('orders-source-breakdown').textContent = `Could not load dashboard: ${error.message}`;
+      });
     }
 
     async function checkSession() {
@@ -237,7 +335,7 @@
       }
 
       loginView.style.display = 'none';
-      adminView.style.display = 'block';
+      adminView.style.display = '';
       whoLabel.textContent = session.user.email || '';
       window.initAdminOrderNotifications();
       await loadOrders();
@@ -246,7 +344,7 @@
     supabaseClient.auth.onAuthStateChange((_event, session) => {
       if (session) {
         loginView.style.display = 'none';
-        adminView.style.display = 'block';
+        adminView.style.display = '';
         whoLabel.textContent = session.user.email || '';
         setTimeout(() => {
           window.initAdminOrderNotifications();
@@ -290,6 +388,25 @@
     });
 
     document.getElementById('refresh-orders-btn').addEventListener('click', loadOrders);
+    document.getElementById('older-orders-btn').addEventListener('click', event => {
+      olderMode = true;
+      event.currentTarget.hidden = true;
+      loadOrders();
+    });
+    document.getElementById('more-orders-btn').addEventListener('click', () => loadOrders({ reset: false }));
+    document.getElementById('apply-order-filters').addEventListener('click', () => {
+      const from = document.getElementById('orders-from').value;
+      const to = document.getElementById('orders-to').value;
+      if (from && to && from > to) { alert('The start date must be before the end date.'); return; }
+      orderQuery = { from, to };
+      olderMode = true;
+      document.getElementById('older-orders-btn').hidden = true;
+      loadOrders();
+    });
+    document.getElementById('order-search').addEventListener('input', () => {
+      clearTimeout(window.orderSearchTimer);
+      window.orderSearchTimer = setTimeout(() => { olderMode = !!document.getElementById('order-search').value.trim(); loadOrders(); }, 350);
+    });
     document.getElementById('orders-filters').addEventListener('click', event => {
       const button = event.target.closest('[data-order-filter]');
       if (!button) return;
@@ -301,26 +418,21 @@
     });
 
     document.getElementById('orders-list').addEventListener('click', async event => {
-      const approveButton = event.target.closest('.approve-order-btn');
       const saveButton = event.target.closest('.save-order-status');
-      if (!approveButton && !saveButton) return;
+      if (!saveButton) return;
 
-      const button = approveButton || saveButton;
+      const button = saveButton;
       const order = cachedOrders.find(item => item.id === button.dataset.orderId);
       if (!order) return;
 
       let newStatus;
-      if (approveButton) {
-        if (order.status !== 'pending') return;
-        if (!confirm(`Approve order ${order.order_token}? This marks it as confirmed in the admin panel.`)) return;
-        newStatus = 'confirmed';
-      } else {
+      {
         const select = document.querySelector(
           `.order-status-select[data-order-id="${CSS.escape(order.id)}"]`
         );
         newStatus = select?.value;
         if (!newStatus) return;
-        if (newStatus === order.status) {
+        if (newStatus === (['cancelled', 'canceled', 'rejected'].includes(order.status) ? 'cancelled' : order.status)) {
           alert('This order already has that status.');
           return;
         }

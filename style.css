@@ -1090,6 +1090,51 @@ select {
   padding: 52px 0 78px;
 }
 
+/* Shared admin workspace and responsive sidebar. */
+.admin-shell.admin-workspace { display:flex; min-height:100vh; padding:0; align-items:stretch; }
+.admin-shell.admin-workspace > .container { width:auto; max-width:none; flex:1; min-width:0; margin:0; padding:34px clamp(20px,4vw,56px) 64px; }
+.admin-sidebar { position:sticky; top:0; width:250px; height:100vh; flex:0 0 250px; display:flex; flex-direction:column; gap:16px; min-height:100vh; overflow-y:auto; padding:24px 16px; color:var(--text); background:#171611; border-right:1px solid var(--border); }
+.admin-sidebar-brand { display:flex; align-items:center; gap:11px; padding:4px 8px 22px; color:var(--text); text-decoration:none; font-weight:700; }
+.admin-brand-mark { display:grid; place-items:center; width:38px; height:38px; border-radius:12px; color:#1c1a14; background:var(--accent); font-family:"Fraunces",serif; font-size:1.3rem; }
+.admin-sidebar-brand small { display:block; margin-top:3px; color:var(--muted); font-size:.72rem; font-weight:400; }
+.admin-sidebar nav { display:grid; gap:5px; }
+.admin-sidebar-link { display:flex; align-items:center; gap:11px; min-height:44px; padding:9px 11px; border-radius:9px; color:var(--muted); text-decoration:none; font-size:.88rem; transition:background .15s,color .15s; }
+.admin-sidebar-link:hover,.admin-sidebar-link.active { color:var(--text); background:#302b21; }
+.admin-sidebar-link.active { box-shadow:inset 3px 0 var(--accent); }
+.admin-sidebar-icon { display:grid; place-items:center; width:22px; color:var(--accent); font-size:1.08rem; }
+.admin-sidebar-storefront { margin-top:auto; padding:12px; color:var(--muted); text-decoration:none; border-top:1px solid var(--border); font-size:.84rem; }
+.admin-sidebar-toggle { display:none; }
+.admin-workspace input,.admin-workspace select,.admin-workspace textarea { max-width:100%; min-width:0; }
+.admin-workspace .panel { min-width:0; }
+.orders-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr)); gap:12px; margin:16px 0; }
+.metric-card { min-width:0; padding:16px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); }
+.metric-card span { display:block; color:var(--muted); font-size:.8rem; }
+.metric-card strong { display:block; margin-top:7px; font-size:1.35rem; overflow-wrap:anywhere; }
+.source-list { display:grid; gap:6px; }
+.source-row { display:flex; justify-content:space-between; gap:12px; min-width:0; padding:9px 0; border-bottom:1px solid var(--border); }
+.source-row span { overflow-wrap:anywhere; }
+.category-list { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:14px 0; }
+.category-chip { padding:7px 11px; border:1px solid var(--border); border-radius:999px; color:var(--text); }
+.admin-subpanel { padding:16px 0 4px; border-top:1px solid var(--border); }
+@media(max-width:800px) {
+  .admin-shell.admin-workspace { display:block; }
+  .admin-sidebar { position:relative; z-index:20; top:auto; width:auto; height:auto; min-height:0; overflow:visible; padding:10px 16px; border-right:0; border-bottom:1px solid var(--border); }
+  .admin-sidebar-brand { padding:4px 4px; }
+  .admin-sidebar-brand small { display:none; }
+  .admin-sidebar-toggle { display:block; position:absolute; right:16px; top:15px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; color:var(--text); background:var(--surface); }
+  .admin-sidebar nav { display:none; padding:5px 0 8px; }
+  .admin-sidebar.open nav { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .admin-sidebar-link { font-size:.82rem; }
+  .admin-sidebar-storefront { display:none; }
+  .admin-shell.admin-workspace > .container { padding:26px 16px 52px; }
+  .admin-workspace .form-row { grid-template-columns:minmax(0,1fr); }
+  .admin-workspace .report-toolbar,.admin-workspace .history-controls { width:100%; }
+  .admin-workspace .history-controls > button { min-height:44px; }
+  .admin-workspace .order-actions { align-items:stretch; }
+  .admin-workspace .order-actions > * { max-width:100%; }
+}
+@media(max-width:420px) { .admin-sidebar.open nav { grid-template-columns:1fr; } }
+
 .login-card {
   max-width: 380px;
   margin: 70px auto 0;
@@ -1792,3 +1837,9 @@ select {
     color: var(--accent);
   }
 }
+.push-opt-in-dialog { border:0; padding:0; border-radius:14px; width:min(440px,calc(100vw - 32px)); color:var(--text); background:var(--surface); box-shadow:0 20px 70px #0007; }
+.push-opt-in-dialog::backdrop { background:#10101099; }
+.push-opt-in-card { padding:24px; }
+.push-opt-in-card h2 { margin:0 0 10px; }
+.push-opt-in-card p { line-height:1.55; }
+.push-opt-in-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:20px; }

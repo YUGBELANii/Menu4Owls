@@ -24,7 +24,7 @@
       <ul class="nav-links admin-desktop-links">
         <li><a href="index.html">Menu</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="admin.html">Products</a></li>
+        <li><a href="admin-products.html">Products</a></li>
         <li><a href="admin-orders.html">Orders</a></li>
         <li><a href="admin-notifications.html" class="active">Notifications</a></li>
       </ul>
@@ -33,7 +33,7 @@
         <ul class="admin-mobile-links">
           <li><a href="index.html">Menu</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="admin.html">Products</a></li>
+          <li><a href="admin-products.html">Products</a></li>
           <li><a href="admin-orders.html">Orders</a></li>
           <li><a href="admin-notifications.html" aria-current="page">Notifications</a></li>
         </ul>
@@ -60,7 +60,7 @@
           <h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.8rem">Notification center</h1>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <a class="btn btn-ghost" href="admin.html">Products</a>
+          <a class="btn btn-ghost" href="admin-products.html">Products</a>
           <a class="btn btn-ghost" href="admin-orders.html">Orders</a>
           <span class="who" id="who-label"></span>
           <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
@@ -119,6 +119,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="admin-push-campaigns.js"></script>
+  <script src="admin-navigation.js"></script>
   <script>
     'use strict';
     const loginView = document.getElementById('login-view');
@@ -134,7 +135,7 @@
       if (error) console.error(error);
       if (data?.session) {
         loginView.style.display = 'none';
-        adminView.style.display = 'block';
+        adminView.style.display = '';
         whoLabel.textContent = data.session.user.email || '';
         await window.loadAdminPushCampaigns();
       } else {
@@ -145,7 +146,7 @@
     supabaseClient.auth.onAuthStateChange((_event, session) => {
       if (session) {
         loginView.style.display = 'none';
-        adminView.style.display = 'block';
+        adminView.style.display = '';
         whoLabel.textContent = session.user.email || '';
         setTimeout(() => window.loadAdminPushCampaigns(), 0);
       } else {
