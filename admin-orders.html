@@ -29,6 +29,11 @@
     .history-controls input { min-width:150px; }
     .source-badge { display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; background:var(--surface-2); font-size:.75rem; }
     .dependency-note { margin:16px 0; padding:12px 14px; border-left:3px solid var(--accent); background:var(--surface-2); line-height:1.5; }
+    .manual-order-lines { display:grid; gap:10px; margin:14px 0; }
+    .manual-order-line { display:grid; grid-template-columns:minmax(0,1fr) 110px auto; align-items:end; gap:10px; padding:12px; border:1px solid var(--border); border-radius:8px; }
+    .manual-order-summary { margin:14px 0; padding:14px; border:1px solid var(--border); border-radius:8px; }
+    .manual-order-summary div { display:flex; justify-content:space-between; gap:12px; padding:4px 0; }
+    @media(max-width:600px) { .manual-order-line { grid-template-columns:minmax(0,1fr) 90px; } .manual-order-line .remove-manual-item { grid-column:1 / -1; } }
     .new-order-toast strong { display:block; margin-bottom:5px; }
     .new-order-toast p { margin:0 0 10px; }
     .new-order-toast button { margin-right:6px; }
@@ -110,7 +115,23 @@
           </div>
           <div id="orders-source-breakdown" class="source-list"></div>
         </section>
-        <section class="admin-subpanel" id="create-order"><h3>Create order</h3><p class="dependency-note">Manual order creation needs a database RPC that safely snapshots catalogue prices and records customer details and whether the source was WhatsApp or phone. The repository exposes only the website checkout RPC, so this feature cannot be safely enabled until that schema is available.</p></section>
+        <section class="admin-subpanel" id="create-order">
+          <h3>Create order</h3>
+          <p class="sub">Creates a pending order in the existing order history and assigns the next token through the existing checkout token generator.</p>
+          <form id="manual-order-form">
+            <div class="form-row">
+              <div class="field"><label for="manual-customer-name">Customer name</label><input id="manual-customer-name" maxlength="120" required></div>
+              <div class="field"><label for="manual-customer-phone">Customer phone</label><input id="manual-customer-phone" type="tel" maxlength="32" autocomplete="tel" required></div>
+              <div class="field"><label for="manual-order-source">Order source</label><select id="manual-order-source" required><option value="whatsapp">WhatsApp</option><option value="phone">Phone</option></select></div>
+            </div>
+            <div id="manual-order-lines" class="manual-order-lines"></div>
+            <button class="btn btn-ghost" id="add-manual-item" type="button">Add product</button>
+            <div id="manual-order-summary" class="manual-order-summary" aria-live="polite">Add products to see the order total.</div>
+            <label style="display:flex;align-items:flex-start;gap:9px;margin:14px 0"><input id="manual-policy-accepted" type="checkbox" required style="margin-top:4px"><span>Customer confirmed acceptance of the <a href="refund-policy.html" target="_blank" rel="noopener">Refund &amp; Order Policy</a>.</span></label>
+            <button class="btn" id="create-manual-order-btn" type="submit">Create order</button>
+            <p id="manual-order-status" class="upload-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
         <h3>Order history</h3><p class="sub">Default history covers the latest three calendar days in India time. Search and date filters request older records when needed.</p>
         <div class="history-controls">
           <input id="order-search" type="search" placeholder="Search ID, customer, phone or items" aria-label="Search orders">
@@ -155,6 +176,9 @@
     let orderOffset = 0;
     let olderMode = false;
     let orderQuery = null;
+    let manualProducts = [];
+    let manualProductsLoaded = false;
+    let manualProductsPromise = null;
 
     function threeDayStart() {
       const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
@@ -172,6 +196,100 @@
 
     function money(value) {
       return Number(value || 0).toFixed(2);
+    }
+
+    function addManualOrderLine() {
+      const host = document.getElementById('manual-order-lines');
+      const row = document.createElement('div');
+      row.className = 'manual-order-line';
+      row.innerHTML = `<div class="field"><label>Product</label><select class="manual-product" required><option value="">Select product</option>${manualProducts.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · ₹${money(p.price)}</option>`).join('')}</select></div><div class="field"><label>Quantity</label><input class="manual-quantity" type="number" min="1" max="99" value="1" required></div><button class="btn btn-ghost remove-manual-item" type="button">Remove</button>`;
+      host.append(row);
+      updateManualOrderSummary();
+    }
+
+    function updateManualOrderSummary() {
+      const host = document.getElementById('manual-order-summary');
+      const grouped = new Map();
+      document.querySelectorAll('.manual-order-line').forEach(row => {
+        const product = manualProducts.find(p => p.id === row.querySelector('.manual-product').value);
+        const qty = Number(row.querySelector('.manual-quantity').value);
+        if (!product || !Number.isInteger(qty) || qty < 1) return;
+        const previous = grouped.get(product.id) || { product, qty: 0 };
+        previous.qty += qty;
+        grouped.set(product.id, previous);
+      });
+      if (!grouped.size) { host.textContent = manualProducts.length ? 'Add products to see the order total.' : 'Loading available products…'; return; }
+      const subtotal = [...grouped.values()].reduce((sum, line) => sum + Number(line.product.price) * line.qty, 0);
+      host.innerHTML = [...grouped.values()].map(line => `<div><span>${escapeHtml(line.product.name)} × ${line.qty}</span><span>₹${money(Number(line.product.price) * line.qty)}</span></div>`).join('') + `<div><span>Delivery</span><span>₹20.00</span></div><div><strong>Total</strong><strong>₹${money(subtotal + 20)}</strong></div>`;
+    }
+
+    async function loadManualProducts() {
+      const status = document.getElementById('manual-order-status');
+      if (manualProductsLoaded) return;
+      if (manualProductsPromise) return manualProductsPromise;
+      manualProductsPromise = (async () => {
+      try {
+        const { data, error } = await supabaseClient.from('products').select('id,name,price,available').eq('available', true).order('name');
+        if (error) throw error;
+        manualProducts = data || [];
+        manualProductsLoaded = true;
+        if (!document.querySelector('.manual-order-line')) addManualOrderLine();
+        else {
+          const count = document.querySelectorAll('.manual-order-line').length;
+          document.getElementById('manual-order-lines').replaceChildren();
+          for (let i = 0; i < count; i++) addManualOrderLine();
+        }
+        if (!manualProducts.length) status.textContent = 'No available products to add.';
+      } catch (error) { status.textContent = `Could not load products — ${error.message}`; }
+      finally { manualProductsPromise = null; }
+      })();
+      return manualProductsPromise;
+    }
+
+    async function submitManualOrder(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.reportValidity()) return;
+      const status = document.getElementById('manual-order-status');
+      const button = document.getElementById('create-manual-order-btn');
+      const grouped = new Map();
+      for (const row of document.querySelectorAll('.manual-order-line')) {
+        const id = row.querySelector('.manual-product').value;
+        const qty = Number(row.querySelector('.manual-quantity').value);
+        if (!id) continue;
+        if (!Number.isInteger(qty) || qty < 1 || qty > 99) { status.textContent = 'Each product quantity must be from 1 to 99.'; return; }
+        grouped.set(id, (grouped.get(id) || 0) + qty);
+      }
+      const items = [...grouped].map(([id, qty]) => ({ id, qty }));
+      if (!items.length || items.some(item => item.qty > 99)) { status.textContent = 'Select products and keep each combined quantity at 99 or below.'; return; }
+      const payload = {
+        p_customer_name: document.getElementById('manual-customer-name').value.trim(),
+        p_customer_phone: document.getElementById('manual-customer-phone').value.trim(),
+        p_source: document.getElementById('manual-order-source').value,
+        p_items: items,
+        p_policy_accepted: document.getElementById('manual-policy-accepted').checked
+      };
+      const requestKey = `owlzz_manual_order_${JSON.stringify(payload)}`;
+      let requestId;
+      try {
+        requestId = sessionStorage.getItem(requestKey);
+        if (!requestId) { requestId = crypto.randomUUID(); sessionStorage.setItem(requestKey, requestId); }
+      } catch (_) { status.textContent = 'Could not initialize a safe order retry. Please reload and try again.'; return; }
+
+      button.disabled = true; button.textContent = 'Creating…'; status.textContent = 'Creating the order…';
+      try {
+        const { data, error } = await supabaseClient.rpc('create_manual_order_with_token', { p_request_id: requestId, ...payload });
+        if (error) throw error;
+        if (!data?.order_id || !data?.token) throw new Error('The database returned an incomplete order response.');
+        sessionStorage.removeItem(requestKey);
+        status.textContent = `Order ${data.token} created as ${data.status}.`;
+        form.reset();
+        document.getElementById('manual-order-source').value = 'whatsapp';
+        document.getElementById('manual-order-lines').replaceChildren();
+        addManualOrderLine();
+        await loadOrders();
+      } catch (error) { status.textContent = `Could not create order — ${error.message}`; }
+      finally { button.disabled = false; button.textContent = 'Create order'; }
     }
 
     function renderOrders() {
@@ -211,6 +329,7 @@
               <div>
                 <div class="order-token">🦉 Order ${escapeHtml(order.order_token || order.id || '—')} <span class="source-badge">${escapeHtml(order.source || order.order_source || 'Source not recorded')}</span></div>
                 <div class="order-meta">${escapeHtml(created)}</div>
+                ${(order.customer_name || order.customer_phone) ? `<div class="order-meta">${escapeHtml(order.customer_name || 'Customer')}${order.customer_phone ? ` · ${escapeHtml(order.customer_phone)}` : ''}</div>` : ''}
               </div>
               <div class="order-status">${escapeHtml(normalizedStatus)}</div>
             </div>
@@ -338,6 +457,7 @@
       adminView.style.display = '';
       whoLabel.textContent = session.user.email || '';
       window.initAdminOrderNotifications();
+      await loadManualProducts();
       await loadOrders();
     }
 
@@ -348,6 +468,7 @@
         whoLabel.textContent = session.user.email || '';
         setTimeout(() => {
           window.initAdminOrderNotifications();
+          loadManualProducts();
           loadOrders();
         }, 0);
       } else {
@@ -388,6 +509,17 @@
     });
 
     document.getElementById('refresh-orders-btn').addEventListener('click', loadOrders);
+    document.getElementById('manual-order-form').addEventListener('submit', submitManualOrder);
+    document.getElementById('add-manual-item').addEventListener('click', addManualOrderLine);
+    document.getElementById('manual-order-lines').addEventListener('input', updateManualOrderSummary);
+    document.getElementById('manual-order-lines').addEventListener('change', updateManualOrderSummary);
+    document.getElementById('manual-order-lines').addEventListener('click', event => {
+      const button = event.target.closest('.remove-manual-item');
+      if (!button) return;
+      button.closest('.manual-order-line').remove();
+      if (!document.querySelector('.manual-order-line')) addManualOrderLine();
+      updateManualOrderSummary();
+    });
     document.getElementById('older-orders-btn').addEventListener('click', event => {
       olderMode = true;
       event.currentTarget.hidden = true;

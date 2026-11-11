@@ -2152,19 +2152,50 @@ function categoryId(category) {
    STORE STATUS
 ========================================================= */
 
-function isOwlzOpen() {
-  const parts = new Intl.DateTimeFormat('en-IN', {
-    timeZone: 'Asia/Kolkata',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: false
-  }).formatToParts(new Date());
+let sharedStoreStatus = null;
+function isOwlzOpen() { return sharedStoreStatus?.is_open === true; }
 
-  const hour = Number(
-    parts.find(part => part.type === 'hour')?.value
-  );
+async function loadStorefrontBanners() {
+  const host = document.querySelector('.diwali-banner');
+  if (!host) return;
+  try {
+    const response = await fetch('/api/admin-content?type=banners', { cache: 'no-store' });
+    if (!response.ok) return;
+    const { banners = [] } = await response.json();
+    if (!Array.isArray(banners)) throw new Error('Banner API returned an invalid response.');
+    if (!banners.length) {
+      host.remove();
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    banners.forEach((banner, index) => {
+      const section = index === 0 ? host : host.cloneNode(false);
+      section.setAttribute('aria-label', banner.title);
+      const inner = document.createElement('div'); inner.className = 'diwali-banner-inner';
+      const title = document.createElement('p'); title.className = 'diwali-title'; title.textContent = banner.title;
+      inner.append(title);
+      String(banner.content || '').split('\n').filter(Boolean).forEach((line, lineIndex) => {
+        const p = document.createElement('p');
+        p.className = lineIndex === 0 ? 'diwali-wish' : lineIndex === 1 ? 'diwali-message' : 'diwali-signoff';
+        p.textContent = line; inner.append(p);
+      });
+      if (banner.image_url) { const img = document.createElement('img'); img.src = banner.image_url; img.alt = ''; img.loading = 'lazy'; inner.prepend(img); }
+      section.replaceChildren(inner); fragment.append(section);
+    });
+    host.replaceWith(fragment);
+  } catch (error) { console.error('Storefront banners unavailable:', error); }
+}
 
-  return hour >= 18 || hour < 3;
+async function loadSharedStoreStatus() {
+  try {
+    const response = await fetch('/api/admin-content', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Store status unavailable');
+    sharedStoreStatus = await response.json();
+  } catch (error) {
+    sharedStoreStatus = { is_open: false, message: 'Store status is temporarily unavailable.' };
+    console.error('Shared store status unavailable:', error);
+  }
+  updateStoreStatus();
 }
 
 function updateStoreStatus() {
@@ -2174,12 +2205,14 @@ function updateStoreStatus() {
   const open = isOwlzOpen();
 
   status.className = `store-status ${open ? 'open' : 'closed'}`;
-  status.textContent = open
-    ? '🟢 OPEN — Orders accepted'
-    : '🔴 CLOSED — Opens at 6:00 PM';
+  status.textContent = sharedStoreStatus?.message || 'Checking store status…';
 
   renderCart();
 }
+
+loadSharedStoreStatus();
+loadStorefrontBanners();
+setInterval(loadSharedStoreStatus, 60000);
 
 /* =========================================================
    LOAD MENU

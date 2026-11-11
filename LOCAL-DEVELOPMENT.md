@@ -18,6 +18,8 @@ Keep `.env.local` out of version control. Do not put server keys in HTML or brow
 
 The order function requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. The service role key is server-only. The function calls the Supabase PostgREST RPC `create_order_with_token` with `p_request_id`, `p_items` (each item has `id` and a string `qty`), and `p_policy_accepted`.
 
+Shared store status and banner administration also require `SUPABASE_ANON_KEY` and `ADMIN_NOTIFICATION_EMAILS` (a comma-separated allowlist of admin emails). Apply `supabase/migrations/20261111000100_admin_store_and_banners.sql` before deploying the app changes. Store status and checkout both call the database `get_store_status()` evaluator. The migration seeds the current Diwali copy; the customer page keeps its existing HTML as fallback until the API returns visible database banners. See `SUPABASE-DEPLOYMENT.md` for manual SQL verification and deployment steps.
+
 Push notifications are optional to order creation. The push endpoints use `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT`; admin notification features may also use `ADMIN_NOTIFICATION_EMAILS`. The customer page's Supabase client may require `SUPABASE_ANON_KEY` depending on its configured client initialization. Use the project’s Vercel Development variables as the source of truth; never copy a service role key or VAPID private key into client code.
 
 ## Checkout behavior and diagnostics

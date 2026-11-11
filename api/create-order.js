@@ -21,6 +21,12 @@ module.exports = async function handler(req, res) {
     }
   }
   try {
+    const statusResponse = await fetch(`${url.replace(/\/+$/, '')}/rest/v1/rpc/get_store_status`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` }, body: '{}'
+    });
+    const storeStatus = await statusResponse.json().catch(() => null);
+    if (!statusResponse.ok || !storeStatus) return res.status(503).json({ error: 'Store status is temporarily unavailable. Please try again shortly.' });
+    if (!storeStatus.is_open) return res.status(403).json({ error: storeStatus.message || 'Owlz Corner is currently closed.' });
     const response = await fetch(`${url.replace(/\/+$/, '')}/rest/v1/rpc/create_order_with_token`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` },
       body: JSON.stringify({ p_request_id: request_id, p_items: items.map(({ id, qty }) => ({ id, qty: String(qty) })), p_policy_accepted: true })
