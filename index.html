@@ -1711,15 +1711,8 @@ body {
 
 <header class="hero">
 
-  <!-- Diwali greeting -->
-  <section class="diwali-banner" aria-label="Diwali greeting">
-    <div class="diwali-banner-inner">
-      <p class="diwali-title"><span aria-hidden="true">🪔</span> HAPPY DIWALI <span aria-hidden="true">🪔</span></p>
-      <p class="diwali-wish">Wishing You a Bright &amp; Joyful Diwali!</p>
-      <p class="diwali-message">May your celebrations be filled with happiness, warmth and delicious food.</p>
-      <p class="diwali-signoff">— Team Owlz Corner</p>
-    </div>
-  </section>
+  <!-- Dynamic announcement slot. No event content is shipped in the HTML. -->
+  <section class="diwali-banner" aria-label="Store announcement" hidden></section>
 
   <div class="container">
 
@@ -2158,24 +2151,33 @@ function isOwlzOpen() { return sharedStoreStatus?.is_open === true; }
 async function loadStorefrontBanners() {
   const host = document.querySelector('.diwali-banner');
   if (!host) return;
+
+  // Fail closed: never leave stale or retired event content visible while the API loads/fails.
+  host.hidden = true;
   try {
-    const response = await fetch('/api/admin-content?type=banners', { cache: 'no-store' });
-    if (!response.ok) return;
+    const response = await fetch('/api/admin-content?type=banners', {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    if (!response.ok) throw new Error(`Banner API returned HTTP ${response.status}.`);
+
     const { banners = [] } = await response.json();
     if (!Array.isArray(banners)) throw new Error('Banner API returned an invalid response.');
     if (!banners.length) {
       host.remove();
       return;
     }
+
     const fragment = document.createDocumentFragment();
     banners.forEach((banner, index) => {
       const section = index === 0 ? host : host.cloneNode(false);
-      section.setAttribute('aria-label', banner.title);
+      section.hidden = false;
+      section.setAttribute('aria-label', banner.title || 'Store announcement');
       section.dataset.theme = ['gold','blood','dark'].includes(banner.theme) ? banner.theme : 'gold';
       const inner = document.createElement('div'); inner.className = 'diwali-banner-inner';
-      const title = document.createElement('p'); title.className = 'diwali-title'; title.textContent = banner.title;
+      const title = document.createElement('p'); title.className = 'diwali-title'; title.textContent = banner.title || '';
       inner.append(title);
-      String(banner.content || '').split('\n').filter(Boolean).forEach((line, lineIndex) => {
+      String(banner.content || '').split('\\n').filter(Boolean).forEach((line, lineIndex) => {
         const p = document.createElement('p');
         p.className = lineIndex === 0 ? 'diwali-wish' : lineIndex === 1 ? 'diwali-message' : 'diwali-signoff';
         p.textContent = line; inner.append(p);
@@ -2184,7 +2186,10 @@ async function loadStorefrontBanners() {
       section.replaceChildren(inner); fragment.append(section);
     });
     host.replaceWith(fragment);
-  } catch (error) { console.error('Storefront banners unavailable:', error); }
+  } catch (error) {
+    host.remove();
+    console.error('Storefront banners unavailable; hiding announcement:', error);
+  }
 }
 
 async function loadSharedStoreStatus() {
