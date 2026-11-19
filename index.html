@@ -2177,7 +2177,7 @@ async function loadStorefrontBanners() {
       const inner = document.createElement('div'); inner.className = 'diwali-banner-inner';
       const title = document.createElement('p'); title.className = 'diwali-title'; title.textContent = banner.title || '';
       inner.append(title);
-      String(banner.content || '').split('\\n').filter(Boolean).forEach((line, lineIndex) => {
+      String(banner.content || '').split(/\r?\n/).filter(Boolean).forEach((line, lineIndex) => {
         const p = document.createElement('p');
         p.className = lineIndex === 0 ? 'diwali-wish' : lineIndex === 1 ? 'diwali-message' : 'diwali-signoff';
         p.textContent = line; inner.append(p);
