@@ -35,10 +35,20 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ banners: data || [] });
       }
       if (req.query?.type === 'banners') {
-        const now = new Date().toISOString();
-        const { data, error } = await db.from('banners').select('id,title,content,image_url,theme,display_order,created_at,starts_at,ends_at').eq('visible', true).or(`starts_at.is.null,starts_at.lte.${now}`).or(`ends_at.is.null,ends_at.gt.${now}`).order('display_order').order('created_at');
+        const now = Date.now();
+        const { data, error } = await db.from('banners')
+          .select('id,title,content,image_url,theme,display_order,created_at,starts_at,ends_at')
+          .eq('visible', true)
+          .order('display_order')
+          .order('created_at');
         if (error) throw error;
-        return res.status(200).json({ banners: data || [] });
+        const activeBanners = (data || []).filter(banner => {
+          const startsAt = banner.starts_at ? Date.parse(banner.starts_at) : null;
+          const endsAt = banner.ends_at ? Date.parse(banner.ends_at) : null;
+          return (startsAt === null || (Number.isFinite(startsAt) && startsAt <= now))
+            && (endsAt === null || (Number.isFinite(endsAt) && endsAt > now));
+        });
+        return res.status(200).json({ banners: activeBanners });
       }
       const { data, error } = await db.rpc('get_store_status');
       if (error) throw error;
