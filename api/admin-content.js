@@ -35,7 +35,8 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ banners: data || [] });
       }
       if (req.query?.type === 'banners') {
-        const { data, error } = await db.from('banners').select('id,title,content,image_url,display_order,created_at').eq('visible', true).order('display_order').order('created_at');
+        const now = new Date().toISOString();
+        const { data, error } = await db.from('banners').select('id,title,content,image_url,theme,display_order,created_at,starts_at,ends_at').eq('visible', true).or(`starts_at.is.null,starts_at.lte.${now}`).or(`ends_at.is.null,ends_at.gt.${now}`).order('display_order').order('created_at');
         if (error) throw error;
         return res.status(200).json({ banners: data || [] });
       }
@@ -101,7 +102,11 @@ module.exports = async function handler(req, res) {
         try { image = new URL(body.image_url); } catch (_) { return res.status(400).json({ error: 'Image URL must be a valid HTTPS URL.' }); }
         if (image.protocol !== 'https:' || image.username || image.password || image.hostname === 'localhost' || image.hostname.endsWith('.local')) return res.status(400).json({ error: 'Image URL must be a public HTTPS URL.' });
       }
-      const patch = { title, content, image_url: body.image_url || null, display_order: Math.max(-10000, Math.min(10000, Number(body.display_order) || 0)), visible: body.visible !== false, updated_at: new Date().toISOString() };
+      const theme = ['gold','blood','dark'].includes(body.theme) ? body.theme : 'gold';
+      const startsAt = body.starts_at ? new Date(body.starts_at) : null;
+      const endsAt = body.ends_at ? new Date(body.ends_at) : null;
+      if ((body.starts_at && !Number.isFinite(startsAt?.getTime())) || (body.ends_at && !Number.isFinite(endsAt?.getTime())) || (startsAt && endsAt && endsAt <= startsAt)) return res.status(400).json({ error: 'Banner schedule dates are invalid. End must be after start.' });
+      const patch = { title, content, image_url: body.image_url || null, theme, starts_at: startsAt?.toISOString() || null, ends_at: endsAt?.toISOString() || null, display_order: Math.max(-10000, Math.min(10000, Number(body.display_order) || 0)), visible: body.visible !== false, updated_at: new Date().toISOString() };
       const query = req.method === 'POST' ? db.from('banners').insert(patch) : db.from('banners').update(patch).eq('id', body.id);
       const { data, error } = await query.select().single();
       if (error) throw error;
