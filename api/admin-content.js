@@ -45,6 +45,17 @@ module.exports = async function handler(req, res) {
     }
     if (!(await isAdmin(req))) return res.status(403).json({ error: 'Authorized administrator required.' });
     const body = req.body || {};
+    if (body.type === 'order-status') {
+      if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST to update order status.' });
+      if (typeof body.id !== 'string' || !UUID_PATTERN.test(body.id)) return res.status(400).json({ error: 'A valid order ID is required.' });
+      if (!['completed', 'cancelled'].includes(body.status)) return res.status(400).json({ error: 'Status must be completed or cancelled.' });
+      if (!['pending', 'confirmed', 'completed', 'cancelled', 'rejected'].includes(body.expected_status)) return res.status(400).json({ error: 'A valid current order status is required.' });
+      const { data, error } = await db.from('orders').update({ status: body.status })
+        .eq('id', body.id).eq('status', body.expected_status).select('id,status').maybeSingle();
+      if (error) throw error;
+      if (!data) return res.status(409).json({ error: 'The order status changed elsewhere. Refresh the order and try again.' });
+      return res.status(200).json({ order: data });
+    }
     if (body.type === 'settings') {
       if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST for settings.' });
       const allowed = ['schedule','override'];
