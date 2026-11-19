@@ -2170,7 +2170,8 @@ async function loadStorefrontBanners() {
 
     const fragment = document.createDocumentFragment();
     banners.forEach((banner, index) => {
-      const section = index === 0 ? host : host.cloneNode(false);
+      // Clone the placeholder; moving `host` into the fragment detaches it before replaceWith().
+      const section = host.cloneNode(false);
       section.hidden = false;
       section.setAttribute('aria-label', banner.title || 'Store announcement');
       section.dataset.theme = ['gold','blood','dark'].includes(banner.theme) ? banner.theme : 'gold';
