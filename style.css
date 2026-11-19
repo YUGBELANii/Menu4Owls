@@ -271,6 +271,21 @@ p {
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.2), 0 0 24px rgba(232, 163, 61, 0.08);
 }
 
+
+.diwali-banner[data-theme="blood"] {
+  background: linear-gradient(135deg, #310b12 0%, #651522 52%, #26090e 100%);
+  border-color: rgba(255, 115, 130, .65);
+  box-shadow: 0 10px 32px rgba(80, 0, 12, .28), 0 0 28px rgba(220, 35, 58, .16);
+}
+.diwali-banner[data-theme="blood"] .diwali-title { color: #ffb3bd; }
+.diwali-banner[data-theme="blood"] .diwali-wish { color: #fff1f2; }
+.diwali-banner[data-theme="blood"] .diwali-message,
+.diwali-banner[data-theme="blood"] .diwali-signoff { color: #f7cbd0; }
+.diwali-banner[data-theme="dark"] { background: #17191e; border-color: rgba(255,255,255,.18); }
+.diwali-banner[data-theme="dark"] .diwali-wish { color: #fff; }
+.diwali-banner[data-theme="dark"] .diwali-message,
+.diwali-banner[data-theme="dark"] .diwali-signoff { color: #d1d5db; }
+
 .diwali-banner::before,
 .diwali-banner::after {
   content: "✦";
