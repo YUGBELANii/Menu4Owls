@@ -572,23 +572,22 @@
       }
 
       button.disabled = true;
-      const { data, error } = await supabaseClient
-        .from('orders')
-        .update({ status: newStatus })
-        .eq('id', order.id)
-        .eq('status', order.status)
-        .select('id,status');
-
-      if (error) {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.access_token) throw new Error('Your admin session expired. Please log in again.');
+        const response = await fetch('/api/admin-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ type: 'order-status', id: order.id, status: newStatus, expected_status: order.status })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Order status update failed.');
+        await loadOrders();
+      } catch (error) {
         console.error('Order status update failed:', error);
         alert(`Couldn't update order — ${error.message}`);
         button.disabled = false;
-        return;
       }
-      if (!data?.length) {
-        alert('Order status changed elsewhere or permissions prevented the update. Refreshing.');
-      }
-      await loadOrders();
     });
 
     document.addEventListener('owlzz:new-order', () => loadOrders());
