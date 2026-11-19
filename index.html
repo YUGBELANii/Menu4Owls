@@ -2171,6 +2171,7 @@ async function loadStorefrontBanners() {
     banners.forEach((banner, index) => {
       const section = index === 0 ? host : host.cloneNode(false);
       section.setAttribute('aria-label', banner.title);
+      section.dataset.theme = ['gold','blood','dark'].includes(banner.theme) ? banner.theme : 'gold';
       const inner = document.createElement('div'); inner.className = 'diwali-banner-inner';
       const title = document.createElement('p'); title.className = 'diwali-title'; title.textContent = banner.title;
       inner.append(title);
