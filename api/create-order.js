@@ -11,6 +11,8 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Order service is not configured.' });
   }
   const { request_id, items, policy_accepted } = req.body || {};
+  const fulfillmentType = req.body?.fulfillment_type === 'takeout' ? 'takeout' : 'delivery';
+  const deliveryFee = fulfillmentType === 'delivery' ? 20 : 0;
   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   if (typeof request_id !== 'string' || !uuidPattern.test(request_id) || !Array.isArray(items) || items.length < 1 || items.length > 50 || policy_accepted !== true) {
     return res.status(400).json({ error: 'Invalid checkout details or policy acceptance.' });
@@ -46,6 +48,18 @@ module.exports = async function handler(req, res) {
       });
     }
     if (!result?.token || !result?.order_id) return res.status(502).json({ error: 'Unexpected response from the order service.' });
+    // Persist fulfillment and recalculate the fee server-side. A retry with the
+    // same idempotency key reapplies these values if this update previously failed.
+    const orderUpdate = await fetch(url.replace(/\/+$/, '') + '/rest/v1/orders?id=eq.' + encodeURIComponent(result.order_id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', apikey: key, Authorization: 'Bearer ' + key, Prefer: 'return=minimal' },
+      body: JSON.stringify({ fulfillment_type: fulfillmentType, delivery_fee: deliveryFee, total: Number(result.total) - 20 + deliveryFee })
+    });
+    if (!orderUpdate.ok) {
+      const updateError = await orderUpdate.text().catch(() => '');
+      console.error('Could not persist order fulfillment:', orderUpdate.status, updateError.slice(0, 400));
+      return res.status(502).json({ error: 'Order created, but fulfillment details could not be saved. Please retry checkout.' });
+    }
     // Push delivery is best-effort: never fail a successfully created customer order because push is unavailable.
     try {
       const sendNewOrderPush = require('../lib/send-push');
