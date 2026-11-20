@@ -29,7 +29,7 @@
   aside.className = 'admin-sidebar';
   aside.innerHTML = `<div class="admin-sidebar-brand"><a class="admin-sidebar-brand-link" href="admin.html"><span class="admin-brand-mark">O</span><span>Owlz Corner<small>Business manager</small></span></a><button type="button" class="admin-sidebar-collapse" aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar"><span class="collapse-glyph" aria-hidden="true">‹</span></button></div>
     <button type="button" class="admin-sidebar-toggle" aria-expanded="false" aria-controls="admin-sidebar-links">☰ <span>Navigation</span></button>
-    <nav id="admin-sidebar-links" aria-label="Admin sections">${links.map(([href, icon, label, key]) => `<a href="${href}" class="admin-sidebar-link ${active === key ? 'active' : ''}" ${active === key ? 'aria-current="page"' : ''}><span class="admin-sidebar-icon" aria-hidden="true">${icon}</span><span>${label}</span></a>`).join('')}</nav>
+    <nav id="admin-sidebar-links" aria-label="Admin sections">${links.map(([href, icon, label, key]) => `<a href="${href}" title="${label}" class="admin-sidebar-link ${active === key ? 'active' : ''}" ${active === key ? 'aria-current="page"' : ''}><span class="admin-sidebar-icon" aria-hidden="true">${icon}</span><span>${label}</span></a>`).join('')}</nav>
     <a class="admin-sidebar-storefront" href="index.html">↗ View storefront</a>`;
   view.prepend(aside);
   const collapseButton = aside.querySelector('.admin-sidebar-collapse');
