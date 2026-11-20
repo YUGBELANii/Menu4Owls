@@ -62,7 +62,7 @@
      Desktop .nav-inner: 18px padding top/bottom + one row of brand/links ≈ 62px + 1px border.
      Mobile .nav-inner (column layout below 768px): 16px padding + brand row + 14px gap + links row + border ≈ 92px. */
   --nav-h-desktop: 63px;
-  --nav-h-mobile: 92px;
+  --nav-h-mobile: 68px;
 }
 
 /* ============================================================
@@ -1944,8 +1944,39 @@ select {
 }
 @media (max-width: 768px) {
   .nav-inner > .theme-toggle {
-    align-self: flex-end;
+    align-self: center;
     margin: 0;
+  }
+}
+@media (max-width: 480px) {
+  .nav-inner {
+    gap: 9px;
+  }
+  .brand {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .nav-links {
+    gap: 11px;
+  }
+  .nav-links a {
+    font-size: .68rem;
+  }
+}
+@media (max-width: 360px) {
+  .nav-inner {
+    gap: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .brand {
+    font-size: .92rem;
+  }
+  .nav-links {
+    gap: 8px;
+  }
+  .nav-links a {
+    font-size: .64rem;
   }
 }
 
