@@ -313,3 +313,17 @@
 @media (prefers-reduced-motion: reduce) {
   .admin-workspace *, .admin-workspace *::before, .admin-workspace *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Brand link remains legible in both expanded and collapsed sidebar states. */
+.admin-sidebar-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+}
+.admin-sidebar-brand-link > span:last-child { min-width: 0; }
+.admin-workspace.sidebar-collapsed .admin-sidebar-brand-link > span:not(.admin-brand-mark) { display: none; }
+.admin-workspace.sidebar-collapsed .admin-sidebar-brand-link { justify-content: center; }
