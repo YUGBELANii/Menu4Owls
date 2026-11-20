@@ -21,8 +21,9 @@
       button.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
       button.setAttribute('aria-pressed', String(light));
       button.innerHTML = light
-        ? '<span aria-hidden="true">☾</span><span class="theme-toggle-label">Dark mode</span>'
-        : '<span aria-hidden="true">☀</span><span class="theme-toggle-label">Light mode</span>';
+        ? '<span aria-hidden="true">☾</span>'
+        : '<span aria-hidden="true">☀</span>';
+      button.title = light ? 'Switch to dark mode' : 'Switch to light mode';
     });
   }
 
@@ -43,8 +44,8 @@
     const nav = document.querySelector('.nav-inner');
 
     if (adminBrand) {
-      if (collapse) adminBrand.insertBefore(button, collapse);
-      else adminBrand.append(button);
+      // Keep the control outside the brand link to avoid nested interactive elements.
+      adminBrand.insertAdjacentElement('afterend', button);
     } else if (nav) {
       nav.append(button);
     }
