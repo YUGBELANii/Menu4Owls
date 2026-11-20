@@ -335,6 +335,7 @@
           timeZone: 'Asia/Kolkata'
         });
         const normalizedStatus = ['cancelled', 'canceled', 'rejected'].includes(order.status) ? 'canceled' : order.status;
+        const displayStatus = normalizedStatus === 'completed' ? (order.fulfillment_type === 'takeout' ? 'Picked Up' : 'Delivered') : normalizedStatus;
 
         return `
           <article class="order-card">
@@ -344,12 +345,12 @@
                 <div class="order-meta">${escapeHtml(created)}</div>
                 ${(order.customer_name || order.customer_phone) ? `<div class="order-meta">${escapeHtml(order.customer_name || 'Customer')}${order.customer_phone ? ` · ${escapeHtml(order.customer_phone)}` : ''}</div>` : ''}
               </div>
-              <div class="order-status">${escapeHtml(normalizedStatus)}</div>
+              <div class="order-status">${escapeHtml(displayStatus)}</div>
             </div>
             <div class="order-items">${itemRows || '<p>No item details available.</p>'}</div>
             <div class="order-total">
               <div>Subtotal: ₹${money(order.subtotal)}</div>
-              <div>Delivery: ₹${money(order.delivery_fee)}</div>
+              <div>${order.fulfillment_type === 'takeout' ? 'Takeout pickup' : 'Delivery'}: ₹${money(order.delivery_fee)}</div>
               ${Number(order.discount || 0) > 0 ? `<div>Discount: −₹${money(order.discount)}</div>` : ''}
               <strong>Total: ₹${money(order.total)}</strong>
             </div>
