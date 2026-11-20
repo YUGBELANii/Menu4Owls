@@ -1858,3 +1858,12 @@ select {
 .push-opt-in-card h2 { margin:0 0 10px; }
 .push-opt-in-card p { line-height:1.55; }
 .push-opt-in-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:20px; }
+
+/* Customer cart fulfillment selector */
+.fulfillment-choice { display:grid; gap:10px; margin:16px 0; padding:12px; border:1px solid var(--border); border-radius:10px; }
+.fulfillment-choice legend { padding:0 6px; font-weight:800; font-size:.9rem; }
+.fulfillment-choice label { display:grid; grid-template-columns:18px minmax(0,1fr) auto; align-items:center; gap:8px; padding:10px; border:1px solid var(--border); border-radius:8px; cursor:pointer; }
+.fulfillment-choice label:has(input:checked) { border-color:var(--accent); background:var(--surface-2); }
+.fulfillment-choice input { accent-color:var(--accent); margin:0; }
+.fulfillment-choice label span { font-weight:800; }
+.fulfillment-choice small { color:var(--muted); font-size:.78rem; text-align:right; }

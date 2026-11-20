@@ -1839,6 +1839,12 @@ body {
       No items added yet.
     </div>
 
+    <fieldset class="fulfillment-choice" aria-label="Order fulfillment">
+      <legend>How would you like your order?</legend>
+      <label><input type="radio" name="fulfillment-type" value="delivery" checked onchange="setFulfillmentType('delivery')"> <span>Delivery</span><small>₹20 delivery fee</small></label>
+      <label><input type="radio" name="fulfillment-type" value="takeout" onchange="setFulfillmentType('takeout')"> <span>Takeout</span><small>Pick up at the kitchen · Free</small></label>
+    </fieldset>
+
    
 <div class="checkout-policy">
   <label>
@@ -2056,6 +2062,7 @@ let weeklyLeaderboardData = null;
 let weeklyLeaderboardStatus = 'loading';
 
 let cart = [];
+let fulfillmentType = 'delivery';
 
 let mysteryReward = null;
 
@@ -2836,6 +2843,15 @@ function hasValidChaiQuantity() {
    RENDER CART
 ========================================================= */
 
+function setFulfillmentType(type) {
+  if (!['delivery', 'takeout'].includes(type)) return;
+  fulfillmentType = type;
+  document.querySelectorAll('input[name="fulfillment-type"]').forEach(input => {
+    input.checked = input.value === fulfillmentType;
+  });
+  renderCart();
+}
+
 function renderCart() {
 
   const items =
@@ -2851,7 +2867,7 @@ function renderCart() {
     document.getElementById('checkout-whatsapp');
 
   checkRewardEligibility();
-
+  const deliveryFee = fulfillmentType === 'delivery' ? DELIVERY_CHARGE : 0;
 
   if (!cart.length) {
 
@@ -2997,7 +3013,7 @@ function renderCart() {
         </span>
 
         <span>
-          ₹${DELIVERY_CHARGE}
+          ₹${deliveryFee}
         </span>
 
       </div>
@@ -3232,6 +3248,7 @@ async function checkoutWhatsapp() {
       body: JSON.stringify({
         request_id: requestId,
         items: orderItems,
+        fulfillment_type: fulfillmentType,
         policy_accepted: true
       })
     });
@@ -3253,7 +3270,7 @@ async function checkoutWhatsapp() {
       0
     );
 
-    const delivery = DELIVERY_CHARGE;
+    const delivery = fulfillmentType === 'delivery' ? DELIVERY_CHARGE : 0;
     const total = subtotal + delivery;
 
     const lines = cart.map(item =>
@@ -3269,6 +3286,7 @@ let message = [
   "",
   "🧾 *ORDER SUMMARY*",
   `🎟️ Order Token: *${result.token}*`,
+  `🚚 Fulfillment: *${fulfillmentType === 'delivery' ? 'Delivery' : 'Takeout / Pickup'}*`,
   "",
   "━━━━━━━━━━━━━━",
   "🛒 *YOUR ITEMS*",
@@ -3279,7 +3297,7 @@ let message = [
   "💰 *PAYMENT SUMMARY*",
   "",
   `Subtotal: ₹${subtotal.toFixed(2)}`,
-  `Delivery Fee: ₹${delivery.toFixed(2)}`,
+  `${fulfillmentType === 'delivery' ? 'Delivery Fee' : 'Pickup Fee'}: ₹${delivery.toFixed(2)}`,
   "━━━━━━━━━━━━━━",
   `*TOTAL: ₹${total.toFixed(2)}*`,
   "",

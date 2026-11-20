@@ -56,6 +56,18 @@ module.exports = async function handler(req, res) {
     }
     if (!(await isAdmin(req))) return res.status(403).json({ error: 'Authorized administrator required.' });
     const body = req.body || {};
+    if (body.type === 'order-fulfillment') {
+      if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST to update order fulfillment.' });
+      if (typeof body.id !== 'string' || !UUID_PATTERN.test(body.id)) return res.status(400).json({ error: 'A valid order ID is required.' });
+      if (!['delivery', 'takeout'].includes(body.fulfillment_type)) return res.status(400).json({ error: 'Fulfillment must be delivery or takeout.' });
+      const { data: current, error: readError } = await db.from('orders').select('id,subtotal').eq('id', body.id).maybeSingle();
+      if (readError) throw readError;
+      if (!current) return res.status(404).json({ error: 'Order not found.' });
+      const deliveryFee = body.fulfillment_type === 'delivery' ? 20 : 0;
+      const { data, error } = await db.from('orders').update({ fulfillment_type: body.fulfillment_type, delivery_fee: deliveryFee, total: Number(current.subtotal || 0) + deliveryFee }).eq('id', body.id).select('id,fulfillment_type,delivery_fee,total').single();
+      if (error) throw error;
+      return res.status(200).json({ order: data });
+    }
     if (body.type === 'order-status') {
       if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST to update order status.' });
       if (typeof body.id !== 'string' || !UUID_PATTERN.test(body.id)) return res.status(400).json({ error: 'A valid order ID is required.' });
