@@ -2325,6 +2325,7 @@ function renderProductRow(item, options = {}) {
           src="${escapeHtml(imageUrl)}"
           alt="${escapeHtml(item.name || 'Menu item')}"
           loading="lazy"
+          decoding="async"
         >
       </div>
     `
@@ -3359,6 +3360,7 @@ let message = [
 ========================================================= */
 
 let searchAnalyticsTimer;
+let menuSearchRenderTimer;
 let lastSearchValue = '';
 
 function filterMenuProducts(search) {
@@ -3385,15 +3387,17 @@ document
 
       const filtered = filterMenuProducts(search);
 
-
-      renderMenu(filtered);
-
-      const searchStatus = document.getElementById('menu-search-status');
-      if (searchStatus) {
-        searchStatus.textContent = search
-          ? `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'} found.`
-          : '';
-      }
+      // Avoid rebuilding every category and product node for each keystroke.
+      window.clearTimeout(menuSearchRenderTimer);
+      menuSearchRenderTimer = window.setTimeout(() => {
+        renderMenu(filtered);
+        const searchStatus = document.getElementById('menu-search-status');
+        if (searchStatus) {
+          searchStatus.textContent = search
+            ? `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'} found.`
+            : '';
+        }
+      }, 100);
 
       window.clearTimeout(searchAnalyticsTimer);
       if (search) {
