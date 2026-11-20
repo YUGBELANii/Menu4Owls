@@ -5,44 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin overview · Owlz Corner</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .home-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:16px; }
-    .home-card { display:block; padding:22px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--gradient-surface); color:var(--text); text-decoration:none; }
-    .home-card:hover { border-color:var(--accent); }
-    .home-card strong { display:block; margin:8px 0; font-size:1.7rem; }
-    .home-card span { color:var(--muted); font-size:.85rem; }
-    .home-section-title { margin:30px 0 14px; }
-    .home-shortcuts { display:flex; gap:10px; flex-wrap:wrap; }
-  </style>
   <link rel="stylesheet" href="admin-ui.css">
+  <style>
+    .dashboard-group { margin: 24px 0 30px; }
+    .dashboard-group h2 { margin: 0 0 14px; font-size: 1.35rem; }
+    .dashboard-group p { margin: 0 0 14px; }
+    .home-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+    .home-card { display:block; min-width:0; min-height:132px; padding:20px; border:1px solid var(--border); border-radius:13px; background:var(--gradient-surface); }
+    .home-card strong { display:block; margin:10px 0 4px; font-size:clamp(1.45rem,2.2vw,2rem); line-height:1.15; overflow-wrap:anywhere; }
+    .home-card span { color:var(--muted); font-size:.82rem; }
+    .home-card small { display:block; margin-top:7px; color:var(--muted); line-height:1.45; }
+    .dashboard-status { margin:8px 0 18px; line-height:1.5; }
+    @media(max-width:1100px) { .home-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:480px) { .home-grid { gap:9px; } .home-card { min-height:108px; padding:12px; } .home-card strong { font-size:1.35rem; } .home-card span { font-size:.75rem; } }
+  </style>
 </head>
 <body>
   <div class="login-card" id="login-view">
-    <h2>Admin login</h2><p class="sub">Sign in with your authorized Supabase admin account.</p>
+    <h2>Admin login</h2>
+    <p class="sub">Sign in with your authorized Supabase admin account.</p>
     <form id="login-form">
       <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" autocomplete="username" required></div>
       <div class="field"><label for="login-password">Password</label><input type="password" id="login-password" autocomplete="current-password" required></div>
-      <button type="submit" class="btn btn-full" id="login-btn">Log in</button><div class="status-msg" id="login-status" role="status"></div>
+      <button type="submit" class="btn btn-full" id="login-btn">Log in</button>
+      <div class="status-msg" id="login-status" role="status"></div>
     </form>
   </div>
+
   <main class="admin-shell admin-workspace" id="admin-view" style="display:none">
     <div class="container">
       <header class="admin-topbar">
-        <div><p class="eyebrow" style="margin-bottom:4px">Owlz Corner · Admin</p><h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.9rem">Business overview</h1><p class="sub">Recent activity from the existing catalogue and order records.</p></div>
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="who" id="who-label"></span><button class="btn btn-ghost" id="logout-btn" type="button">Log out</button></div>
+        <div>
+          <p class="eyebrow" style="margin-bottom:4px">Owlz Corner · Management</p>
+          <h1 style="font-family:'Fraunces',serif;font-weight:500;margin:0;font-size:1.9rem">Business dashboard</h1>
+          <p class="sub">A single view of orders, products, revenue and customer notification preferences.</p>
+        </div>
+        <div><span class="who" id="who-label"></span><button class="btn btn-ghost" id="logout-btn" type="button">Log out</button></div>
       </header>
-      <p id="overview-status" class="upload-status" role="status">Loading overview…</p>
-      <section class="home-grid" aria-label="Recent business activity">
-        <a class="home-card" href="admin-products.html"><span>Products in catalogue</span><strong id="overview-products">—</strong><span>Manage products and categories →</span></a>
-        <a class="home-card" href="admin-orders.html"><span>Orders · last 3 India calendar days</span><strong id="overview-orders">—</strong><span>Open order history →</span></a>
-        <a class="home-card" href="admin-orders.html#analytics"><span>Completed · last 3 days</span><strong id="overview-completed">—</strong><span>See order analytics →</span></a>
+
+      <p id="overview-status" class="upload-status dashboard-status" role="status">Loading business data…</p>
+
+      <section class="dashboard-group" aria-labelledby="orders-heading">
+        <h2 id="orders-heading">Orders overview</h2>
+        <div class="home-grid">
+          <article class="home-card"><span>Total orders</span><strong id="metric-orders-total">—</strong><small>All recorded orders</small></article>
+          <article class="home-card"><span>Pending</span><strong id="metric-orders-pending">—</strong><small>Awaiting completion or cancellation</small></article>
+          <article class="home-card"><span>Completed</span><strong id="metric-orders-completed">—</strong><small>Delivered and picked-up orders</small></article>
+          <article class="home-card"><span>Cancelled / rejected</span><strong id="metric-orders-cancelled">—</strong><small>Orders not fulfilled</small></article>
+        </div>
       </section>
-      <h2 class="home-section-title">Management</h2>
-      <section class="home-shortcuts" aria-label="Admin shortcuts">
-        <a class="btn" href="admin-orders.html">Orders</a><a class="btn btn-ghost" href="admin-products.html">Products &amp; categories</a><a class="btn btn-ghost" href="admin-notifications.html">Notifications</a><a class="btn btn-ghost" href="admin-finance.html">Finance</a><a class="btn btn-ghost" href="admin-promotions.html">Banners &amp; promotions</a><a class="btn btn-ghost" href="admin-store-status.html">Store status</a>
+
+      <section class="dashboard-group" aria-labelledby="products-heading">
+        <h2 id="products-heading">Products overview</h2>
+        <div class="home-grid">
+          <article class="home-card"><span>Products in catalogue</span><strong id="metric-products-total">—</strong><small>All saved products</small></article>
+          <article class="home-card"><span>Available products</span><strong id="metric-products-available">—</strong><small>Currently marked available</small></article>
+        </div>
+      </section>
+
+      <section class="dashboard-group" aria-labelledby="finance-heading">
+        <h2 id="finance-heading">Finance overview</h2>
+        <div class="home-grid">
+          <article class="home-card"><span>Recorded revenue</span><strong id="metric-revenue">—</strong><small>Sum of completed order totals</small></article>
+          <article class="home-card"><span>Average completed order</span><strong id="metric-average-order">—</strong><small>Revenue divided by completed orders</small></article>
+        </div>
+        <p class="sub">Revenue is not net profit. Expenses and product costs are not included in this figure.</p>
+      </section>
+
+      <section class="dashboard-group" aria-labelledby="notifications-heading">
+        <h2 id="notifications-heading">Customer notification preferences</h2>
+        <div class="home-grid">
+          <article class="home-card"><span>Agreed to notifications</span><strong id="metric-notifications-accepted">—</strong><small>Customers who accepted the prompt</small></article>
+          <article class="home-card"><span>Disagreed to notifications</span><strong id="metric-notifications-refused">—</strong><small>Customers who refused the prompt</small></article>
+          <article class="home-card"><span>Subscribed successfully</span><strong id="metric-notifications-subscribed">—</strong><small>Browser subscriptions currently recorded</small></article>
+        </div>
       </section>
     </div>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="admin-navigation.js"></script>
@@ -50,37 +90,93 @@
     'use strict';
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
-    const setStatus = (el, text, type='') => { el.textContent=text; el.className=type?`status-msg show ${type}`:'upload-status'; };
-    function threeDayStart() {
-      const p = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
-      const get = type => p.find(x=>x.type===type).value;
-      const day = new Date(Date.UTC(Number(get('year')),Number(get('month'))-1,Number(get('day'))-2)).toISOString().slice(0,10);
-      return new Date(`${day}T00:00:00+05:30`).toISOString();
+    const money = value => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(value)||0);
+    const setStatus = (el,text,type='') => { el.textContent=text; el.className=type?'status-msg show '+type:'upload-status dashboard-status'; };
+    function setMetric(id,value) { document.getElementById(id).textContent=String(value); }
+    async function countRows(table, filters=[]) {
+      let query=supabaseClient.from(table).select('id',{count:'exact',head:true});
+      for (const [method,column,value] of filters) query=query[method](column,value);
+      return query;
+    }
+    async function loadRevenue() {
+      let total=0, count=0;
+      for(let offset=0;;offset+=500) {
+        const {data,error}=await supabaseClient.from('orders').select('total').eq('status','completed').order('created_at',{ascending:true}).range(offset,offset+499);
+        if(error) throw error;
+        for(const row of data||[]) { total+=Number(row.total)||0; count++; }
+        if(!data||data.length<500) break;
+      }
+      return {total,count};
     }
     async function loadOverview() {
-      document.getElementById('overview-status').textContent='Loading overview…';
-      const start=threeDayStart();
-      const [products, orders, completed] = await Promise.all([
-        supabaseClient.from('products').select('id,available',{count:'exact'}),
-        supabaseClient.from('orders').select('id',{count:'exact',head:true}).gte('created_at',start),
-        supabaseClient.from('orders').select('id',{count:'exact',head:true}).eq('status','completed').gte('created_at',start)
+      const status=document.getElementById('overview-status');
+      status.textContent='Loading all-time totals from Supabase…';
+      const tasks=await Promise.allSettled([
+        countRows('orders'),
+        countRows('orders',[['eq','status','pending']]),
+        countRows('orders',[['eq','status','completed']]),
+        countRows('orders',[['in','status',['cancelled','rejected']]]),
+        countRows('products'),
+        countRows('products',[['eq','available',true]]),
+        countRows('customer_notification_preferences',[['eq','preference','accepted']]),
+        countRows('customer_notification_preferences',[['eq','preference','refused']]),
+        countRows('customer_notification_preferences',[['eq','subscription_status','subscribed']]),
+        loadRevenue()
       ]);
-      if(products.error) throw products.error;
-      if(orders.error) throw orders.error;
-      if(completed.error) throw completed.error;
-      document.getElementById('overview-products').textContent=String(products.count ?? products.data?.length ?? 0);
-      document.getElementById('overview-orders').textContent=String(orders.count ?? 0);
-      document.getElementById('overview-completed').textContent=String(completed.count ?? 0);
-      document.getElementById('overview-status').textContent='Overview uses saved records from the connected Supabase project.';
+      const labels=['orders','pending orders','completed orders','cancelled/rejected orders','products','available products','accepted preferences','refused preferences','active notification subscriptions','revenue'];
+      const errors=[];
+      tasks.forEach((task,index)=>{
+        if(task.status==='rejected') { errors.push(labels[index]+': '+task.reason.message); return; }
+        const result=task.value;
+        if(index===9) {
+          setMetric('metric-revenue',money(result.total));
+          setMetric('metric-average-order',result.count?money(result.total/result.count):money(0));
+          return;
+        }
+        if(result.error) { errors.push(labels[index]+': '+result.error.message); return; }
+        const ids=['metric-orders-total','metric-orders-pending','metric-orders-completed','metric-orders-cancelled','metric-products-total','metric-products-available','metric-notifications-accepted','metric-notifications-refused','metric-notifications-subscribed'];
+        setMetric(ids[index],result.count??0);
+      });
+      status.textContent=errors.length
+        ? 'Some dashboard figures could not be loaded: '+errors.join(' · ')
+        : 'All figures are live counts from saved records. Revenue includes completed orders only.';
+      if(errors.length) status.className='status-msg show err dashboard-status';
     }
     async function refresh() {
-      const {data,error}=await supabaseClient.auth.getSession(); if(error)console.error(error);
-      const session=data?.session; loginView.style.display=session?'none':'block'; adminView.style.display=session?'':'none';
-      if(session){document.getElementById('who-label').textContent=session.user.email||'';try{await loadOverview();}catch(e){document.getElementById('overview-status').textContent=`Could not load overview: ${e.message}`;}}
+      const {data,error}=await supabaseClient.auth.getSession();
+      if(error) console.error(error);
+      const session=data?.session;
+      loginView.style.display=session?'none':'block';
+      adminView.style.display=session?'':'none';
+      if(session) {
+        document.getElementById('who-label').textContent=session.user.email||'';
+        try { await loadOverview(); }
+        catch(error) { setStatus(document.getElementById('overview-status'),'Could not load dashboard: '+error.message,'err'); }
+      }
     }
-    supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(refresh,0);else{loginView.style.display='block';adminView.style.display='none';}});
-    document.getElementById('login-form').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('login-btn');b.disabled=true;try{const{error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('login-email').value.trim(),password:document.getElementById('login-password').value});if(error)throw error;await refresh();}catch(error){setStatus(document.getElementById('login-status'),error.message||'Login failed.','err');}finally{b.disabled=false;}});
-    document.getElementById('logout-btn').addEventListener('click',async()=>{const{error}=await supabaseClient.auth.signOut();if(error)alert(`Could not log out: ${error.message}`);await refresh();});
+    supabaseClient.auth.onAuthStateChange((_event,session)=>{
+      if(session) setTimeout(refresh,0);
+      else { loginView.style.display='block'; adminView.style.display='none'; }
+    });
+    document.getElementById('login-form').addEventListener('submit',async event=>{
+      event.preventDefault();
+      const button=document.getElementById('login-btn');
+      button.disabled=true; button.textContent='Logging in…';
+      try {
+        const {error}=await supabaseClient.auth.signInWithPassword({
+          email:document.getElementById('login-email').value.trim(),
+          password:document.getElementById('login-password').value
+        });
+        if(error) throw error;
+        await refresh();
+      } catch(error) { setStatus(document.getElementById('login-status'),error.message||'Login failed.','err'); }
+      finally { button.disabled=false; button.textContent='Log in'; }
+    });
+    document.getElementById('logout-btn').addEventListener('click',async()=>{
+      const {error}=await supabaseClient.auth.signOut();
+      if(error) alert('Could not log out: '+error.message);
+      await refresh();
+    });
     refresh();
   </script>
 </body>

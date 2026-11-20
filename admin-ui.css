@@ -327,3 +327,143 @@
 .admin-sidebar-brand-link > span:last-child { min-width: 0; }
 .admin-workspace.sidebar-collapsed .admin-sidebar-brand-link > span:not(.admin-brand-mark) { display: none; }
 .admin-workspace.sidebar-collapsed .admin-sidebar-brand-link { justify-content: center; }
+
+
+/* Layout pass: use the available workspace width instead of constraining panels. */
+.admin-shell.admin-workspace > .container,
+.admin-workspace > .container {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(18px, 2.2vw, 34px) clamp(16px, 2.4vw, 40px) 56px;
+}
+.admin-workspace .panel,
+.admin-workspace .home-dashboard-section {
+  width: 100%;
+  max-width: none;
+}
+.admin-workspace .home-dashboard-section { margin: 22px 0; }
+
+/* Consistent, easier-to-hit controls and predictable spacing. */
+.admin-workspace button:not(.admin-sidebar-collapse):not(.admin-sidebar-toggle),
+.admin-workspace .btn,
+.admin-workspace input[type="button"],
+.admin-workspace input[type="submit"] {
+  min-height: 42px;
+  padding: 10px 17px;
+  line-height: 1.2;
+  font-size: .88rem;
+  border-radius: 9px;
+}
+.admin-workspace .icon-btn {
+  min-height: 38px;
+  padding: 8px 12px;
+  line-height: 1.2;
+}
+.admin-workspace .orders-filters,
+.admin-workspace .order-actions,
+.admin-workspace .p-actions,
+.admin-workspace .edit-actions,
+.admin-workspace .report-toolbar,
+.admin-workspace .history-controls,
+.admin-workspace .orders-toolbar,
+.admin-workspace .order-alert-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.admin-workspace .orders-filters button,
+.admin-workspace .order-actions button,
+.admin-workspace .p-actions button,
+.admin-workspace .edit-actions button {
+  flex: 0 1 auto;
+}
+.admin-workspace .form-row { column-gap: 18px; row-gap: 14px; }
+.admin-workspace .field { margin-bottom: 16px; }
+.admin-workspace .field > input,
+.admin-workspace .field > select,
+.admin-workspace .field > textarea { min-width: 0; }
+
+/* Dashboard cards are information panels, not tiny navigation buttons. */
+.admin-workspace .home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.admin-workspace .home-card {
+  min-width: 0;
+  min-height: 132px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--gradient-surface);
+}
+.admin-workspace .home-card strong {
+  margin: 10px 0 4px;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.admin-workspace .home-card .metric-note {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+.admin-workspace .dashboard-group-title {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
+.admin-workspace .home-card-label {
+  display: block;
+  color: var(--muted);
+  font-size: .82rem;
+}
+.admin-workspace .home-card .metric-trend {
+  color: var(--accent);
+  font-size: .76rem;
+}
+.admin-workspace .dashboard-status {
+  margin: 8px 0 18px;
+  line-height: 1.5;
+}
+.admin-workspace .home-card:hover { transform: none; }
+
+@media (max-width: 1100px) {
+  .admin-workspace .home-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .admin-shell.admin-workspace > .container,
+  .admin-workspace > .container {
+    padding: 18px 16px 36px;
+  }
+  .admin-workspace .home-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .admin-workspace .home-card { min-height: 116px; padding: 15px; }
+  .admin-workspace button:not(.admin-sidebar-collapse):not(.admin-sidebar-toggle),
+  .admin-workspace .btn,
+  .admin-workspace input[type="button"],
+  .admin-workspace input[type="submit"] {
+    min-height: 44px;
+  }
+  .admin-workspace .orders-filters button,
+  .admin-workspace .order-actions button,
+  .admin-workspace .p-actions button,
+  .admin-workspace .edit-actions button { flex: 1 1 130px; }
+}
+@media (max-width: 480px) {
+  .admin-shell.admin-workspace > .container,
+  .admin-workspace > .container { padding: 14px 12px 30px; }
+  .admin-workspace .home-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+  .admin-workspace .home-card { min-height: 108px; padding: 12px; }
+  .admin-workspace .home-card strong { font-size: 1.35rem; }
+  .admin-workspace .home-card-label { font-size: .75rem; }
+  .admin-workspace .orders-filters button,
+  .admin-workspace .order-actions button,
+  .admin-workspace .p-actions button,
+  .admin-workspace .edit-actions button { flex: 1 1 100%; }
+  .admin-workspace .report-toolbar > *,
+  .admin-workspace .history-controls > * { flex: 1 1 100%; width: 100%; }
+}
