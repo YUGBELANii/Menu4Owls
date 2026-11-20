@@ -1874,22 +1874,23 @@ select {
 ============================================================ */
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f7f4ed;
-  --surface: #fffdf8;
-  --surface-2: #f0ebe1;
-  --surface-3: #e6ddce;
-  --text: #29241e;
-  --muted: #6f6558;
-  --border: #ded5c7;
-  --border-soft: #ded5c766;
-  --shadow-sm: 0 2px 8px rgba(54, 42, 25, .07);
-  --shadow-md: 0 8px 24px rgba(54, 42, 25, .10);
-  --shadow-lg: 0 20px 48px rgba(54, 42, 25, .14);
+  /* Warm, low-glare neutrals instead of stark white surfaces. */
+  --bg: #eee9df;
+  --surface: #f5f1e8;
+  --surface-2: #e9e2d5;
+  --surface-3: #ddd3c2;
+  --text: #3a332a;
+  --muted: #776d60;
+  --border: #d8cebd;
+  --border-soft: #d8cebd88;
+  --shadow-sm: 0 2px 8px rgba(54, 42, 25, .045);
+  --shadow-md: 0 8px 24px rgba(54, 42, 25, .065);
+  --shadow-lg: 0 20px 48px rgba(54, 42, 25, .09);
 }
 
 /* Keep the same amber and brick brand colors in both themes. */
 :root[data-theme="light"] .nav {
-  background: rgba(247, 244, 237, .88);
+  background: rgba(238, 233, 223, .92);
 }
 
 :root[data-theme="light"] .admin-sidebar {
@@ -1951,7 +1952,7 @@ select {
 
 /* Theme-specific fixes for components with legacy hard-coded dark surfaces. */
 :root[data-theme="light"] .category-nav {
-  background: rgba(247, 244, 237, .92);
+  background: rgba(238, 233, 223, .94);
 }
 :root[data-theme="light"] .admin-sidebar {
   background: var(--surface);
