@@ -1867,3 +1867,83 @@ select {
 .fulfillment-choice input { accent-color:var(--accent); margin:0; }
 .fulfillment-choice label span { font-weight:800; }
 .fulfillment-choice small { color:var(--muted); font-size:.78rem; text-align:right; }
+
+
+/* ============================================================
+   LIGHT THEME — surface colors adapt; brand accents stay intact.
+============================================================ */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f7f4ed;
+  --surface: #fffdf8;
+  --surface-2: #f0ebe1;
+  --surface-3: #e6ddce;
+  --text: #29241e;
+  --muted: #6f6558;
+  --border: #ded5c7;
+  --border-soft: #ded5c766;
+  --shadow-sm: 0 2px 8px rgba(54, 42, 25, .07);
+  --shadow-md: 0 8px 24px rgba(54, 42, 25, .10);
+  --shadow-lg: 0 20px 48px rgba(54, 42, 25, .14);
+}
+
+/* Keep the same amber and brick brand colors in both themes. */
+:root[data-theme="light"] .nav {
+  background: rgba(247, 244, 237, .88);
+}
+
+:root[data-theme="light"] .admin-sidebar {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.nav-inner > .theme-toggle {
+  flex: 0 0 auto;
+  margin-left: 14px;
+}
+.admin-sidebar-brand > .theme-toggle {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 5px 8px;
+  border-radius: 8px;
+}
+.admin-workspace.sidebar-collapsed .admin-sidebar-brand > .theme-toggle {
+  width: 38px;
+  padding: 5px;
+}
+.admin-workspace.sidebar-collapsed .theme-toggle-label {
+  display: none;
+}
+@media (max-width: 768px) {
+  .nav-inner > .theme-toggle {
+    align-self: flex-end;
+    margin: 0;
+  }
+}
