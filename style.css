@@ -1340,12 +1340,12 @@ select {
     padding-right: 18px;
   }
 
-  /* .nav-inner switches to column layout here — brand row + links row */
+  /* Brand, navigation and theme control share one compact row. */
   .nav-inner {
-    flex-direction: column;
-    gap: 14px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    flex-direction: row;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .brand {
@@ -1353,15 +1353,18 @@ select {
   }
 
   .nav-links {
-    width: 100%;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
+    width: auto;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: nowrap;
+    flex: 1 1 auto;
   }
 
   .nav-links a {
-    font-size: 0.78rem;
-    padding: 4px 2px;
+    font-size: 0.74rem;
+    padding: 4px 1px;
+    white-space: nowrap;
   }
 
   .push-nav-button {
@@ -1926,8 +1929,16 @@ select {
   outline-offset: 3px;
 }
 .nav-inner > .theme-toggle {
-  flex: 0 0 auto;
-  margin-left: 14px;
+  flex: 0 0 34px;
+  width: 34px;
+  min-height: 34px;
+  height: 34px;
+  margin-left: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  border-color: transparent;
+  font-size: 1.1rem;
 }
 .admin-sidebar-brand > .theme-toggle {
   flex: 0 0 auto;
