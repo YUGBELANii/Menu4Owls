@@ -27,15 +27,63 @@
               : hash === 'analytics' ? 'analytics' : 'home';
   const aside = document.createElement('aside');
   aside.className = 'admin-sidebar';
-  aside.innerHTML = `<a class="admin-sidebar-brand" href="admin.html"><span class="admin-brand-mark">O</span><span>Owlz Corner<small>Business manager</small></span></a>
+  aside.innerHTML = `<div class="admin-sidebar-brand"><a class="admin-sidebar-brand-link" href="admin.html"><span class="admin-brand-mark">O</span><span>Owlz Corner<small>Business manager</small></span></a><button type="button" class="admin-sidebar-collapse" aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar"><span class="collapse-glyph" aria-hidden="true">‹</span></button></div>
     <button type="button" class="admin-sidebar-toggle" aria-expanded="false" aria-controls="admin-sidebar-links">☰ <span>Navigation</span></button>
     <nav id="admin-sidebar-links" aria-label="Admin sections">${links.map(([href, icon, label, key]) => `<a href="${href}" class="admin-sidebar-link ${active === key ? 'active' : ''}" ${active === key ? 'aria-current="page"' : ''}><span class="admin-sidebar-icon" aria-hidden="true">${icon}</span><span>${label}</span></a>`).join('')}</nav>
     <a class="admin-sidebar-storefront" href="index.html">↗ View storefront</a>`;
   view.prepend(aside);
+  const collapseButton = aside.querySelector('.admin-sidebar-collapse');
+  try {
+    if (localStorage.getItem('owlz-admin-sidebar-collapsed') === 'true') {
+      view.classList.add('sidebar-collapsed');
+      collapseButton.setAttribute('aria-pressed', 'true');
+      collapseButton.setAttribute('aria-label', 'Expand sidebar');
+      collapseButton.title = 'Expand sidebar';
+    }
+  } catch (_) {}
+  collapseButton.addEventListener('click', () => {
+    const collapsed = view.classList.toggle('sidebar-collapsed');
+    collapseButton.setAttribute('aria-pressed', String(collapsed));
+    collapseButton.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+    collapseButton.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    try { localStorage.setItem('owlz-admin-sidebar-collapsed', String(collapsed)); } catch (_) {}
+  });
+
   const toggle = aside.querySelector('.admin-sidebar-toggle');
   toggle.addEventListener('click', () => {
     const opened = aside.classList.toggle('open');
     toggle.setAttribute('aria-expanded', String(opened));
   });
   aside.querySelectorAll('nav a').forEach(link => link.addEventListener('click', () => aside.classList.remove('open')));
+
+  function makeDisclosure(section, openByDefault) {
+    if (!section || section.dataset.disclosureReady === 'true') return;
+    const heading = section.querySelector(':scope > h2, :scope > h3');
+    if (!heading) return;
+    const details = document.createElement('details');
+    for (const attribute of [...section.attributes]) details.setAttribute(attribute.name, attribute.value);
+    details.classList.add('admin-disclosure');
+    const hashTargetsSection = details.id && location.hash === `#${details.id}`;
+    details.open = Boolean(openByDefault || hashTargetsSection);
+    const summary = document.createElement('summary');
+    summary.append(heading);
+    const content = document.createElement('div');
+    content.className = 'admin-disclosure-content';
+    while (section.firstChild) content.append(section.firstChild);
+    details.append(summary, content);
+    section.replaceWith(details);
+    if (hashTargetsSection) requestAnimationFrame(() => details.scrollIntoView({ block: 'start' }));
+  }
+
+  if (page === 'admin-products.html') {
+    makeDisclosure(view.querySelector('#categories'), false);
+  } else if (page === 'admin-orders.html') {
+    makeDisclosure(view.querySelector('#analytics'), false);
+    makeDisclosure(view.querySelector('#create-order'), true);
+  } else if (page === 'admin-notifications.html') {
+    makeDisclosure(view.querySelector('.notification-settings'), false);
+    makeDisclosure(view.querySelector('#opening-templates')?.closest('.panel'), false);
+    makeDisclosure(view.querySelector('#closing-templates')?.closest('.panel'), false);
+    makeDisclosure(view.querySelector('#campaign-history')?.closest('.panel'), false);
+  }
 })();
