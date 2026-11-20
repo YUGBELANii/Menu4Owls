@@ -12,8 +12,7 @@
     ['admin-notifications.html', '◉', 'Notifications', 'notifications'],
     ['admin-promotions.html', '▧', 'Banners & promotions', 'banners'],
     ['admin-store-status.html', '◷', 'Store status', 'store'],
-    ['admin-finance.html', '₹', 'Finance dashboard', 'finance'],
-    ['admin-orders.html#analytics', '⌁', 'Order analytics', 'analytics']
+    ['admin-finance.html', '₹', 'Finance dashboard', 'finance']
   ];
   const page = location.pathname.split('/').pop();
   const hash = location.hash.slice(1);
@@ -24,7 +23,7 @@
         : page === 'admin-promotions.html' ? 'banners'
           : page === 'admin-store-status.html' ? 'store'
             : page === 'admin-finance.html' ? 'finance'
-              : hash === 'analytics' ? 'analytics' : 'home';
+              : 'home';
   const aside = document.createElement('aside');
   aside.className = 'admin-sidebar';
   aside.innerHTML = `<div class="admin-sidebar-brand"><a class="admin-sidebar-brand-link" href="index.html" aria-label="Owlz Corner storefront"><span class="admin-brand-mark">O</span><span>Owlz Corner<small>Business manager</small></span></a><button type="button" class="admin-sidebar-collapse" aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar"><span class="collapse-glyph" aria-hidden="true">‹</span></button></div>

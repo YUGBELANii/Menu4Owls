@@ -20,9 +20,10 @@
       const light = selected === 'light';
       button.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
       button.setAttribute('aria-pressed', String(light));
-      button.innerHTML = light
-        ? '<span aria-hidden="true">☾</span>'
-        : '<span aria-hidden="true">☀</span>';
+      const inAdminNav = button.closest('.admin-sidebar nav');
+      button.innerHTML = inAdminNav
+        ? (light ? '<span aria-hidden="true">☾</span><span>Dark mode</span>' : '<span aria-hidden="true">☀</span><span>Light mode</span>')
+        : (light ? '<span aria-hidden="true">☾</span>' : '<span aria-hidden="true">☀</span>');
       button.title = light ? 'Switch to dark mode' : 'Switch to light mode';
     });
   }
@@ -39,13 +40,12 @@
       applyTheme(root.dataset.theme === 'light' ? 'dark' : 'light');
     });
 
-    const adminBrand = document.querySelector('.admin-sidebar-brand');
-    const collapse = adminBrand?.querySelector('.admin-sidebar-collapse');
+    const adminNav = document.querySelector('.admin-sidebar nav');
     const nav = document.querySelector('.nav-inner');
 
-    if (adminBrand) {
-      // Keep the control outside the brand link to avoid nested interactive elements.
-      adminBrand.insertAdjacentElement('afterend', button);
+    if (adminNav) {
+      button.classList.add('admin-theme-toggle');
+      adminNav.insertBefore(button, adminNav.firstChild);
     } else if (nav) {
       nav.append(button);
     }
