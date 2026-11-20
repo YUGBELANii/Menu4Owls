@@ -123,6 +123,7 @@
               <div class="field"><label for="manual-customer-name">Customer name</label><input id="manual-customer-name" maxlength="120" required></div>
               <div class="field"><label for="manual-customer-phone">Customer phone</label><input id="manual-customer-phone" type="tel" maxlength="32" autocomplete="tel" required></div>
               <div class="field"><label for="manual-order-source">Order source</label><select id="manual-order-source" required><option value="whatsapp">WhatsApp</option><option value="phone">Phone</option></select></div>
+              <div class="field"><label for="manual-fulfillment-type">Fulfillment</label><select id="manual-fulfillment-type" required><option value="delivery">Delivery · ₹20</option><option value="takeout">Takeout · Free pickup</option></select></div>
             </div>
             <div id="manual-order-lines" class="manual-order-lines"></div>
             <button class="btn btn-ghost" id="add-manual-item" type="button">Add product</button>
@@ -220,7 +221,9 @@
       });
       if (!grouped.size) { host.textContent = manualProducts.length ? 'Add products to see the order total.' : 'Loading available products…'; return; }
       const subtotal = [...grouped.values()].reduce((sum, line) => sum + Number(line.product.price) * line.qty, 0);
-      host.innerHTML = [...grouped.values()].map(line => `<div><span>${escapeHtml(line.product.name)} × ${line.qty}</span><span>₹${money(Number(line.product.price) * line.qty)}</span></div>`).join('') + `<div><span>Delivery</span><span>₹20.00</span></div><div><strong>Total</strong><strong>₹${money(subtotal + 20)}</strong></div>`;
+      const fulfillment = document.getElementById('manual-fulfillment-type').value;
+      const deliveryFee = fulfillment === 'delivery' ? 20 : 0;
+      host.innerHTML = [...grouped.values()].map(line => `<div><span>${escapeHtml(line.product.name)} × ${line.qty}</span><span>₹${money(Number(line.product.price) * line.qty)}</span></div>`).join('') + `<div><span>${fulfillment === 'delivery' ? 'Delivery' : 'Takeout pickup'}</span><span>₹${money(deliveryFee)}</span></div><div><strong>Total</strong><strong>₹${money(subtotal + deliveryFee)}</strong></div>`;
     }
 
     async function loadManualProducts() {
@@ -281,10 +284,20 @@
         const { data, error } = await supabaseClient.rpc('create_manual_order_with_token', { p_request_id: requestId, ...payload });
         if (error) throw error;
         if (!data?.order_id || !data?.token) throw new Error('The database returned an incomplete order response.');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.access_token) throw new Error('Your admin session expired. Please log in again.');
+        const fulfillmentResponse = await fetch('/api/admin-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ type: 'order-fulfillment', id: data.order_id, fulfillment_type: document.getElementById('manual-fulfillment-type').value })
+        });
+        const fulfillmentResult = await fulfillmentResponse.json();
+        if (!fulfillmentResponse.ok) throw new Error(fulfillmentResult.error || 'Could not save order fulfillment.');
         sessionStorage.removeItem(requestKey);
         status.textContent = `Order ${data.token} created as ${data.status}.`;
         form.reset();
         document.getElementById('manual-order-source').value = 'whatsapp';
+        document.getElementById('manual-fulfillment-type').value = 'delivery';
         document.getElementById('manual-order-lines').replaceChildren();
         addManualOrderLine();
         await loadOrders();
@@ -327,7 +340,7 @@
           <article class="order-card">
             <div class="order-card-head">
               <div>
-                <div class="order-token">🦉 Order ${escapeHtml(order.order_token || order.id || '—')} <span class="source-badge">${escapeHtml(order.source || order.order_source || 'Source not recorded')}</span></div>
+                <div class="order-token">🦉 Order ${escapeHtml(order.order_token || order.id || '—')} <span class="source-badge">${escapeHtml(order.source || order.order_source || 'Source not recorded')}</span> <span class="source-badge">${order.fulfillment_type === 'takeout' ? 'Takeout / Pickup' : 'Delivery'}</span></div>
                 <div class="order-meta">${escapeHtml(created)}</div>
                 ${(order.customer_name || order.customer_phone) ? `<div class="order-meta">${escapeHtml(order.customer_name || 'Customer')}${order.customer_phone ? ` · ${escapeHtml(order.customer_phone)}` : ''}</div>` : ''}
               </div>
@@ -345,7 +358,7 @@
                 Status
                 <select class="order-status-select" data-order-id="${escapeHtml(order.id)}" aria-label="Update status for order ${escapeHtml(order.order_token || '')}">
                   ${['completed', 'canceled'].includes(normalizedStatus) ? '' : '<option value="" selected disabled>Choose status</option>'}
-                  <option value="completed" ${normalizedStatus === 'completed' ? 'selected' : ''}>Completed</option>
+                  <option value="completed" ${normalizedStatus === 'completed' ? 'selected' : ''}>${order.fulfillment_type === 'takeout' ? 'Picked Up' : 'Delivered'}</option>
                   <option value="cancelled" ${normalizedStatus === 'canceled' ? 'selected' : ''}>Canceled</option>
                 </select>
               </label>
@@ -512,6 +525,7 @@
     document.getElementById('manual-order-form').addEventListener('submit', submitManualOrder);
     document.getElementById('add-manual-item').addEventListener('click', addManualOrderLine);
     document.getElementById('manual-order-lines').addEventListener('input', updateManualOrderSummary);
+    document.getElementById('manual-fulfillment-type').addEventListener('change', updateManualOrderSummary);
     document.getElementById('manual-order-lines').addEventListener('change', updateManualOrderSummary);
     document.getElementById('manual-order-lines').addEventListener('click', event => {
       const button = event.target.closest('.remove-manual-item');
