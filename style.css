@@ -2003,3 +2003,16 @@ select {
 :root[data-theme="light"] .admin-sidebar-link.active {
   background: var(--surface-2);
 }
+
+
+.admin-sidebar nav > .admin-theme-toggle {
+  display:flex; align-items:center; justify-content:flex-start; gap:11px;
+  width:100%; min-height:42px; margin:0 0 5px; padding:9px 11px;
+  border:1px solid var(--border); border-radius:9px; background:var(--surface);
+  color:var(--text); font:inherit; font-size:.88rem; font-weight:600; text-align:left;
+}
+.admin-sidebar nav > .admin-theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
+.admin-sidebar nav > .admin-theme-toggle > span:first-child { display:grid; place-items:center; width:22px; font-size:1.05rem; }
+.admin-workspace.sidebar-collapsed .admin-sidebar nav > .admin-theme-toggle { justify-content:center; padding:9px 5px; }
+.admin-workspace.sidebar-collapsed .admin-sidebar nav > .admin-theme-toggle > span:last-child { display:none; }
+@media (max-width:768px) { .admin-sidebar.open nav > .admin-theme-toggle { grid-column:1 / -1; } }
