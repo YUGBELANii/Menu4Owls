@@ -2016,3 +2016,95 @@ select {
 .admin-workspace.sidebar-collapsed .admin-sidebar nav > .admin-theme-toggle { justify-content:center; padding:9px 5px; }
 .admin-workspace.sidebar-collapsed .admin-sidebar nav > .admin-theme-toggle > span:last-child { display:none; }
 @media (max-width:768px) { .admin-sidebar.open nav > .admin-theme-toggle { grid-column:1 / -1; } }
+
+/* Storefront announcement carousel (admin banner management remains unchanged). */
+.diwali-banner-carousel {
+  width: 100%;
+  margin: 0 auto 68px;
+  touch-action: pan-y;
+}
+.diwali-banner-carousel .diwali-banner {
+  margin: 0 auto;
+}
+.diwali-banner-carousel .diwali-banner[hidden] {
+  display: none !important;
+}
+.diwali-banner-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px auto 0;
+}
+.diwali-banner-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.diwali-banner-arrow:hover,
+.diwali-banner-arrow:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+.diwali-banner-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.diwali-banner-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--muted);
+  opacity: .48;
+  cursor: pointer;
+  transition: width .2s ease, opacity .2s ease, background .2s ease;
+}
+.diwali-banner-dot.is-active {
+  width: 22px;
+  background: var(--accent);
+  opacity: 1;
+}
+.diwali-banner-carousel button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .diwali-banner-carousel {
+    margin-bottom: 46px;
+  }
+  .diwali-banner-carousel .diwali-banner {
+    margin-bottom: 0;
+  }
+}
+@media (max-width: 480px) {
+  .diwali-banner-carousel {
+    margin-bottom: 38px;
+  }
+  .diwali-banner-controls {
+    margin-top: 10px;
+    gap: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .diwali-banner-arrow,
+  .diwali-banner-dot {
+    transition: none;
+  }
+}
+
