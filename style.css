@@ -2125,6 +2125,24 @@ select {
   cursor: pointer;
   transition: color .18s ease, border-color .18s ease, background .18s ease;
 }
+.nav-share-button {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  justify-content: center;
+  padding: 8px;
+}
+.nav-share-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .nav-share-button:hover,
 .nav-share-button:focus-visible {
   color: var(--text);
