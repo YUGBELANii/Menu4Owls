@@ -2176,25 +2176,179 @@ async function loadStorefrontBanners() {
       return;
     }
 
-    const fragment = document.createDocumentFragment();
-    banners.forEach((banner, index) => {
-      // Clone the placeholder; moving `host` into the fragment detaches it before replaceWith().
-      const section = host.cloneNode(false);
-      section.hidden = false;
-      section.setAttribute('aria-label', banner.title || 'Store announcement');
-      section.dataset.theme = ['gold','blood','dark'].includes(banner.theme) ? banner.theme : 'gold';
-      const inner = document.createElement('div'); inner.className = 'diwali-banner-inner';
-      const title = document.createElement('p'); title.className = 'diwali-title'; title.textContent = banner.title || '';
+    const slides = banners.map((banner, index) => {
+      const slide = host.cloneNode(false);
+      slide.hidden = false;
+      slide.setAttribute('aria-label', banner.title || `Store announcement ${index + 1}`);
+      slide.dataset.theme = ['gold','blood','dark'].includes(banner.theme) ? banner.theme : 'gold';
+
+      const inner = document.createElement('div');
+      inner.className = 'diwali-banner-inner';
+
+      const title = document.createElement('p');
+      title.className = 'diwali-title';
+      title.textContent = banner.title || '';
       inner.append(title);
+
       String(banner.content || '').split(/\r?\n/).filter(Boolean).forEach((line, lineIndex) => {
-        const p = document.createElement('p');
-        p.className = lineIndex === 0 ? 'diwali-wish' : lineIndex === 1 ? 'diwali-message' : 'diwali-signoff';
-        p.textContent = line; inner.append(p);
+        const paragraph = document.createElement('p');
+        paragraph.className = lineIndex === 0 ? 'diwali-wish' : lineIndex === 1 ? 'diwali-message' : 'diwali-signoff';
+        paragraph.textContent = line;
+        inner.append(paragraph);
       });
-      if (banner.image_url) { const img = document.createElement('img'); img.src = banner.image_url; img.alt = ''; img.loading = 'lazy'; inner.prepend(img); }
-      section.replaceChildren(inner); fragment.append(section);
+
+      if (banner.image_url) {
+        const image = document.createElement('img');
+        image.src = banner.image_url;
+        image.alt = '';
+        image.loading = index === 0 ? 'eager' : 'lazy';
+        inner.prepend(image);
+      }
+
+      slide.replaceChildren(inner);
+      return slide;
     });
-    host.replaceWith(fragment);
+
+    // Keep the original single-banner presentation when there is only one active banner.
+    if (slides.length === 1) {
+      host.replaceWith(slides[0]);
+      return;
+    }
+
+    const carousel = document.createElement('div');
+    carousel.className = 'diwali-banner-carousel';
+    carousel.setAttribute('role', 'region');
+    carousel.setAttribute('aria-label', 'Store announcements');
+    carousel.tabIndex = 0;
+
+    const track = document.createElement('div');
+    track.className = 'diwali-banner-track';
+    slides.forEach((slide, index) => {
+      slide.classList.add('diwali-banner-slide');
+      slide.hidden = index !== 0;
+      slide.setAttribute('aria-hidden', String(index !== 0));
+      track.append(slide);
+    });
+    carousel.append(track);
+
+    const controls = document.createElement('div');
+    controls.className = 'diwali-banner-controls';
+
+    const previous = document.createElement('button');
+    previous.type = 'button';
+    previous.className = 'diwali-banner-arrow';
+    previous.setAttribute('aria-label', 'Previous banner');
+    previous.textContent = '‹';
+
+    const pagination = document.createElement('div');
+    pagination.className = 'diwali-banner-pagination';
+    pagination.setAttribute('role', 'group');
+    pagination.setAttribute('aria-label', 'Choose a banner');
+
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'diwali-banner-arrow';
+    next.setAttribute('aria-label', 'Next banner');
+    next.textContent = '›';
+
+    controls.append(previous, pagination, next);
+    carousel.append(controls);
+
+    let activeIndex = 0;
+    let autoplayTimer = null;
+    let pointerStartX = null;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const renderSlide = (nextIndex) => {
+      activeIndex = (nextIndex + slides.length) % slides.length;
+      slides.forEach((slide, index) => {
+        const active = index === activeIndex;
+        slide.hidden = !active;
+        slide.setAttribute('aria-hidden', String(!active));
+      });
+      [...pagination.children].forEach((dot, index) => {
+        const active = index === activeIndex;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    };
+
+    slides.forEach((slide, index) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'diwali-banner-dot';
+      dot.setAttribute('aria-label', `Show banner ${index + 1} of ${slides.length}`);
+      dot.setAttribute('aria-current', String(index === 0));
+      dot.addEventListener('click', () => {
+        renderSlide(index);
+        restartAutoplay();
+      });
+      pagination.append(dot);
+    });
+
+    const stopAutoplay = () => {
+      if (autoplayTimer !== null) {
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    };
+
+    const startAutoplay = () => {
+      if (reducedMotion || document.hidden || autoplayTimer !== null) return;
+      autoplayTimer = window.setInterval(() => renderSlide(activeIndex + 1), 5000);
+    };
+
+    const restartAutoplay = () => {
+      stopAutoplay();
+      startAutoplay();
+    };
+
+    previous.addEventListener('click', () => {
+      renderSlide(activeIndex - 1);
+      restartAutoplay();
+    });
+    next.addEventListener('click', () => {
+      renderSlide(activeIndex + 1);
+      restartAutoplay();
+    });
+
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+    carousel.addEventListener('focusin', stopAutoplay);
+    carousel.addEventListener('focusout', (event) => {
+      if (!carousel.contains(event.relatedTarget)) startAutoplay();
+    });
+    carousel.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        renderSlide(activeIndex - 1);
+        restartAutoplay();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        renderSlide(activeIndex + 1);
+        restartAutoplay();
+      }
+    });
+    carousel.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('button')) return;
+      pointerStartX = event.clientX;
+    });
+    carousel.addEventListener('pointerup', (event) => {
+      if (pointerStartX === null) return;
+      const distance = event.clientX - pointerStartX;
+      pointerStartX = null;
+      if (Math.abs(distance) < 45) return;
+      renderSlide(activeIndex + (distance < 0 ? 1 : -1));
+      restartAutoplay();
+    });
+    carousel.addEventListener('pointercancel', () => { pointerStartX = null; });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopAutoplay();
+      else startAutoplay();
+    });
+
+    host.replaceWith(carousel);
+    startAutoplay();
   } catch (error) {
     host.remove();
     console.error('Storefront banners unavailable; hiding announcement:', error);
