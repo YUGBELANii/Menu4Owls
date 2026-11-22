@@ -1700,11 +1700,33 @@ body {
         </a>
       </li> -->
 
+      <li>
+        <button type="button" class="nav-share-button" id="open-share-dialog" aria-haspopup="dialog">
+          <span aria-hidden="true">↗</span> Share
+        </button>
+      </li>
+
     </ul>
 
   </div>
 
 </nav>
+
+<dialog id="share-website-dialog" class="share-dialog" aria-labelledby="share-website-title">
+  <div class="share-dialog-content">
+    <button type="button" class="share-dialog-close" id="close-share-dialog" aria-label="Close share dialog">×</button>
+    <p class="eyebrow">Spread the word</p>
+    <h2 id="share-website-title">Share Owlz Corner</h2>
+    <p class="share-dialog-description">Send our menu to a friend or scan this QR code to open Owlz Corner.</p>
+    <div id="website-qr" class="website-qr" aria-label="QR code for Owlz Corner website">
+      <span class="qr-loading">Preparing QR code…</span>
+    </div>
+    <button type="button" class="share-primary-button" id="download-website-qr" disabled>Download QR code</button>
+    <button type="button" class="share-secondary-button" id="native-share-website">Share website</button>
+    <button type="button" class="share-copy-button" id="copy-website-link">Copy website link</button>
+    <p id="share-website-status" class="share-status" role="status" aria-live="polite"></p>
+  </div>
+</dialog>
 
 <!-- =======================================================
      HERO
@@ -2155,6 +2177,120 @@ function categoryId(category) {
 
 let sharedStoreStatus = null;
 function isOwlzOpen() { return sharedStoreStatus?.is_open === true; }
+
+async function loadQrCodeLibrary() {
+  if (window.QRCode) return window.QRCode;
+  if (window.qrCodeLibraryPromise) return window.qrCodeLibraryPromise;
+
+  window.qrCodeLibraryPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    script.async = true;
+    script.onload = () => window.QRCode ? resolve(window.QRCode) : reject(new Error('QR library did not initialize.'));
+    script.onerror = () => reject(new Error('Could not load QR code generator.'));
+    document.head.append(script);
+  });
+  return window.qrCodeLibraryPromise;
+}
+
+function getPublicWebsiteUrl() {
+  return new URL('/', window.location.origin).href;
+}
+
+async function renderWebsiteQrCode() {
+  const qrHost = document.getElementById('website-qr');
+  const downloadButton = document.getElementById('download-website-qr');
+  if (!qrHost || !downloadButton) return;
+
+  qrHost.replaceChildren(Object.assign(document.createElement('span'), {
+    className: 'qr-loading',
+    textContent: 'Preparing QR code…'
+  }));
+  downloadButton.disabled = true;
+
+  try {
+    const QRCodeLibrary = await loadQrCodeLibrary();
+    qrHost.replaceChildren();
+    new QRCodeLibrary(qrHost, {
+      text: getPublicWebsiteUrl(),
+      width: 220,
+      height: 220,
+      colorDark: '#171717',
+      colorLight: '#ffffff',
+      correctLevel: QRCodeLibrary.CorrectLevel.M
+    });
+    downloadButton.disabled = false;
+  } catch (error) {
+    qrHost.textContent = 'QR code could not be generated right now. You can still share or copy the website link.';
+    console.error('Website QR generation failed:', error);
+  }
+}
+
+function openWebsiteShareDialog() {
+  const dialog = document.getElementById('share-website-dialog');
+  if (!dialog) return;
+  if (typeof dialog.showModal === 'function') dialog.showModal();
+  else dialog.setAttribute('open', '');
+  renderWebsiteQrCode();
+}
+
+function closeWebsiteShareDialog() {
+  const dialog = document.getElementById('share-website-dialog');
+  if (!dialog) return;
+  if (typeof dialog.close === 'function') dialog.close();
+  else dialog.removeAttribute('open');
+}
+
+async function shareOwlzWebsite() {
+  const url = getPublicWebsiteUrl();
+  const shareData = { title: 'Owlz Corner', text: 'Check out the menu at Owlz Corner!', url };
+  const status = document.getElementById('share-website-status');
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+      if (status) status.textContent = 'Thanks for sharing Owlz Corner!';
+    } else {
+      await navigator.clipboard.writeText(url);
+      if (status) status.textContent = 'Website link copied. Share it with your friends!';
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError' && status) status.textContent = 'Sharing was unavailable. Try copying the link instead.';
+  }
+}
+
+async function copyOwlzWebsiteLink() {
+  const status = document.getElementById('share-website-status');
+  try {
+    await navigator.clipboard.writeText(getPublicWebsiteUrl());
+    if (status) status.textContent = 'Website link copied!';
+  } catch (error) {
+    if (status) status.textContent = getPublicWebsiteUrl();
+  }
+}
+
+function downloadOwlzWebsiteQr() {
+  const qrHost = document.getElementById('website-qr');
+  const canvas = qrHost?.querySelector('canvas');
+  const image = qrHost?.querySelector('img');
+  let dataUrl = canvas?.toDataURL('image/png') || image?.src;
+  if (!dataUrl) return;
+
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = 'owlz-corner-qr.png';
+  document.body.append(link);
+  link.click();
+  link.remove();
+}
+
+document.getElementById('open-share-dialog')?.addEventListener('click', openWebsiteShareDialog);
+document.getElementById('close-share-dialog')?.addEventListener('click', closeWebsiteShareDialog);
+document.getElementById('native-share-website')?.addEventListener('click', shareOwlzWebsite);
+document.getElementById('copy-website-link')?.addEventListener('click', copyOwlzWebsiteLink);
+document.getElementById('download-website-qr')?.addEventListener('click', downloadOwlzWebsiteQr);
+document.getElementById('share-website-dialog')?.addEventListener('click', event => {
+  if (event.target === event.currentTarget) closeWebsiteShareDialog();
+});
 
 async function loadStorefrontBanners() {
   const host = document.querySelector('.diwali-banner');
@@ -3614,7 +3750,10 @@ document.getElementById('checkout-whatsapp')?.addEventListener('click', checkout
 document.addEventListener('click', event => {
   const widget = document.querySelector('.cart-widget');
   const panel = document.getElementById('cart-panel');
-  if (panel?.classList.contains('show') && widget && !widget.contains(event.target)) {
+  // renderCart() replaces cart item buttons during the same click, detaching event.target.
+  // composedPath() retains the original propagation path, so quantity clicks stay inside the widget.
+  const clickedInsideWidget = widget && event.composedPath().includes(widget);
+  if (panel?.classList.contains('show') && widget && !clickedInsideWidget) {
     setCartOpen(false);
   }
 });
