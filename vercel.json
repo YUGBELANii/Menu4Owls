@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
+    {
+      "src": "^/admin(?:[-/].*)?\\.html/?$",
+      "status": 404
+    }
+  ]
+}
