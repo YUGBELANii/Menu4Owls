@@ -1,140 +1,4271 @@
-<!doctype html>
-<!-- OwlzCorner closure page: redeploy trigger -->
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#11110f">
-  <meta name="description" content="OwlzCorner is no longer available for online ordering. Contact us on Instagram.">
-  <title>OwlzCorner · Online ordering unavailable</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #11110f;
-      --panel: #1b1b18;
-      --text: #f5f0e6;
-      --muted: #aaa69c;
-      --accent: #e8ad48;
-      --border: rgba(255,255,255,.11);
-    }
-    * { box-sizing: border-box; }
-    body {
-      min-height: 100vh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 28px 18px;
-      background:
-        radial-gradient(ellipse at 50% 0%, rgba(232,173,72,.12), transparent 48%),
-        var(--bg);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    main {
-      width: min(100%, 540px);
-      padding: clamp(28px, 7vw, 52px);
-      text-align: center;
-      background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: 0 28px 90px rgba(0,0,0,.35);
-    }
-    .mark {
-      width: 62px;
-      height: 62px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 18px;
-      border: 1px solid rgba(232,173,72,.42);
-      border-radius: 19px;
-      color: var(--accent);
-      font-family: Georgia, serif;
-      font-size: 34px;
-      font-weight: 700;
-    }
-    .brand {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(30px, 7vw, 40px);
-      font-weight: 600;
-      letter-spacing: -.04em;
-    }
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 24px 0 18px;
-      padding: 8px 12px;
-      border: 1px solid rgba(232,173,72,.3);
-      border-radius: 999px;
-      color: var(--accent);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .12em;
-    }
-    .status::before {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      content: "";
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(25px, 5vw, 32px);
-      line-height: 1.2;
-      letter-spacing: -.035em;
-    }
-    .message {
-      max-width: 390px;
-      margin: 15px auto 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.75;
-    }
-    .contact {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 50px;
-      margin-top: 30px;
-      padding: 0 22px;
-      border-radius: 12px;
-      background: var(--accent);
-      color: #17130b;
-      font-size: 14px;
-      font-weight: 800;
-      text-decoration: none;
-      transition: transform .18s ease, filter .18s ease;
-    }
-    .contact:hover { transform: translateY(-2px); filter: brightness(1.06); }
-    .contact:focus-visible { outline: 3px solid var(--text); outline-offset: 4px; }
-    .handle { margin: 12px 0 0; color: var(--muted); font-size: 13px; }
-    footer {
-      margin-top: 34px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      color: #77746c;
-      font-size: 12px;
-    }
-  </style>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Owlz Corner</title>
+
+<link rel="stylesheet" href="style.css">
+  <script src="theme.js"></script>
+
+<style>
+
+/* =========================================================
+   GLOBAL SAFETY
+========================================================= */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+
+
+/* NAVBAR BRAND / LOGO */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.nav-logo-svg {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: block;
+  overflow: visible;
+  color: var(--accent);
+}
+
+@media (max-width: 700px) {
+  .brand { gap: 7px; }
+  .nav-logo-svg { width: 27px; height: 27px; flex-basis: 27px; }
+}
+
+/* STORE STATUS */
+.store-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 0;
+  font-weight: 800;
+}
+
+.store-status.open {
+  color: #58c27d;
+}
+
+.store-status.closed {
+  color: #e76f51;
+}
+
+/* =========================================================
+   MENU PRODUCT
+========================================================= */
+
+.item-row {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.item-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 22px;
+}
+
+.item-image-wrap {
+  width: 165px;
+  height: 135px;
+
+  flex: 0 0 165px;
+
+  overflow: hidden;
+
+  border-radius: 6px;
+
+  background: var(--surface-2);
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.item-details {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  flex: 1 1 auto;
+}
+
+
+/* =========================================================
+   PRODUCT NAME / PRICE / BUTTON
+========================================================= */
+
+.item-name-row {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, auto)
+    minmax(20px, 1fr)
+    auto
+    auto;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.item-name {
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  line-height: 1.3;
+}
+
+.item-leader {
+  width: 100%;
+  min-width: 0;
+
+  border-bottom:
+    1px dotted rgba(255,255,255,.16);
+}
+
+.item-price {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.order-btn {
+  min-width: 0;
+  max-width: 100%;
+
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.item-desc {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   FLOATING CART
+========================================================= */
+
+.cart-widget {
+  position: fixed;
+
+  right: 20px;
+  bottom: 20px;
+
+  width: 58px;
+  height: 58px;
+
+  margin: 0;
+  padding: 0;
+
+  z-index: 9999;
+}
+
+
+/* =========================================================
+   CART BUTTON
+========================================================= */
+
+.cart-toggle {
+  position: relative;
+
+  width: 58px;
+  height: 58px;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--accent);
+  color: var(--bg);
+
+  font-size: 22px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.28);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.cart-toggle:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.35);
+}
+
+
+/* Hide textual cart count */
+.cart-toggle #cart-count {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* =========================================================
+   CART BADGE
+========================================================= */
+
+.cart-toggle::after {
+  content: attr(data-count);
+
+  position: absolute;
+
+  top: -4px;
+  right: -4px;
+
+  min-width: 22px;
+  height: 22px;
+
+  padding: 0 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--surface);
+  color: var(--accent);
+
+  border: 2px solid var(--accent);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   CART PANEL
+========================================================= */
+
+/*
+   IMPORTANT:
+
+   The panel is ABSOLUTELY positioned relative
+   to the fixed .cart-widget.
+
+   This prevents it from escaping the viewport
+   because of conflicting fixed-position rules.
+*/
+
+.cart-panel {
+  position: absolute;
+
+  right: 0;
+
+  bottom: calc(100% + 14px);
+
+  width: 360px;
+
+  max-width:
+    min(360px, calc(100vw - 24px));
+
+  max-height:
+    min(520px, calc(100vh - 110px));
+
+  margin: 0;
+  padding: 20px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  background: var(--surface);
+  color: var(--text);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    var(--radius);
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.35);
+
+  display: none;
+
+  z-index: 10000;
+}
+
+.cart-panel.show {
+  display: block;
+}
+
+
+/* =========================================================
+   CART HEADING
+========================================================= */
+
+.cart-panel h3 {
+  margin: 0 0 18px;
+
+  font-family: "Fraunces", serif;
+
+  font-size: 1.4rem;
+  font-weight: 500;
+
+  color: var(--text);
+}
+
+
+/* =========================================================
+   CART ITEMS
+========================================================= */
+
+.cart-item {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid var(--border);
+}
+
+.cart-item > div:first-child {
+  min-width: 0;
+
+  flex:
+    1 1 auto;
+}
+
+.cart-item strong {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   CART QUANTITY
+========================================================= */
+
+.cart-actions {
+  flex:
+    0 0 auto;
+  min-width: max-content;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.cart-actions button {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 50%;
+
+  background:
+    var(--surface-2);
+
+  color:
+    var(--text);
+
+  cursor: pointer;
+
+  font-size: 17px;
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+.cart-actions button:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+
+.cart-warning {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(231,111,81,.45);
+  border-radius: 8px;
+  color: #e76f51;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   CART SUMMARY
+========================================================= */
+
+.cart-summary {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.cart-summary-row {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 7px;
+}
+
+.cart-summary-total {
+  margin-top: 8px;
+  margin-bottom: 0;
+
+  font-weight: 800;
+}
+
+.cart-panel hr {
+  border: 0;
+
+  border-top:
+    1px solid var(--border);
+
+  margin:
+    12px 0;
+}
+
+
+/* =========================================================
+   MYSTERY REWARD — DISABLED FOR CURRENT SEASON
+========================================================= */
+
+.mystery-reward {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  margin:
+    14px 0;
+
+  padding:
+    10px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  border-top:
+    1px dashed var(--border);
+
+  border-bottom:
+    1px dashed var(--border);
+
+  color: inherit;
+}
+
+.mystery-reward-info {
+  min-width: 0;
+
+  flex:
+    1 1 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.mystery-reward-icon {
+  flex:
+    0 0 auto;
+
+  font-size: 16px;
+}
+
+.mystery-reward-text {
+  min-width: 0;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   REWARD BUTTON
+========================================================= */
+
+.reward-reveal-btn {
+  flex:
+    0 0 auto;
+
+  padding:
+    6px 8px;
+
+  border:
+    1px solid var(--accent);
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color:
+    var(--accent);
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: .04em;
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .15s ease;
+}
+
+.reward-reveal-btn:hover {
+  background:
+    var(--accent);
+
+  color:
+    var(--bg);
+}
+
+.reward-reveal-btn:active {
+  transform:
+    scale(.92);
+}
+
+
+/* =========================================================
+   REWARD WON
+========================================================= */
+
+.reward-won {
+  justify-content: flex-start;
+
+  color:
+    var(--accent);
+
+  border-color:
+    var(--accent);
+
+  animation:
+    rewardPop .45s ease;
+}
+
+.reward-won-icon {
+  display: inline-block;
+
+  flex:
+    0 0 auto;
+
+  font-size: 18px;
+
+  animation:
+    rewardBounce .55s ease;
+}
+
+.reward-won-text {
+  min-width: 0;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  animation:
+    rewardGlow .7s ease;
+}
+
+
+/* =========================================================
+   REWARD ANIMATIONS
+========================================================= */
+
+@keyframes rewardPop {
+
+  0% {
+    opacity: 0;
+    transform: scale(.88);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+}
+
+@keyframes rewardBounce {
+
+  0% {
+    transform:
+      translateY(-7px)
+      rotate(-8deg);
+  }
+
+  50% {
+    transform:
+      translateY(2px)
+      rotate(8deg);
+  }
+
+  100% {
+    transform:
+      translateY(0)
+      rotate(0);
+  }
+
+}
+
+@keyframes rewardGlow {
+
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================================================
+   CUSTOMER REVIEWS
+========================================================= */
+
+.reviews-section {
+  width: 100%;
+
+  padding:
+    70px 0
+    90px;
+}
+
+.reviews-header {
+  margin-bottom: 32px;
+
+  text-align: center;
+}
+
+.reviews-header .eyebrow {
+  margin-bottom: 8px;
+}
+
+.reviews-header h2 {
+  margin: 0 0 8px;
+}
+
+.reviews-header p {
+  max-width: 560px;
+
+  margin: 0 auto;
+
+  opacity: .72;
+}
+
+
+/* =========================================================
+   REVIEW FORM
+========================================================= */
+
+.review-form-wrap {
+  width: 100%;
+  max-width: 620px;
+
+  margin:
+    0 auto
+    42px;
+
+  padding: 24px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  background:
+    var(--surface-2);
+}
+
+.review-form {
+  width: 100%;
+
+  display: grid;
+
+  gap: 14px;
+}
+
+.review-form label {
+  margin-bottom: -7px;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-form input,
+.review-form textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding:
+    12px 13px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 8px;
+
+  background:
+    var(--surface);
+
+  color:
+    inherit;
+
+  outline: none;
+
+  font: inherit;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.review-form textarea {
+  min-height: 105px;
+
+  resize: vertical;
+}
+
+.review-form input:focus,
+.review-form textarea:focus {
+  border-color:
+    var(--accent);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(230,164,48,.08);
+}
+
+
+/* =========================================================
+   REVIEW SUBMIT
+========================================================= */
+
+.review-submit {
+  width: 100%;
+
+  padding:
+    11px 16px;
+
+  border:
+    1px solid var(--accent);
+
+  border-radius: 8px;
+
+  background:
+    var(--accent);
+
+  color:
+    var(--bg);
+
+  font:
+    inherit;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform .15s ease,
+    opacity .15s ease;
+}
+
+.review-submit:active {
+  transform:
+    scale(.98);
+}
+
+.review-submit:disabled,
+.btn:disabled,
+#checkout-whatsapp:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.category-chip,
+.order-btn,
+.cart-actions button,
+.reward-reveal-btn {
+  touch-action: manipulation;
+}
+
+.category-chip:focus-visible,
+.order-btn:focus-visible,
+.cart-toggle:focus-visible,
+.cart-actions button:focus-visible,
+.reward-reveal-btn:focus-visible,
+.review-submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.review-status {
+  min-height: 18px;
+
+  margin: 0;
+
+  font-size: 13px;
+
+  text-align: center;
+
+  opacity: .8;
+}
+
+
+/* =========================================================
+   REVIEW LIST
+========================================================= */
+
+.reviews-list {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+.review-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 20px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 10px;
+
+  background:
+    var(--surface-2);
+}
+
+.review-card-head {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 10px;
+}
+
+.review-card-name {
+  min-width: 0;
+
+  font-weight: 800;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-card-time {
+  flex:
+    0 0 auto;
+
+  font-size: 11px;
+
+  opacity: .5;
+
+  white-space: nowrap;
+}
+
+.review-card-comment {
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+
+  line-height: 1.65;
+
+  opacity: .86;
+
+  white-space: pre-wrap;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.reviews-empty {
+  grid-column: 1 / -1;
+
+  padding:
+    20px 0;
+
+  text-align: center;
+
+  opacity: .65;
+}
+
+
+/* =========================================================
+   TABLET / MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  /* PRODUCT */
+
+  .item-content {
+    gap: 14px;
+  }
+
+  .item-image-wrap {
+    width: 120px;
+    height: 110px;
+
+    flex:
+      0 0 120px;
+  }
+
+  .item-name-row {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto
+      auto;
+
+    grid-template-areas:
+      "name name name"
+      "leader price button";
+
+    gap: 9px;
+  }
+
+  .item-name {
+    grid-area:
+      name;
+
+    font-size:
+      1rem;
+
+    line-height:
+      1.3;
+  }
+
+  .item-leader {
+    grid-area:
+      leader;
+
+    min-width:
+      8px;
+  }
+
+  .item-price {
+    grid-area:
+      price;
+
+    white-space:
+      nowrap;
+  }
+
+  .order-btn {
+    grid-area:
+      button;
+
+    padding:
+      8px 11px;
+
+    font-size:
+      .85rem;
+
+    max-width:
+      100%;
+  }
+
+
+  /* CART */
+
+  .cart-widget {
+    right:
+      16px;
+
+    bottom:
+      16px;
+
+    width:
+      54px;
+
+    height:
+      54px;
+  }
+
+  .cart-toggle {
+    width:
+      54px;
+
+    height:
+      54px;
+
+    font-size:
+      20px;
+  }
+
+  .cart-panel {
+    right:
+      0;
+
+    bottom:
+      calc(100% + 12px);
+
+    width:
+      360px;
+
+    max-width:
+      calc(100vw - 24px);
+
+    max-height:
+      calc(100vh - 105px);
+
+    padding:
+      16px;
+
+    border-radius:
+      18px;
+  }
+
+
+  /* REVIEWS */
+
+  .reviews-list {
+    grid-template-columns:
+      1fr;
+  }
+
+  .review-form-wrap {
+    padding:
+      18px;
+  }
+
+  .review-card-head {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap:
+      3px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .item-content {
+    gap:
+      11px;
+  }
+
+  .item-image-wrap {
+    width:
+      105px;
+
+    height:
+      100px;
+
+    flex:
+      0 0 105px;
+  }
+
+  .item-name {
+    font-size:
+      .95rem;
+  }
+
+  .item-price {
+    font-size:
+      .95rem;
+  }
+
+  .order-btn {
+    padding:
+      7px 9px;
+
+    font-size:
+      .78rem;
+  }
+
+
+  .mystery-reward {
+    gap:
+      8px;
+  }
+
+  .mystery-reward-text {
+    font-size:
+      12px;
+  }
+
+  .reward-reveal-btn {
+    padding:
+      5px 7px;
+
+    font-size:
+      10px;
+  }
+
+
+  .cart-widget {
+    right:
+      14px;
+
+    bottom:
+      14px;
+  }
+
+  .cart-panel {
+    max-width:
+      calc(100vw - 24px);
+
+    padding:
+      14px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .item-content {
+    gap:
+      9px;
+  }
+
+  .item-image-wrap {
+    width:
+      88px;
+
+    height:
+      90px;
+
+    flex:
+      0 0 88px;
+  }
+
+  .item-name {
+    font-size:
+      .9rem;
+  }
+
+  .item-price {
+    font-size:
+      .9rem;
+  }
+
+  .order-btn {
+    padding:
+      6px 8px;
+
+    font-size:
+      .72rem;
+  }
+
+  .cart-widget {
+    right:
+      12px;
+
+    bottom:
+      12px;
+  }
+
+  .cart-toggle {
+    width:
+      52px;
+
+    height:
+      52px;
+
+    font-size:
+      19px;
+  }
+
+  .cart-panel {
+    max-width:
+      calc(100vw - 24px);
+
+    max-height:
+      calc(100vh - 95px);
+
+    padding:
+      13px;
+  }
+
+  .mystery-reward {
+    gap:
+      7px;
+  }
+
+  .mystery-reward-text {
+    font-size:
+      11px;
+  }
+
+  .reward-reveal-btn {
+    padding:
+      5px 6px;
+
+    font-size:
+      9px;
+  }
+
+}
+
+
+/* =========================================================
+   EXTREMELY SMALL PHONES
+========================================================= */
+
+@media (max-width: 320px) {
+
+  .item-content {
+    gap:
+      7px;
+  }
+
+  .item-image-wrap {
+    width:
+      78px;
+
+    height:
+      82px;
+
+    flex:
+      0 0 78px;
+  }
+
+  .item-name {
+    font-size:
+      .85rem;
+  }
+
+  .item-price {
+    font-size:
+      .82rem;
+  }
+
+  .order-btn {
+    padding:
+      5px 6px;
+
+    font-size:
+      .68rem;
+  }
+
+  .cart-panel {
+    max-width:
+      calc(100vw - 20px);
+
+    padding:
+      12px;
+  }
+
+}
+
+/* Cart layout: fixed action, independently scrolling items, stable checkout. */
+.cart-widget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  left: auto;
+  width: auto;
+  height: auto;
+  z-index: 9999;
+}
+
+.cart-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: auto;
+  min-width: 132px;
+  height: 56px;
+  padding: 0 20px;
+  border: 1px solid rgba(240, 179, 92, .48);
+  border-radius: 999px;
+  background: var(--gradient-accent);
+  color: var(--bg);
+  font: 700 15px "Inter", sans-serif;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .36), 0 0 0 4px rgba(232, 163, 61, .1);
+}
+
+.cart-toggle::before {
+  content: "Your cart";
+  white-space: nowrap;
+}
+
+.cart-toggle[data-count="0"]::after {
+  display: none;
+}
+
+.cart-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 14px);
+  left: auto;
+  display: none;
+  flex-direction: column;
+  width: min(410px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: min(650px, calc(100vh - 112px));
+  max-height: min(650px, calc(100dvh - 112px));
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.cart-panel.show {
+  display: flex;
+}
+
+.cart-panel h3 {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: "Fraunces", serif;
+  font-size: 1.25rem;
+}
+
+#cart-items {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 4px 4px 4px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--border) transparent;
+}
+
+.cart-item {
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-item > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.cart-item strong {
+  margin-bottom: 3px;
+  color: var(--text);
+  font-size: .94rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.cart-actions {
+  flex: 0 0 auto;
+  min-width: 88px;
+  gap: 8px;
+  justify-content: flex-end;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.cart-actions button {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 19px;
+}
+
+.cart-summary {
+  padding: 4px 0 2px;
+}
+
+.cart-summary-row {
+  margin: 0;
+  padding: 5px 0;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.cart-summary-total {
+  margin-top: 5px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.cart-panel hr {
+  margin: 8px 0;
+  border-top-color: var(--border);
+}
+
+.checkout-policy {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.checkout-policy label {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.checkout-policy input {
+  flex: 0 0 auto;
+  margin: 3px 0 0;
+  accent-color: var(--accent);
+}
+
+.checkout-policy a {
+  color: var(--accent-strong);
+}
+
+#checkout-whatsapp {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  min-height: 48px;
+}
+
+#checkout-whatsapp:disabled {
+  filter: grayscale(.5);
+  opacity: .56;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cart-panel.is-empty .checkout-policy {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .cart-widget {
+    right: 16px;
+    bottom: 16px;
+    left: auto;
+    width: auto;
+  }
+
+  .cart-toggle {
+    width: auto;
+    min-width: 128px;
+    height: 54px;
+    padding: 0 18px;
+  }
+
+  .cart-panel {
+    right: 0;
+    bottom: calc(100% + 12px);
+    left: auto;
+    width: min(410px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    max-height: min(620px, calc(100vh - 100px));
+    max-height: min(620px, calc(100dvh - 100px));
+    padding: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .cart-widget {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .cart-toggle {
+    min-width: 118px;
+    height: 50px;
+    padding: 0 16px;
+  }
+
+  .cart-panel {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    max-height: min(590px, calc(100vh - 88px));
+    max-height: min(590px, calc(100dvh - 88px));
+    padding: 14px;
+  }
+
+  .cart-item {
+    gap: 8px;
+  }
+
+  .cart-actions {
+    gap: 5px;
+    min-width: 80px;
+  }
+
+  .cart-actions button {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+</style>
+
 </head>
+
+
 <body>
-  <main>
-    <div class="mark" aria-hidden="true">O</div>
-    <p class="brand">OwlzCorner</p>
-    <div class="status">ONLINE ORDERING UNAVAILABLE</div>
-    <h1>We're no longer taking orders on the web.</h1>
-    <p class="message">
-      OwlzCorner is no longer available for online ordering through this website.
-      For enquiries or to get in touch, contact us on Instagram.
-    </p>
-    <a class="contact" href="https://instagram.com/owlzcorner" target="_blank" rel="noopener noreferrer">
-      Contact us on Instagram <span aria-hidden="true">↗</span>
+
+
+<!-- =======================================================
+     NAVIGATION
+======================================================= -->
+
+<nav class="nav">
+
+  <div class="nav-inner">
+
+    <a href="index.html" class="brand" aria-label="Owlz Corner home">
+      <svg class="nav-logo-svg" viewBox="0 0 64 64" role="img" aria-label="Owlz Corner logo">
+        <path fill="currentColor" d="M8 28c9-12 20-18 35-20-4 5-8 9-12 12 8-2 15-1 21 2-8 2-14 6-18 12-2 10-9 17-18 17 4-5 6-10 5-15-4 2-8 4-13 4 2-4 4-8 7-12-3 0-5 0-7 0z"/>
+        <circle cx="31" cy="35" r="12" fill="none" stroke="currentColor" stroke-width="5"/>
+        <circle cx="31" cy="35" r="4" fill="currentColor"/>
+        <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M23 45c4 3 12 3 16 0"/>
+      </svg>
+      Owlz<span> Corner</span>
     </a>
-    <p class="handle">@owlzcorner</p>
-    <footer>Thank you for being part of OwlzCorner.</footer>
-  </main>
+
+    <ul class="nav-links">
+
+      <li>
+        <a href="index.html" class="active">
+          Menu
+        </a>
+      </li>
+
+      <li>
+        <a href="contact.html">
+          Contact
+        </a>
+      </li>
+
+      <!-- <li>
+        <a href="admin.html">
+          Admin
+        </a>
+      </li> -->
+
+      <li>
+        <button type="button" class="nav-share-button" id="open-share-dialog" aria-haspopup="dialog">
+          <svg class="nav-share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
+        </button>
+      </li>
+
+    </ul>
+
+  </div>
+
+</nav>
+
+<dialog id="share-website-dialog" class="share-dialog" aria-labelledby="share-website-title">
+  <div class="share-dialog-content">
+    <button type="button" class="share-dialog-close" id="close-share-dialog" aria-label="Close share dialog">×</button>
+    <p class="eyebrow">Spread the word</p>
+    <h2 id="share-website-title">Share Owlz Corner</h2>
+    <p class="share-dialog-description">Send our menu to a friend or scan this QR code to open Owlz Corner.</p>
+    <div id="website-qr" class="website-qr" aria-label="QR code for Owlz Corner website">
+      <span class="qr-loading">Preparing QR code…</span>
+    </div>
+    <button type="button" class="share-primary-button" id="download-website-qr" disabled>Download QR code</button>
+    <button type="button" class="share-secondary-button" id="native-share-website">Share website</button>
+    <button type="button" class="share-copy-button" id="copy-website-link">Copy website link</button>
+    <p id="share-website-status" class="share-status" role="status" aria-live="polite"></p>
+  </div>
+</dialog>
+
+<!-- =======================================================
+     HERO
+======================================================= -->
+
+<header class="hero">
+
+  <!-- Dynamic announcement slot. No event content is shipped in the HTML. -->
+  <section class="diwali-banner" aria-label="Store announcement" hidden></section>
+
+  <div class="container">
+
+    <p class="eyebrow">
+      Today's Menu
+    </p>
+
+    <h1>
+      What we're serving
+    </h1>
+
+    <p>
+      Everything below is made fresh, updated straight from
+      our kitchen list — nothing here is stale.
+    </p>
+
+    <span>
+      Timings
+      <strong>
+        Mon-Sun: 6:00 PM - 3:00 AM
+      </strong>
+    </span>
+
+    <p
+      id="store-status"
+      class="store-status"
+      aria-live="polite"
+    >
+      Checking store status…
+    </p>
+
+  </div>
+
+</header>
+
+
+<!-- =======================================================
+     MENU
+======================================================= -->
+
+<main class="menu-section">
+
+  <div class="container">
+
+    <div class="search-bar">
+
+      <div class="search-input">
+
+        <span>⌕</span>
+
+        <input
+          type="search"
+          id="menuSearch"
+          placeholder="Search coffee, maggi, fries…"
+          aria-label="Search the menu"
+          aria-controls="menu-root"
+          aria-describedby="menu-search-status"
+          enterkeyhint="search"
+          autocomplete="off"
+        >
+
+      </div>
+
+    </div>
+
+    <p id="menu-search-status" class="search-status" aria-live="polite"></p>
+
+
+    <div
+      id="category-nav"
+      class="category-nav"
+    ></div>
+
+
+    <div id="menu-root">
+
+      <p class="loading-state">
+        Loading menu…
+      </p>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<!-- =======================================================
+     FLOATING CART
+======================================================= -->
+
+<div class="cart-widget">
+
+  <button
+    id="cart-toggle"
+    class="cart-toggle"
+    aria-label="Open cart"
+    aria-expanded="false"
+    aria-controls="cart-panel"
+    data-count="0"
+  >
+
+    <span id="cart-count" aria-live="polite" aria-atomic="true">
+      0
+    </span>
+
+    🛒
+
+  </button>
+
+
+  <div
+    id="cart-panel"
+    class="cart-panel"
+    role="region"
+    aria-label="Your cart"
+  >
+
+    <h3>
+      Your Cart
+    </h3>
+
+    <div id="cart-items">
+      No items added yet.
+    </div>
+
+    <fieldset class="fulfillment-choice" aria-label="Order fulfillment">
+      <legend>How would you like your order?</legend>
+      <label><input type="radio" name="fulfillment-type" value="delivery" checked onchange="setFulfillmentType('delivery')"> <span>Delivery</span><small>₹20 delivery fee</small></label>
+      <label><input type="radio" name="fulfillment-type" value="takeout" onchange="setFulfillmentType('takeout')"> <span>Takeout</span><small>Pick up at the kitchen · Free</small></label>
+    </fieldset>
+
+   
+<div class="checkout-policy">
+  <label>
+    <input type="checkbox" id="policy-accepted">
+    I have read and accept the
+    <a href="/refund-policy.html" target="_blank" rel="noopener">
+      Refund &amp; Order Policy
+    </a>.
+  </label>
+</div>
+
+<button
+  class="btn btn-full"
+  id="checkout-whatsapp"
+>
+  Order on WhatsApp
+</button>
+
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     REVIEWS
+======================================================= -->
+
+<section class="reviews-section">
+
+  <div class="container">
+
+    <div class="reviews-header">
+
+      <p class="eyebrow">
+        Customer Reviews
+      </p>
+
+      <h2>
+        What people are saying
+      </h2>
+
+      <p>
+        Ordered from Owlz Corner?
+        Tell us how we did.
+      </p>
+
+    </div>
+
+
+    <div class="review-form-wrap">
+
+      <form
+        id="reviewForm"
+        class="review-form"
+      >
+
+        <label for="reviewName">
+          Your name
+        </label>
+
+        <input
+          type="text"
+          id="reviewName"
+          maxlength="50"
+          placeholder="Your name"
+          autocomplete="name"
+          required
+        >
+
+
+        <label for="reviewComment">
+          Your review
+        </label>
+
+        <textarea
+          id="reviewComment"
+          maxlength="500"
+          placeholder="How was your food?"
+          required
+        ></textarea>
+
+
+        <button
+          type="submit"
+          id="reviewSubmit"
+          class="review-submit"
+        >
+          Leave Review
+        </button>
+
+
+        <p
+          id="reviewStatus"
+          class="review-status"
+        ></p>
+
+      </form>
+
+    </div>
+
+
+    <div
+      id="reviews-root"
+      class="reviews-list"
+    >
+
+      <p class="reviews-empty">
+        Loading reviews…
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
+<footer class="site-footer">
+
+  <div
+    class="container"
+    style="
+      display:flex;
+      justify-content:space-between;
+      width:100%;
+      flex-wrap:wrap;
+      gap:16px;
+    "
+  >
+
+    <span>
+      Questions about an item?
+      <a href="contact.html">
+        Get in touch
+      </a>.
+    </span>
+
+    <span>
+
+      Powered by
+
+      <a
+        href="https://instagram.com/yugbelanii"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Yug Belani
+      </a>
+
+    </span>
+
+  </div>
+
+</footer>
+
+<dialog id="push-opt-in" class="push-opt-in-dialog" aria-labelledby="push-opt-in-title">
+  <form method="dialog" class="push-opt-in-card">
+    <h2 id="push-opt-in-title">Get order updates?</h2>
+    <p>Allow notifications for order updates and relevant offers. You can continue checkout either way.</p>
+    <div class="push-opt-in-actions">
+      <button class="btn btn-ghost" type="button" id="push-opt-in-refuse">No thanks</button>
+      <button class="btn" type="button" id="push-opt-in-accept">Enable Notifications</button>
+    </div>
+  </form>
+</dialog>
+
+
+<!-- =======================================================
+     SUPABASE
+======================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+<script src="customer-push.js"></script>
+
+
+<script>
+
+
+
+
+
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const DELIVERY_CHARGE = 20;
+
+// Rewards are temporarily disabled. Set to true when the reward season returns.
+const REWARDS_ENABLED = false;
+
+const REWARD_THRESHOLD = 250;
+
+const REWARD_PRODUCT_NAMES = [
+  'Coco-Cola',
+  'Croissant'
+];
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let products = [];
+
+let weeklyLeaderboardData = null;
+let weeklyLeaderboardStatus = 'loading';
+
+let cart = [];
+let fulfillmentType = 'delivery';
+
+let mysteryReward = null;
+
+let rewardRevealed = false;
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function escapeHtml(value) {
+
+  const div =
+    document.createElement('div');
+
+  div.textContent =
+    value ?? '';
+
+  return div.innerHTML;
+}
+
+
+
+function safeImageUrl(value) {
+  try {
+    const url = new URL(String(value), window.location.href);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
+  } catch (_) {}
+  return '';
+}
+
+function trackVercelEvent(name, data = {}) {
+  try {
+    if (typeof window.va === 'function') window.va('event', { name, data });
+  }
+  catch (error) { console.debug('Optional analytics event skipped:', error); }
+}
+
+const reportedMenuSections = new Set();
+let menuSectionObserver;
+
+function observeMenuSections() {
+  if (!('IntersectionObserver' in window)) return;
+  if (!menuSectionObserver) {
+    menuSectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const section = entry.target;
+        const sectionName = section.classList.contains('leaderboard-section')
+          ? 'weekly_favorites'
+          : section.id;
+        if (reportedMenuSections.has(sectionName)) {
+          menuSectionObserver.unobserve(section);
+          return;
+        }
+        reportedMenuSections.add(sectionName);
+        trackVercelEvent('Menu Section Viewed', { section: sectionName.slice(0, 120) });
+        menuSectionObserver.unobserve(section);
+      });
+    }, { threshold: 0.15 });
+  }
+
+  menuSectionObserver.disconnect();
+
+  document.querySelectorAll('#menu-root .category-block, #menu-root .leaderboard-section')
+    .forEach(section => {
+      const sectionName = section.classList.contains('leaderboard-section')
+        ? 'weekly_favorites'
+        : section.id;
+      if (!reportedMenuSections.has(sectionName)) menuSectionObserver.observe(section);
+    });
+}
+
+function categoryId(category) {
+
+  return 'cat-' +
+    String(category)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+}
+
+
+/* =========================================================
+   STORE STATUS
+========================================================= */
+
+let sharedStoreStatus = null;
+function isOwlzOpen() { return sharedStoreStatus?.is_open === true; }
+
+async function loadQrCodeLibrary() {
+  if (window.QRCode) return window.QRCode;
+  if (window.qrCodeLibraryPromise) return window.qrCodeLibraryPromise;
+
+  window.qrCodeLibraryPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    script.async = true;
+    script.onload = () => window.QRCode ? resolve(window.QRCode) : reject(new Error('QR library did not initialize.'));
+    script.onerror = () => reject(new Error('Could not load QR code generator.'));
+    document.head.append(script);
+  });
+  return window.qrCodeLibraryPromise;
+}
+
+function getPublicWebsiteUrl() {
+  return new URL('/', window.location.origin).href;
+}
+
+async function renderWebsiteQrCode() {
+  const qrHost = document.getElementById('website-qr');
+  const downloadButton = document.getElementById('download-website-qr');
+  if (!qrHost || !downloadButton) return;
+
+  qrHost.replaceChildren(Object.assign(document.createElement('span'), {
+    className: 'qr-loading',
+    textContent: 'Preparing QR code…'
+  }));
+  downloadButton.disabled = true;
+
+  try {
+    const QRCodeLibrary = await loadQrCodeLibrary();
+    qrHost.replaceChildren();
+    new QRCodeLibrary(qrHost, {
+      text: getPublicWebsiteUrl(),
+      width: 220,
+      height: 220,
+      colorDark: '#171717',
+      colorLight: '#ffffff',
+      correctLevel: QRCodeLibrary.CorrectLevel.M
+    });
+    downloadButton.disabled = false;
+  } catch (error) {
+    qrHost.textContent = 'QR code could not be generated right now. You can still share or copy the website link.';
+    console.error('Website QR generation failed:', error);
+  }
+}
+
+function openWebsiteShareDialog() {
+  const dialog = document.getElementById('share-website-dialog');
+  if (!dialog) return;
+  if (typeof dialog.showModal === 'function') dialog.showModal();
+  else dialog.setAttribute('open', '');
+  renderWebsiteQrCode();
+}
+
+function closeWebsiteShareDialog() {
+  const dialog = document.getElementById('share-website-dialog');
+  if (!dialog) return;
+  if (typeof dialog.close === 'function') dialog.close();
+  else dialog.removeAttribute('open');
+}
+
+async function shareOwlzWebsite() {
+  const url = getPublicWebsiteUrl();
+  const shareData = { title: 'Owlz Corner', text: 'Check out the menu at Owlz Corner!', url };
+  const status = document.getElementById('share-website-status');
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+      if (status) status.textContent = 'Thanks for sharing Owlz Corner!';
+    } else {
+      await navigator.clipboard.writeText(url);
+      if (status) status.textContent = 'Website link copied. Share it with your friends!';
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError' && status) status.textContent = 'Sharing was unavailable. Try copying the link instead.';
+  }
+}
+
+async function copyOwlzWebsiteLink() {
+  const status = document.getElementById('share-website-status');
+  try {
+    await navigator.clipboard.writeText(getPublicWebsiteUrl());
+    if (status) status.textContent = 'Website link copied!';
+  } catch (error) {
+    if (status) status.textContent = getPublicWebsiteUrl();
+  }
+}
+
+function downloadOwlzWebsiteQr() {
+  const qrHost = document.getElementById('website-qr');
+  const canvas = qrHost?.querySelector('canvas');
+  const image = qrHost?.querySelector('img');
+  let dataUrl = canvas?.toDataURL('image/png') || image?.src;
+  if (!dataUrl) return;
+
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = 'owlz-corner-qr.png';
+  document.body.append(link);
+  link.click();
+  link.remove();
+}
+
+document.getElementById('open-share-dialog')?.addEventListener('click', openWebsiteShareDialog);
+document.getElementById('close-share-dialog')?.addEventListener('click', closeWebsiteShareDialog);
+document.getElementById('native-share-website')?.addEventListener('click', shareOwlzWebsite);
+document.getElementById('copy-website-link')?.addEventListener('click', copyOwlzWebsiteLink);
+document.getElementById('download-website-qr')?.addEventListener('click', downloadOwlzWebsiteQr);
+document.getElementById('share-website-dialog')?.addEventListener('click', event => {
+  if (event.target === event.currentTarget) closeWebsiteShareDialog();
+});
+
+async function loadStorefrontBanners() {
+  const host = document.querySelector('.diwali-banner');
+  if (!host) return;
+
+  // Fail closed: never leave stale or retired event content visible while the API loads/fails.
+  host.hidden = true;
+  try {
+    const response = await fetch('/api/admin-content?type=banners', {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    if (!response.ok) throw new Error(`Banner API returned HTTP ${response.status}.`);
+
+    const { banners = [] } = await response.json();
+    if (!Array.isArray(banners)) throw new Error('Banner API returned an invalid response.');
+    if (!banners.length) {
+      host.remove();
+      return;
+    }
+
+    const slides = banners.map((banner, index) => {
+      const slide = host.cloneNode(false);
+      slide.hidden = false;
+      slide.setAttribute('aria-label', banner.title || `Store announcement ${index + 1}`);
+      slide.dataset.theme = ['gold','blood','dark'].includes(banner.theme) ? banner.theme : 'gold';
+
+      const inner = document.createElement('div');
+      inner.className = 'diwali-banner-inner';
+
+      const title = document.createElement('p');
+      title.className = 'diwali-title';
+      title.textContent = banner.title || '';
+      inner.append(title);
+
+      String(banner.content || '').split(/\r?\n/).filter(Boolean).forEach((line, lineIndex) => {
+        const paragraph = document.createElement('p');
+        paragraph.className = lineIndex === 0 ? 'diwali-wish' : lineIndex === 1 ? 'diwali-message' : 'diwali-signoff';
+        paragraph.textContent = line;
+        inner.append(paragraph);
+      });
+
+      if (banner.image_url) {
+        const image = document.createElement('img');
+        image.src = banner.image_url;
+        image.alt = '';
+        image.loading = index === 0 ? 'eager' : 'lazy';
+        inner.prepend(image);
+      }
+
+      slide.replaceChildren(inner);
+      return slide;
+    });
+
+    // Keep the original single-banner presentation when there is only one active banner.
+    if (slides.length === 1) {
+      host.replaceWith(slides[0]);
+      return;
+    }
+
+    const carousel = document.createElement('div');
+    carousel.className = 'diwali-banner-carousel';
+    carousel.setAttribute('role', 'region');
+    carousel.setAttribute('aria-label', 'Store announcements');
+    carousel.tabIndex = 0;
+
+    const track = document.createElement('div');
+    track.className = 'diwali-banner-track';
+    slides.forEach((slide, index) => {
+      slide.classList.add('diwali-banner-slide');
+      slide.hidden = index !== 0;
+      slide.setAttribute('aria-hidden', String(index !== 0));
+      track.append(slide);
+    });
+    carousel.append(track);
+
+    const controls = document.createElement('div');
+    controls.className = 'diwali-banner-controls';
+
+    const previous = document.createElement('button');
+    previous.type = 'button';
+    previous.className = 'diwali-banner-arrow';
+    previous.setAttribute('aria-label', 'Previous banner');
+    previous.textContent = '‹';
+
+    const pagination = document.createElement('div');
+    pagination.className = 'diwali-banner-pagination';
+    pagination.setAttribute('role', 'group');
+    pagination.setAttribute('aria-label', 'Choose a banner');
+
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'diwali-banner-arrow';
+    next.setAttribute('aria-label', 'Next banner');
+    next.textContent = '›';
+
+    controls.append(previous, pagination, next);
+    carousel.append(controls);
+
+    let activeIndex = 0;
+    let autoplayTimer = null;
+    let pointerStartX = null;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const renderSlide = (nextIndex) => {
+      activeIndex = (nextIndex + slides.length) % slides.length;
+      slides.forEach((slide, index) => {
+        const active = index === activeIndex;
+        slide.hidden = !active;
+        slide.setAttribute('aria-hidden', String(!active));
+      });
+      [...pagination.children].forEach((dot, index) => {
+        const active = index === activeIndex;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    };
+
+    slides.forEach((slide, index) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'diwali-banner-dot';
+      dot.setAttribute('aria-label', `Show banner ${index + 1} of ${slides.length}`);
+      dot.setAttribute('aria-current', String(index === 0));
+      dot.addEventListener('click', () => {
+        renderSlide(index);
+        restartAutoplay();
+      });
+      pagination.append(dot);
+    });
+    renderSlide(0);
+
+    const stopAutoplay = () => {
+      if (autoplayTimer !== null) {
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    };
+
+    const startAutoplay = () => {
+      if (reducedMotion || document.hidden || autoplayTimer !== null) return;
+      autoplayTimer = window.setInterval(() => renderSlide(activeIndex + 1), 5000);
+    };
+
+    const restartAutoplay = () => {
+      stopAutoplay();
+      startAutoplay();
+    };
+
+    previous.addEventListener('click', () => {
+      renderSlide(activeIndex - 1);
+      restartAutoplay();
+    });
+    next.addEventListener('click', () => {
+      renderSlide(activeIndex + 1);
+      restartAutoplay();
+    });
+
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+    carousel.addEventListener('focusin', stopAutoplay);
+    carousel.addEventListener('focusout', (event) => {
+      if (!carousel.contains(event.relatedTarget)) startAutoplay();
+    });
+    carousel.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        renderSlide(activeIndex - 1);
+        restartAutoplay();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        renderSlide(activeIndex + 1);
+        restartAutoplay();
+      }
+    });
+    carousel.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('button')) return;
+      pointerStartX = event.clientX;
+    });
+    carousel.addEventListener('pointerup', (event) => {
+      if (pointerStartX === null) return;
+      const distance = event.clientX - pointerStartX;
+      pointerStartX = null;
+      if (Math.abs(distance) < 45) return;
+      renderSlide(activeIndex + (distance < 0 ? 1 : -1));
+      restartAutoplay();
+    });
+    carousel.addEventListener('pointercancel', () => { pointerStartX = null; });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopAutoplay();
+      else startAutoplay();
+    });
+
+    host.replaceWith(carousel);
+    startAutoplay();
+  } catch (error) {
+    host.remove();
+    console.error('Storefront banners unavailable; hiding announcement:', error);
+  }
+}
+
+async function loadSharedStoreStatus() {
+  try {
+    const response = await fetch('/api/admin-content', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Store status unavailable');
+    sharedStoreStatus = await response.json();
+  } catch (error) {
+    sharedStoreStatus = { is_open: false, message: 'Store status is temporarily unavailable.' };
+    console.error('Shared store status unavailable:', error);
+  }
+  updateStoreStatus();
+}
+
+function updateStoreStatus() {
+  const status = document.getElementById('store-status');
+  if (!status) return;
+
+  const open = isOwlzOpen();
+
+  status.className = `store-status ${open ? 'open' : 'closed'}`;
+  status.textContent = sharedStoreStatus?.message || 'Checking store status…';
+
+  renderCart();
+}
+
+loadSharedStoreStatus();
+loadStorefrontBanners();
+setInterval(loadSharedStoreStatus, 60000);
+
+/* =========================================================
+   LOAD MENU
+========================================================= */
+
+async function loadMenu() {
+
+  const root = document.getElementById('menu-root');
+  if (!root) return;
+
+  if (!window.supabaseClient) {
+    root.innerHTML = weeklyLeaderboardSectionHtml() + '<p class="empty-state">Menu is temporarily unavailable.</p>';
+    renderWeeklyLeaderboard();
+    console.error('supabaseClient is not available. Check supabase-config.js.');
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+
+      .from('products')
+
+      .select('*')
+
+      .order('category', {
+        ascending: true
+      })
+
+      .order('name', {
+        ascending: true
+      });
+
+
+  if (error) {
+
+    root.innerHTML = weeklyLeaderboardSectionHtml() + `
+
+      <p class="empty-state">
+        Couldn't load the menu right now.
+        (${escapeHtml(error.message)})
+      </p>
+
+    `;
+    renderWeeklyLeaderboard();
+    observeMenuSections();
+
+    return;
+  }
+
+
+  if (!data || !data.length) {
+
+    root.innerHTML = weeklyLeaderboardSectionHtml() + `
+
+      <p class="empty-state">
+        No items on the menu yet —
+        add some from the Admin page.
+      </p>
+
+    `;
+    renderWeeklyLeaderboard();
+    observeMenuSections();
+
+    return;
+  }
+
+
+  products = data;
+  const search = document.getElementById('menuSearch')?.value.trim().toLowerCase() || '';
+  const visibleProducts = search ? filterMenuProducts(search) : products;
+  renderMenu(visibleProducts);
+  const searchStatus = document.getElementById('menu-search-status');
+  if (searchStatus && search) {
+    searchStatus.textContent = `${visibleProducts.length} ${visibleProducts.length === 1 ? 'item' : 'items'} found.`;
+  }
+
+}
+
+
+/* =========================================================
+   WEEKLY PRODUCT LEADERBOARD
+========================================================= */
+
+function renderProductRow(item, options = {}) {
+  const imageUrl = typeof item.image_url === 'string' && item.image_url.trim()
+    ? safeImageUrl(item.image_url)
+    : '';
+  const imageHtml = imageUrl
+    ? `
+      <div class="item-image-wrap">
+        <img
+          class="item-image"
+          src="${escapeHtml(imageUrl)}"
+          alt="${escapeHtml(item.name || 'Menu item')}"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
+    `
+    : '';
+
+  const canOrder = options.canOrder !== false && item.available !== false;
+  const buttonHtml = canOrder
+    ? `
+      <button
+        class="order-btn"
+        data-product-id="${escapeHtml(item.id)}"
+        aria-label="Add ${escapeHtml(item.name || 'menu item')} to cart"
+      >
+        Add to Cart
+      </button>
+    `
+    : '';
+
+  const description = options.detailText || item.description;
+  const descriptionHtml = description
+    ? `<p class="item-desc">${escapeHtml(description)}</p>`
+    : '';
+
+  const price = Number(item.price);
+
+  return `
+    <div class="item-row ${item.available === false ? 'item-unavailable' : ''}">
+      <div class="item-content">
+        ${imageHtml}
+        <div class="item-details">
+          <div class="item-name-row">
+            <span class="item-name">${escapeHtml(item.name || 'Menu item')}</span>
+            <span class="item-leader"></span>
+            <span class="item-price">₹${Number.isFinite(price) ? price.toFixed(0) : '—'}</span>
+            ${buttonHtml}
+          </div>
+          ${descriptionHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function weeklyLeaderboardSectionHtml() {
+  return `
+    <section class="category-block leaderboard-section" aria-labelledby="leaderboard-title">
+      <h2 id="leaderboard-title" class="category-title">Most Ordered This Week</h2>
+      <div id="weekly-leaderboard" aria-live="polite">
+        ${weeklyLeaderboardContentHtml()}
+      </div>
+    </section>
+  `;
+}
+
+function weeklyLeaderboardContentHtml() {
+  if (weeklyLeaderboardStatus === 'loading') {
+    return '<p class="loading-state">Loading weekly favorites…</p>';
+  }
+  if (weeklyLeaderboardStatus === 'error') {
+    return '<p class="empty-state">Weekly favorites couldn’t load. Please try again later.</p>';
+  }
+  if (!weeklyLeaderboardData?.length) {
+    return '<p class="empty-state">No weekly orders to show yet.</p>';
+  }
+
+  return weeklyLeaderboardData.map((item, index) => {
+    const quantity = Number(item.total_quantity);
+    const quantityText = Number.isFinite(quantity) ? quantity.toLocaleString() : '0';
+    const menuProduct = products.find(product => String(product.id) === String(item.product_id));
+
+    return renderProductRow({
+      id: menuProduct?.id ?? item.product_id,
+      name: item.product_name,
+      price: item.product_price,
+      image_url: item.product_image,
+      available: menuProduct?.available
+    }, {
+      canOrder: Boolean(menuProduct && menuProduct.available !== false),
+      detailText: `#${index + 1} this week · ${quantityText} ordered`
+    });
+  }).join('');
+}
+
+function renderWeeklyLeaderboard() {
+  const root = document.getElementById('weekly-leaderboard');
+  if (root) root.innerHTML = weeklyLeaderboardContentHtml();
+}
+
+async function loadWeeklyLeaderboard() {
+  if (!window.supabaseClient) {
+    weeklyLeaderboardStatus = 'error';
+    renderWeeklyLeaderboard();
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      'get_weekly_product_leaderboard'
+    );
+
+    if (error) throw error;
+
+    weeklyLeaderboardData = Array.isArray(data) ? data : [];
+    weeklyLeaderboardStatus = 'loaded';
+    renderWeeklyLeaderboard();
+  } catch (error) {
+    console.error('Could not load weekly product leaderboard:', error);
+    weeklyLeaderboardStatus = 'error';
+    renderWeeklyLeaderboard();
+  }
+}
+
+
+/* =========================================================
+   RENDER MENU
+========================================================= */
+
+function renderMenu(menuData) {
+
+  const root =
+    document.getElementById('menu-root');
+
+  const nav =
+    document.getElementById('category-nav');
+
+
+  if (!menuData.length) {
+
+    nav.innerHTML = '';
+
+    root.innerHTML = weeklyLeaderboardSectionHtml() + `
+
+      <p class="empty-state">
+        No items found 😔
+      </p>
+
+    `;
+    renderWeeklyLeaderboard();
+    observeMenuSections();
+
+    return;
+  }
+
+
+  const groups = {};
+
+
+  menuData.forEach(item => {
+
+    const category =
+      item.category || 'General';
+
+
+    if (!groups[category]) {
+
+      groups[category] = [];
+
+    }
+
+
+    groups[category].push(item);
+
+  });
+
+
+  /* CATEGORY NAV */
+
+  nav.innerHTML =
+
+    Object.keys(groups)
+
+      .map(category => {
+
+        return `
+
+          <button
+            class="category-chip"
+            data-category="${escapeHtml(category)}"
+          >
+
+            ${escapeHtml(category)}
+
+          </button>
+
+        `;
+
+      })
+
+      .join('');
+
+
+  /* PRODUCTS */
+
+  root.innerHTML = weeklyLeaderboardSectionHtml() +
+
+    Object.entries(groups)
+
+      .map(([category, items]) => {
+
+        return `
+
+          <section
+            class="category-block"
+            id="${categoryId(category)}"
+          >
+
+            <h2 class="category-title">
+              ${escapeHtml(category)}
+            </h2>
+
+
+            ${items.map(item => renderProductRow(item)).join('')}
+
+          </section>
+
+        `;
+
+      })
+
+      .join('');
+
+  renderWeeklyLeaderboard();
+  observeMenuSections();
+
+}
+
+
+/* =========================================================
+   ADD TO CART
+========================================================= */
+
+function addToCart(productId) {
+
+  const product =
+    products.find(
+      product => product.id === productId
+    );
+
+
+  if (!product) return;
+
+
+  if (product.available === false) {
+    return;
+  }
+
+  trackVercelEvent('Item Added to Cart', {
+    product: String(product.name || 'Menu item').slice(0, 120),
+    category: String(product.category || 'General').slice(0, 80)
+  });
+
+
+  const existing =
+    cart.find(
+      item => item.id === productId
+    );
+
+
+  if (existing) {
+
+    existing.qty++;
+
+  } else {
+
+    cart.push({
+
+      id:
+        product.id,
+
+      name:
+        product.name,
+
+      price:
+        Number(product.price),
+
+      qty:
+        1
+
+    });
+
+  }
+
+
+  renderCart();
+
+}
+
+
+/* =========================================================
+   CART TOTAL
+========================================================= */
+
+function getCartSubtotal() {
+
+  return cart.reduce(
+
+    (total, item) =>
+
+      total +
+      (item.price * item.qty),
+
+    0
+
+  );
+
+}
+
+
+/* =========================================================
+   REWARD ELIGIBILITY
+========================================================= */
+
+function checkRewardEligibility() {
+
+  if (!REWARDS_ENABLED) return false;
+
+  const subtotal =
+    getCartSubtotal();
+
+
+  if (subtotal < REWARD_THRESHOLD) {
+
+    mysteryReward = null;
+
+    rewardRevealed = false;
+
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   AVAILABLE REWARDS
+========================================================= */
+
+function getAvailableRewards() {
+
+  const rewardNames = REWARD_PRODUCT_NAMES.map(name =>
+    String(name).trim().toLowerCase()
+  );
+
+  return products.filter(product => {
+    const productName = String(product.name || '').trim().toLowerCase();
+    return rewardNames.includes(productName) && product.available !== false;
+  });
+}
+
+
+/* =========================================================
+   REVEAL REWARD
+========================================================= */
+
+function revealMysteryReward() {
+
+  if (!REWARDS_ENABLED) return;
+
+  const subtotal =
+    getCartSubtotal();
+
+
+  if (subtotal < REWARD_THRESHOLD) {
+
+    mysteryReward = null;
+
+    rewardRevealed = false;
+
+    renderCart();
+
+    return;
+
+  }
+
+
+  if (rewardRevealed) {
+    return;
+  }
+
+
+  const rewards =
+    getAvailableRewards();
+
+
+  if (!rewards.length) {
+
+    alert(
+      'Mystery rewards are temporarily unavailable.'
+    );
+
+    return;
+
+  }
+
+
+  const randomIndex =
+    Math.floor(
+      Math.random() * rewards.length
+    );
+
+
+  mysteryReward =
+    rewards[randomIndex];
+
+
+  rewardRevealed =
+    true;
+
+
+  renderCart();
+
+}
+
+
+/* =========================================================
+   RENDER REWARD
+========================================================= */
+
+function renderMysteryReward() {
+
+  if (!REWARDS_ENABLED) return '';
+
+  const eligible =
+    checkRewardEligibility();
+
+
+  if (!eligible) {
+    return '';
+  }
+
+
+  if (!rewardRevealed) {
+
+    return `
+
+      <div class="mystery-reward">
+
+        <div class="mystery-reward-info">
+
+          <span class="mystery-reward-icon">
+            🎁
+          </span>
+
+          <span class="mystery-reward-text">
+            Mystery reward
+          </span>
+
+        </div>
+
+
+        <button
+          class="reward-reveal-btn"
+          data-action="reveal-reward"
+        >
+          TAP TO REVEAL
+        </button>
+
+      </div>
+
+    `;
+
+  }
+  if (!mysteryReward) {
+    rewardRevealed = false;
+    return '';
+  }
+
+  const rewardIcon =
+    mysteryReward.name
+      .toLowerCase()
+      .includes('cola')
+
+      ? '🥤'
+
+      : '🥐';
+
+
+  return `
+
+    <div class="mystery-reward reward-won">
+
+      <span class="reward-won-icon">
+        ${rewardIcon}
+      </span>
+
+      <span class="reward-won-text">
+        You won ${escapeHtml(mysteryReward.name)} — FREE!
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   CHAI ORDER RULE
+========================================================= */
+
+function getChaiItem() {
+  return cart.find(
+    item => String(item.name).trim().toLowerCase() === 'chai'
+  );
+}
+
+function hasValidChaiQuantity() {
+  const chai = getChaiItem();
+  return !chai || chai.qty >= 5;
+}
+
+/* =========================================================
+   RENDER CART
+========================================================= */
+
+function setFulfillmentType(type) {
+  if (!['delivery', 'takeout'].includes(type)) return;
+  fulfillmentType = type;
+  document.querySelectorAll('input[name="fulfillment-type"]').forEach(input => {
+    input.checked = input.value === fulfillmentType;
+  });
+  renderCart();
+}
+
+function renderCart() {
+
+  const items =
+    document.getElementById('cart-items');
+
+  const count =
+    document.getElementById('cart-count');
+
+  const toggle =
+    document.getElementById('cart-toggle');
+
+  const checkoutButton =
+    document.getElementById('checkout-whatsapp');
+
+  checkRewardEligibility();
+  const deliveryFee = fulfillmentType === 'delivery' ? DELIVERY_CHARGE : 0;
+
+  if (!cart.length) {
+
+    document.getElementById('cart-panel')?.classList.add('is-empty');
+
+    items.innerHTML =
+      'No items added yet.';
+
+    count.textContent =
+      '0';
+
+    toggle.setAttribute(
+      'data-count',
+      '0'
+    );
+
+    if (toggle.getAttribute('aria-expanded') !== 'true') {
+      toggle.setAttribute('aria-label', 'Open cart, empty');
+    }
+
+    if (checkoutButton) checkoutButton.disabled = true;
+
+    return;
+
+  }
+
+
+  document.getElementById('cart-panel')?.classList.remove('is-empty');
+
+  let subtotal = 0;
+
+  let totalItems = 0;
+
+
+  const cartHtml =
+
+    cart.map(item => {
+
+      const itemTotal =
+        item.price * item.qty;
+
+
+      subtotal +=
+        itemTotal;
+
+
+      totalItems +=
+        item.qty;
+
+
+      return `
+
+        <div class="cart-item">
+
+          <div>
+
+            <strong>
+              ${escapeHtml(item.name)}
+            </strong>
+
+            <div>
+              ₹${item.price} × ${item.qty}
+            </div>
+
+          </div>
+
+
+          <div class="cart-actions">
+
+            <button
+              data-action="decrease" data-product-id="${escapeHtml(item.id)}"
+              aria-label="Remove one ${escapeHtml(item.name)} from cart"
+            >
+              −
+            </button>
+
+            <span>
+              ${item.qty}
+            </span>
+
+            <button
+              data-action="increase" data-product-id="${escapeHtml(item.id)}"
+              aria-label="Add one ${escapeHtml(item.name)} to cart"
+            >
+              +
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    })
+
+    .join('');
+
+
+  const chaiItem = getChaiItem();
+  const chaiValid = hasValidChaiQuantity();
+  const storeOpen = isOwlzOpen();
+
+  const rewardHtml =
+    renderMysteryReward();
+
+  const grandTotal =
+    subtotal +
+    DELIVERY_CHARGE;
+
+
+  items.innerHTML = `
+
+    ${cartHtml}
+
+    ${!chaiValid ? `
+      <p class="cart-warning">☕ Chai requires a minimum order of 5 cups.</p>
+    ` : ''}
+
+    ${rewardHtml}
+
+    <hr>
+
+
+    <div class="cart-summary">
+
+      <div class="cart-summary-row">
+
+        <span>
+          Subtotal
+        </span>
+
+        <span>
+          ₹${subtotal}
+        </span>
+
+      </div>
+
+
+      <div class="cart-summary-row">
+
+        <span>
+          Delivery
+        </span>
+
+        <span>
+          ₹${deliveryFee}
+        </span>
+
+      </div>
+
+
+      <div
+        class="
+          cart-summary-row
+          cart-summary-total
+        "
+      >
+
+        <span>
+          Total
+        </span>
+
+        <span>
+          ₹${grandTotal}
+        </span>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  count.textContent =
+    totalItems;
+
+
+  toggle.setAttribute(
+    'data-count',
+    totalItems
+  );
+
+  if (toggle.getAttribute('aria-expanded') !== 'true') {
+    toggle.setAttribute(
+      'aria-label',
+      `Open cart, ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`
+    );
+  }
+
+  if (checkoutButton) checkoutButton.disabled = !storeOpen || !chaiValid;
+
+}
+
+
+/* =========================================================
+   CHANGE QUANTITY
+========================================================= */
+
+function changeQty(productId, amount) {
+
+  const item =
+    cart.find(
+      item => item.id === productId
+    );
+
+
+  if (!item) return;
+
+  trackVercelEvent('Cart Quantity Changed', {
+    direction: amount > 0 ? 'increase' : 'decrease'
+  });
+
+
+  item.qty +=
+    amount;
+
+
+  if (item.qty <= 0) {
+
+    cart =
+      cart.filter(
+        item => item.id !== productId
+      );
+
+  }
+
+
+  renderCart();
+
+}
+
+
+/* =========================================================
+   CART TOGGLE
+========================================================= */
+
+function toggleCart() {
+  const panel = document.getElementById('cart-panel');
+  if (!panel) return;
+  setCartOpen(!panel.classList.contains('show'));
+}
+
+function setCartOpen(open) {
+  const panel = document.getElementById('cart-panel');
+  const toggle = document.getElementById('cart-toggle');
+  if (!panel || !toggle) return;
+
+  panel.classList.toggle('show', open);
+  toggle.setAttribute('aria-expanded', String(open));
+  const itemCount = Number(toggle.dataset.count || 0);
+  toggle.setAttribute(
+    'aria-label',
+    open
+      ? 'Close cart'
+      : itemCount === 0
+        ? 'Open cart, empty'
+        : `Open cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`
+  );
+  if (open) trackVercelEvent('Cart Opened');
+}
+
+
+/* =========================================================
+   CATEGORY SCROLL
+========================================================= */
+
+function scrollToCategory(category) {
+
+  const element =
+    document.getElementById(
+      categoryId(category)
+    );
+
+
+  if (!element) return;
+
+
+  const y =
+
+    element.getBoundingClientRect().top +
+
+    window.pageYOffset -
+
+    160;
+
+
+  window.scrollTo({
+
+    top:
+      y,
+
+    behavior:
+      'smooth'
+
+  });
+
+}
+
+
+/* =========================================================
+   WHATSAPP CHECKOUT
+========================================================= */
+
+let owlzzCheckoutAttemptInProgress = false;
+
+async function checkoutWhatsapp() {
+  if (owlzzCheckoutAttemptInProgress) return;
+  owlzzCheckoutAttemptInProgress = true;
+  const checkoutButton = document.getElementById('checkout-whatsapp');
+  const originalButtonText = checkoutButton?.textContent;
+  if (checkoutButton) {
+    checkoutButton.disabled = true;
+    checkoutButton.textContent = 'Preparing order…';
+  }
+
+  try {
+    // The preference decision is the first checkout action. This promise only
+    // resolves after accept/refuse (including Escape) and best-effort processing.
+    if (typeof window.askCustomerPushOptIn === 'function') {
+      try { await window.askCustomerPushOptIn(); }
+      catch (error) { console.warn('Notification decision failed; continuing checkout:', error); }
+    }
+
+    const policyCheckbox = document.getElementById("policy-accepted");
+    if (!policyCheckbox || !policyCheckbox.checked) {
+      alert("Please read and accept the Refund & Order Policy before ordering.");
+      policyCheckbox?.focus();
+      return;
+    }
+
+    if (!Array.isArray(cart) || cart.length === 0) {
+      alert("Your cart is empty. Please add items before ordering.");
+      return;
+    }
+
+    const chaiQuantity = cart
+      .filter(item => /chai/i.test(item.name))
+      .reduce((total, item) => total + item.qty, 0);
+    if (chaiQuantity > 0 && chaiQuantity < 5) {
+      alert("Chai orders require a minimum of 5 cups.");
+      return;
+    }
+
+    const indiaHour = Number(
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        hourCycle: "h23"
+      }).format(new Date())
+    );
+    if (!(indiaHour >= 18 || indiaHour < 3)) {
+      alert("Owlz Corner is currently closed. Ordering is available from 6 PM to 3 AM.");
+      return;
+    }
+
+    const orderItems = cart.map(item => ({ id: item.id, qty: item.qty }));
+    const cartKey = JSON.stringify([...orderItems].sort((a, b) => a.id.localeCompare(b.id)));
+    let requestId;
+    try {
+      const storageKey = "owlzz_checkout_request_" + cartKey;
+      requestId = sessionStorage.getItem(storageKey);
+      if (!requestId) {
+        requestId = crypto.randomUUID();
+        sessionStorage.setItem(storageKey, requestId);
+      }
+    } catch (error) {
+      alert("Secure checkout could not be initialized. Please reload and try again.");
+      return;
+    }
+
+    trackVercelEvent('Checkout Started');
+    // 6. Create the order securely on the server.
+    const response = await fetch("/api/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        request_id: requestId,
+        items: orderItems,
+        fulfillment_type: fulfillmentType,
+        policy_accepted: true
+      })
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.token || !result?.order_id) {
+      const message = response.status === 405 || response.status === 404
+        ? 'The checkout API is unavailable from this server. Start the site with Vercel Dev (see LOCAL-DEVELOPMENT.md).'
+        : result?.error || "Couldn't create your order. Please try again.";
+      throw new Error(message);
+    }
+
+    trackVercelEvent('Order Token Created');
+
+    // 7. Build the WhatsApp message.
+    const subtotal = cart.reduce(
+      (sum, item) => sum + Number(item.price) * item.qty,
+      0
+    );
+
+    const delivery = fulfillmentType === 'delivery' ? DELIVERY_CHARGE : 0;
+    const total = subtotal + delivery;
+
+    const lines = cart.map(item =>
+      `${item.name} x ${item.qty} = ₹${(
+        Number(item.price) * item.qty
+      ).toFixed(2)}`
+    );
+
+
+let message = [
+  "🦉 *OWLZ CORNER*",
+  "━━━━━━━━━━━━━━",
+  "",
+  "🧾 *ORDER SUMMARY*",
+  `🎟️ Order Token: *${result.token}*`,
+  `🚚 Fulfillment: *${fulfillmentType === 'delivery' ? 'Delivery' : 'Takeout / Pickup'}*`,
+  "",
+  "━━━━━━━━━━━━━━",
+  "🛒 *YOUR ITEMS*",
+  "",
+  ...lines,
+  "",
+  "━━━━━━━━━━━━━━",
+  "💰 *PAYMENT SUMMARY*",
+  "",
+  `Subtotal: ₹${subtotal.toFixed(2)}`,
+  `${fulfillmentType === 'delivery' ? 'Delivery Fee' : 'Pickup Fee'}: ₹${delivery.toFixed(2)}`,
+  "━━━━━━━━━━━━━━",
+  `*TOTAL: ₹${total.toFixed(2)}*`,
+  "",
+  "━━━━━━━━━━━━━━",
+  "📜Refud Policy: Accepted ✅",
+  "",
+  "Hey! 👋 I'd like to place this order.",
+  "",
+  "Thank you! ❤️"
+];
+
+    
+
+    if (rewardRevealed && mysteryReward) {
+      message.push(
+        "",
+        `Mystery Reward: ${mysteryReward.name} (free, subject to cafe confirmation)`
+      );
+    }
+
+    message.push(
+      "",
+      "I have reviewed and accepted the Refund & Order Policy.",
+      "Please confirm my order."
+    );
+
+    // 8. Continue to WhatsApp. The customer must send the message.
+    const whatsappUrl =
+      "https://wa.me/919370693869?text=" +
+      encodeURIComponent(message.join("\n"));
+
+    trackVercelEvent('WhatsApp Order Opened');
+    // A same-tab navigation does not depend on popup permission and happens
+    // only after the order API has returned a valid order ID and token.
+    window.location.href = whatsappUrl;
+
+  } catch (error) {
+    trackVercelEvent('Checkout Failed');
+    console.error("Checkout failed:", error);
+
+    alert(
+      error.message ||
+      "Checkout failed. Please try again in a moment."
+    );
+
+  } finally {
+    owlzzCheckoutAttemptInProgress = false;
+    if (checkoutButton) {
+      checkoutButton.disabled = false;
+      checkoutButton.textContent =
+        originalButtonText || "Order on WhatsApp";
+    }
+  }
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+let searchAnalyticsTimer;
+let menuSearchRenderTimer;
+let lastSearchValue = '';
+
+function filterMenuProducts(search) {
+  const query = String(search || '').toLowerCase().trim();
+  if (!query) return products;
+
+  return products.filter(item =>
+    [item.name, item.category, item.description]
+      .some(value => String(value || '').toLowerCase().includes(query))
+  );
+}
+
+document
+  .getElementById('menuSearch')
+  ?.addEventListener(
+    'input',
+    function () {
+
+      const search =
+        this.value
+          .toLowerCase()
+          .trim();
+
+
+      const filtered = filterMenuProducts(search);
+
+      // Avoid rebuilding every category and product node for each keystroke.
+      window.clearTimeout(menuSearchRenderTimer);
+      menuSearchRenderTimer = window.setTimeout(() => {
+        renderMenu(filtered);
+        const searchStatus = document.getElementById('menu-search-status');
+        if (searchStatus) {
+          searchStatus.textContent = search
+            ? `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'} found.`
+            : '';
+        }
+      }, 100);
+
+      window.clearTimeout(searchAnalyticsTimer);
+      if (search) {
+        searchAnalyticsTimer = window.setTimeout(() => {
+          trackVercelEvent('Menu Search', {
+            query_length: Math.min(search.length, 100),
+            results_count: filtered.length
+          });
+        }, 700);
+      } else if (lastSearchValue) {
+        trackVercelEvent('Menu Search Cleared');
+      }
+
+      lastSearchValue = search;
+
+    }
+  );
+
+
+/* =========================================================
+   EVENT DELEGATION
+========================================================= */
+
+document.addEventListener('click', event => {
+  const target = event.target.closest('[data-action], [data-category], [data-product-id]');
+  if (!target) return;
+
+  if (target.dataset.category) {
+    trackVercelEvent('Category Selected', {
+      category: target.dataset.category.slice(0, 120)
+    });
+    scrollToCategory(target.dataset.category);
+    return;
+  }
+
+  if (target.dataset.productId && !target.dataset.action) {
+    addToCart(target.dataset.productId);
+    return;
+  }
+
+  switch (target.dataset.action) {
+    case 'decrease':
+      changeQty(target.dataset.productId, -1);
+      break;
+    case 'increase':
+      changeQty(target.dataset.productId, 1);
+      break;
+    // Rewards are currently disabled.
+    case 'reveal-reward':
+      revealMysteryReward();
+      break;
+  }
+});
+
+document.getElementById('cart-toggle')?.addEventListener('click', toggleCart);
+document.getElementById('checkout-whatsapp')?.addEventListener('click', checkoutWhatsapp);
+
+document.addEventListener('click', event => {
+  const widget = document.querySelector('.cart-widget');
+  const panel = document.getElementById('cart-panel');
+  // renderCart() replaces cart item buttons during the same click, detaching event.target.
+  // composedPath() retains the original propagation path, so quantity clicks stay inside the widget.
+  const clickedInsideWidget = widget && event.composedPath().includes(widget);
+  if (panel?.classList.contains('show') && widget && !clickedInsideWidget) {
+    setCartOpen(false);
+  }
+});
+
+document.addEventListener('error', event => {
+  if (event.target instanceof HTMLImageElement && event.target.classList.contains('item-image')) {
+    event.target.parentElement?.remove();
+  }
+}, true);
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    const panel = document.getElementById('cart-panel');
+    if (panel?.classList.contains('show')) {
+      setCartOpen(false);
+      document.getElementById('cart-toggle')?.focus();
+    }
+  }
+});
+
+/* =========================================================
+   LOAD REVIEWS
+========================================================= */
+
+async function loadReviews() {
+
+  const root =
+    document.getElementById(
+      'reviews-root'
+    );
+
+
+  if (!root) return;
+
+  if (!window.supabaseClient) {
+    root.innerHTML = '<p class="reviews-empty">Reviews are temporarily unavailable.</p>';
+    console.error('supabaseClient is not available. Check supabase-config.js.');
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+
+      .from('reviews')
+
+      .select(
+        'id, name, comment, created_at'
+      )
+
+      .order(
+        'created_at',
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      'Failed to load reviews:',
+      error
+    );
+
+
+    root.innerHTML = `
+
+      <p class="reviews-empty">
+        Reviews are unavailable right now.
+      </p>
+
+    `;
+
+    return;
+
+  }
+
+  renderReviews(
+    data || []
+  );
+
+}
+
+
+/* =========================================================
+   RENDER REVIEWS
+========================================================= */
+
+function renderReviews(reviews) {
+
+  const root =
+    document.getElementById(
+      'reviews-root'
+    );
+
+
+  if (!root) return;
+
+
+  if (!reviews.length) {
+
+    root.innerHTML = `
+
+      <p class="reviews-empty">
+        Be the first to leave a review ❤️
+      </p>
+
+    `;
+
+    return;
+
+  }
+
+
+  root.innerHTML =
+
+    reviews.map(review => {
+
+      return `
+
+        <article class="review-card">
+
+          <div class="review-card-head">
+
+            <span class="review-card-name">
+              ${escapeHtml(review.name)}
+            </span>
+
+            <span class="review-card-time">
+              ${formatReviewTime(review.created_at)}
+            </span>
+
+          </div>
+
+
+          <p class="review-card-comment">
+            ${escapeHtml(review.comment)}
+          </p>
+
+        </article>
+
+      `;
+
+    })
+
+    .join('');
+
+}
+
+
+/* =========================================================
+   REVIEW TIME
+========================================================= */
+
+function formatReviewTime(timestamp) {
+
+  const date =
+    new Date(timestamp);
+
+  const now =
+    new Date();
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return '';
+
+  }
+
+
+  const diffSeconds =
+
+    Math.max(
+
+      0,
+
+      Math.floor(
+        (now - date) / 1000
+      )
+
+    );
+
+
+  if (diffSeconds < 60) {
+    return 'Just now';
+  }
+
+
+  if (diffSeconds < 3600) {
+
+    const minutes =
+      Math.floor(
+        diffSeconds / 60
+      );
+
+    return `${minutes} min ago`;
+
+  }
+
+
+  if (diffSeconds < 86400) {
+
+    const hours =
+      Math.floor(
+        diffSeconds / 3600
+      );
+
+    return `${hours} hr ago`;
+
+  }
+
+
+  if (diffSeconds < 172800) {
+    return 'Yesterday';
+  }
+
+
+  if (diffSeconds < 604800) {
+
+    const days =
+      Math.floor(
+        diffSeconds / 86400
+      );
+
+    return `${days} days ago`;
+
+  }
+
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day:
+        'numeric',
+
+      month:
+        'short',
+
+      year:
+        'numeric'
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SUBMIT REVIEW
+========================================================= */
+
+async function submitReview(event) {
+
+  event.preventDefault();
+
+  if (!window.supabaseClient) {
+    const status = document.getElementById('reviewStatus');
+    if (status) status.textContent = 'Reviews are temporarily unavailable.';
+    return;
+  }
+
+
+  const nameInput =
+    document.getElementById(
+      'reviewName'
+    );
+
+  const commentInput =
+    document.getElementById(
+      'reviewComment'
+    );
+
+  const submitButton =
+    document.getElementById(
+      'reviewSubmit'
+    );
+
+  const status =
+    document.getElementById(
+      'reviewStatus'
+    );
+
+
+  const name =
+    nameInput.value.trim();
+
+  const comment =
+    commentInput.value.trim();
+
+
+  if (!name || !comment) {
+
+    status.textContent =
+      'Please enter your name and review.';
+
+    return;
+
+  }
+
+
+  if (name.length > 50) {
+
+    status.textContent =
+      'Name must be 50 characters or less.';
+
+    return;
+
+  }
+
+
+  if (comment.length > 500) {
+
+    status.textContent =
+      'Review must be 500 characters or less.';
+
+    return;
+
+  }
+
+
+  submitButton.disabled =
+    true;
+
+  submitButton.textContent =
+    'Submitting…';
+
+  status.textContent =
+    '';
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+
+      .from('reviews')
+
+      .insert({
+
+        name,
+        comment
+
+      })
+
+      .select(
+        'id, name, comment, created_at'
+      )
+
+      .single();
+
+
+  if (error) {
+
+    console.error(
+      'Review submission failed:',
+      error
+    );
+
+
+    status.textContent =
+      'Could not submit your review. Please try again.';
+
+
+    submitButton.disabled =
+      false;
+
+    submitButton.textContent =
+      'Leave Review';
+
+    return;
+
+  }
+
+  trackVercelEvent('Review Submitted');
+
+
+  const root =
+    document.getElementById(
+      'reviews-root'
+    );
+
+
+  const existingEmpty =
+    root.querySelector(
+      '.reviews-empty'
+    );
+
+
+  if (existingEmpty) {
+
+    root.innerHTML =
+      '';
+
+  }
+
+
+  const card =
+    document.createElement(
+      'article'
+    );
+
+
+  card.className =
+    'review-card';
+
+
+  card.innerHTML = `
+
+    <div class="review-card-head">
+
+      <span class="review-card-name">
+        ${escapeHtml(data.name)}
+      </span>
+
+      <span class="review-card-time">
+        ${formatReviewTime(data.created_at)}
+      </span>
+
+    </div>
+
+
+    <p class="review-card-comment">
+      ${escapeHtml(data.comment)}
+    </p>
+
+  `;
+
+
+  root.prepend(card);
+
+
+  nameInput.value =
+    '';
+
+  commentInput.value =
+    '';
+
+
+  status.textContent =
+    'Thanks for your review! ❤️';
+
+
+  submitButton.disabled =
+    false;
+
+  submitButton.textContent =
+    'Leave Review';
+
+}
+
+
+/* =========================================================
+   REVIEW FORM
+========================================================= */
+
+const reviewForm =
+  document.getElementById(
+    'reviewForm'
+  );
+
+
+if (reviewForm) {
+
+  reviewForm.addEventListener(
+    'submit',
+    submitReview
+  );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+updateStoreStatus();
+setInterval(updateStoreStatus, 30000);
+
+loadReviews().catch(error => {
+  console.error('Unexpected review loading error:', error);
+});
+
+loadMenu().catch(error => {
+  console.error('Unexpected menu loading error:', error);
+  const root = document.getElementById('menu-root');
+  if (root) {
+    root.innerHTML = weeklyLeaderboardSectionHtml() + '<p class="empty-state">Couldn’t load the menu right now. Please try again.</p>';
+    renderWeeklyLeaderboard();
+  }
+});
+
+loadWeeklyLeaderboard();
+
+</script>
+
+<script>
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+  window.si = window.si || function () {
+    (window.siq = window.siq || []).push(arguments);
+  };
+</script>
+<script defer src="/vercel-analytics-loader.js"></script>
+
 </body>
 </html>
